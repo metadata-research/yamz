@@ -1,9 +1,8 @@
 [default]
-dbname = seaice
-user = reader
-password = PASSWORD1
-
+  dbname = seaice
+  user = postgres
+  password = PASS
 [contributor]
-dbname = seaice
-user = contributor
-password = PASSWORD3
+  dbname = seaice
+  user = contributor
+  password = PASS
