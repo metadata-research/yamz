@@ -87,4 +87,4 @@ class SeaIceFlask (Flask):
       elif notif_class == 'TermRemoved':
         notif = notify.TermRemoved(from_user_id, term_string, T_notify)
 
-      self.SeaIceUsers[user_id].notify(notif
+      self.SeaIceUsers[user_id].notify(notif)
