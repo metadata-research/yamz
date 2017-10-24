@@ -417,9 +417,15 @@ def getTerm(term_concept_id = None, message = ""):
 
 @app.route("/browse")
 @app.route("/browse/<listing>")
-def browse(listing = None):
+@app.route("/browse/<listing>/<int:page>")
+def browse(listing = None, page = None):
+  if listing == None:
+    return redirect("/browse/recent")
+  if page == None:
+    return redirect("/browse/" + listing + '/1')
+
   g.db = app.dbPool.getScoped()
-  terms = g.db.getAllTerms(sortBy="term_string")
+  terms = g.db.getChunkTerms(sortBy="term_string", page=page)
   letter = '~'
   result = "<h5>{0} | {1} | {2} | {3} | {4}</h5><hr>".format(
      '<a href="/browse/score">high score</a>' if listing != "score" else 'high score',
@@ -463,19 +469,19 @@ def browse(listing = None):
         result += "</td></tr><tr><td width=20% align=center valign=top><h4>{0}</h4></td><td width=80%>".format(letter)
       result += "<p><a %s</a>" % seaice.pretty.innerAnchor(
         g.db, term['term_string'], term['concept_id'], term['definition'],
-	tagAsTerm=True)
+	      tagAsTerm=True)
       result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'])
     result += "</table>"
     # yyy temporary proof that this code is running
     print >>sys.stderr, "note: end alpha listing"
 
-  else:
-    return redirect("/browse/recent")
-
   return render_template("browse.html", user_name = l.current_user.name,
                                         title = "Browse",
                                         headline = "Browse dictionary",
-                                        content = Markup(result.decode('utf-8')))
+                                        content = Markup(result.decode('utf-8')),
+                                        termCount = g.db.getLengthTerms(),
+                                        page = page,
+                                        listing = listing)
 
 
 hash2uniquerifier_regex = re.compile('(?<!#)#(\w[\w.-]+)')

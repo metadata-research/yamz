@@ -599,8 +599,8 @@ class SeaIceConnector:
     for row in cur.fetchall():
       yield row
 
-  def getChunkTerms(self, sortBy=None, nth=0):
-    """ Return an iterator over ``SI.Terms``.
+  def getChunkTerms(self, sortBy=None, page=1):
+    """ Return an iterator over one page of ``SI.Terms``.
 
     :param sortBy: Column by which sort the results in ascending order.
     :type sortBy: str
@@ -613,7 +613,7 @@ class SeaIceConnector:
                             T_stable, T_last, concept_id, persistent_id
                        FROM SI.Terms
                       ORDER BY %s
-                      LIMIT %s OFFSET %s""" % (sortBy, 2, (nth * 2)))
+                      LIMIT %s OFFSET %s""" % (sortBy, 2, ((page - 1) * 2))) # set to 2 to test. probably wants to be around 50?
     else:
       cur.execute("""SELECT id, owner_id, term_string, definition, examples,
                             modified, created, up, down, consensus, class,
@@ -621,6 +621,17 @@ class SeaIceConnector:
                        FROM SI.Terms""")
     for row in cur.fetchall():
       yield row
+
+  def getLengthTerms(self):
+    """ Return the number of terms currently in the database.
+        Used for pagination
+
+    :rtype: integer
+    """
+    cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+    cur.execute("""SELECT count(*)
+                    FROM SI.Terms""")
+    return cur.fetchone()["count"]
 
   def getTermStats(self):
     """ Return the various parameters used to calculate consensus
