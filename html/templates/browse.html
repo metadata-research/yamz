@@ -4,9 +4,9 @@
   <head>
     <meta charset="utf-8">
     <title>
-      {% if title %} 
-        YAMZ {{ title }} 
-      {% else %} 
+      {% if title %}
+        YAMZ {{ title }}
+      {% else %}
         A basic page
       {% endif %}
     </title>
@@ -56,7 +56,7 @@
                  <a href="/logout">Log out of {{ user_name }}</a>
                 {% else %}
                  <a href="/login">Login</a>
-                {% endif %} 
+                {% endif %}
               </li>
             </ul>
           </div><!--/.nav-collapse -->
@@ -65,41 +65,58 @@
     </div>
 
     <div class="container">
-    
+
     <table width=100%>
      <tr>
       <td>
-       {% if headline %} 
+       {% if headline %}
          <h1 class="jetstrap-highlighted" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">
            {{ headline }}</h1>
        {% endif %}
-      
+
       <p class="jetstrap-selected" contenteditable="false" style="background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAALHRFWHRDcmVhdGlvbiBUaW1lAEZyaSAxMiBOb3YgMjAxMCAxOTowNzowMiArMTIwMOGr8p4AAAAHdElNRQfaCwwGBxwduq16AAAACXBIWXMAAAsSAAALEgHS3X78AAAABGdBTUEAALGPC/xhBQAAAfJJREFUeNqVkk1vElEUhp87X4CIFhhMG0toMC5K3Lgxbro10bhxY2Jc+CO666Y/oP/DxFVjTKM7l1apTdM0JSU0LSg0WqaUjwE6MDNebGpKBYlndc+55zw5H6/gim2UUd0qs5Uy6VaTa7EYdtOmUN7naHER92q+dtnZ2UFpHTOTXWfuwxrfYlNUHz1lxvdIVyx6MuXHPwFeBLW2z+29Pepr7ziUof7SEq1CibCEmKMAymXH6SD6LrpzRndQPIjNz9P3odu2URlhQ4C+ghcM0JpLEchkzrv7eIDS62JYP2lPBJS2cIMhyrMpwo+fMbW8jLhhc2t3F906pjoK8GcH29vonoenRDk1m5zcvUM6ZuJvZEnmcljT09hbR6iVIuLJw/PxhgAOPOj26Gk1nEQCNWAQ7XS4bxvw8hWuGedeo4iR+/y7+OtfgM1N9OIBwnFQ5SLdZJJ2JML17BdqEuYHgmiahsjnx4zw/i2fslm8dht/YQHx/AWpfI50/ZTKm9d8lykiHkf4/hjA6ipnF++VFRS7T1AoaDejyCEYlHmWNeEKF9YISz30CBkGirxKUIZGamAsQG2hux66BAipi1A6g/5fAM/HkGrUFfmr6wSSiWHJTwQoPrq8hCYEGDoh0xzfwUhyIY9ROkRrNKQ65e1P6uM7+AW+ibcHEM1ixAAAAABJRU5ErkJggg==); background-position: 708px 0px; background-repeat: no-repeat no-repeat;"></p>
       </td>
       <td valign=top align=right width=30%>
          <form action="/search" method="post">
            <div class="control-group"><label class="control-label"></label>
-           <div class="controls"><input name="term_string" type="text" 
+           <div class="controls"><input name="term_string" type="text"
            class="input-large search-query" placeholder="Search for a term"></div></div>
          </form>
        </td>
       </tr>
-    </table> 
+    </table>
 
     {% if content %}
       {{ content }}
     {% endif %}
 
+<!-- Newer version of bootstrap will do well with these and make nice pagination links. Doesn't work with current bootstrap, but john wants to update anyway, so we'll keep it like this for now. Not updating atm because it'll mess up everything else  -->
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {% for i in range(1, (1 + (termCount//2) + (termCount%2))) %} <!-- change 2 to page size -->
+          {% if i == page %}
+            <li class="page-item active">
+              <span class="page-link">
+                {{ i }}
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+          {% else %}
+            <li class="page-item"><a class="page-link" href="/browse/{{ listing }}/{{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </nav>
 
       <hr>
 
       <div class="footer" align=right><font size="2" color="#8B8B8B">
         Contributions to the <i>YAMZ</i> metadictionary are dedicated to the public
         domain under the terms of CC0. By <br> using this site, you agree to Terms
-        of Use and Privacy Policy statements similar to 
+        of Use and Privacy Policy statements similar to
         <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
       </font></div><br>
-    
+
     </div> <!-- /container -->
 
     <style>

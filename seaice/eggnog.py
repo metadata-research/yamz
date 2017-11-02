@@ -23,8 +23,8 @@ REAL_BINDER_URL = "https://n2t.net/a/yamz/b"
 TEST_MINTER_URL = "https://n2t.net/a/yamz/m/ark/99152/fk2"
 TEST_BINDER_URL = "https://n2t.net/a/yamz_test/b"
 
-# FIXME Location for minter_password is needlessly hardcoded. 
-deploy = 'heroku' 
+# FIXME Location for minter_password is needlessly hardcoded.
+deploy = 'heroku'
 CONFIG = auth.get_config('.seaice_auth')
 PASSWORD = os.environ.get('MINTER_PASSWORD')
 if not PASSWORD and CONFIG.has_option(deploy, 'minter_password'):
@@ -66,7 +66,7 @@ def minderOpener (prod_mode):
 def mintArkIdentifier (prod_mode):
   # Returns an ARK identifier as a string (e.g., "ark:/99152/h4232").
   global _opener, _minter
-  if not _opener: 
+  if not _opener:
     _opener = minderOpener(prod_mode)
   c = None
   try:
@@ -80,7 +80,7 @@ def mintArkIdentifier (prod_mode):
   finally:
     if c: c.close()
   return arkId
- 
+
 # encode quotes and non-visible ascii
 enc_pat = re.compile("""[%'"]|[^!-~]""")
 def _encode (s):		# ^HH encodes chars (for egg :hx)
@@ -93,7 +93,7 @@ def _encode (s):		# ^HH encodes chars (for egg :hx)
 def bindArkIdentifier (arkId, prod_mode, who, what, peek):
   # Returns the identifier passed in as a string.
   global _opener, _binder
-  if not _opener: 
+  if not _opener:
     _opener = minderOpener(prod_mode)
   # compute our own, since caller often only knows the string 'now()'
   when = time.strftime("%Y.%m.%d_%H:%M:%S", time.gmtime())	# TEMPER-style
@@ -121,7 +121,7 @@ def bindArkIdentifier (arkId, prod_mode, who, what, peek):
 def removeArkIdentifier (arkId, prod_mode):
   # Returns the identifier passed in as a string.
   global _opener, _binder
-  if not _opener: 
+  if not _opener:
     _opener = minderOpener(prod_mode)
   c = None
   try:
@@ -153,7 +153,7 @@ def bind_persistent_id (prod_mode, arkId, who, what, peek):
   bindArkIdentifier(arkId, prod_mode, who, what, peek)
   return ark2pid(arkId)
 
-# yyy recyle id after suitable waiting period? 
+# yyy recyle id after suitable waiting period?
 def remove_persistent_id (prod_mode, arkId):
   arkId = removeArkIdentifier(arkId, prod_mode)
   return ark2pid(arkId)			# yyy better return value?
