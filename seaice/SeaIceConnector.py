@@ -775,7 +775,7 @@ class SeaIceConnector:
 
     except Exception as e:
       print >>sys.stderr, e.pgerror
-      cur.execute("ROLLBACK;")	# else one error can wedge entire service
+      cur.execute("ROLLBACK;")  # else one error can wedge entire service
       rows = []
       return list(rows)
     #  return None
@@ -784,6 +784,73 @@ class SeaIceConnector:
     rows = sorted(cur.fetchall(), key=lambda row: orderOfClass[row['class']])
     rows = sorted(rows, key=lambda row: row['consensus'], reverse=True)
     return list(rows)
+
+  def searchPage(self, string, page=1):
+    """ Search table by term_string, definition and examples. Rank
+        results by relevance to query, consensus, and classificaiton.
+
+    :param string: Search query.
+    :type string: str
+    :rtype: dict list
+    """
+    try:
+      string = string.replace("'", "''")
+      string = ' & '.join(string.split(' '))
+      # |'s are also allowed, and paranthesis TODO
+      # xxx are we correctly insulating naive queriers?
+      cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+      cur.execute("""
+        SELECT id, owner_id, term_string, definition, examples, up, down,
+               created, modified, consensus, class, concept_id, persistent_id,
+               ts_rank_cd(tsv, query, 32 /* rank(rank+1) */ ) AS rank
+          FROM SI.Terms, to_tsquery('english', %s) query
+          WHERE query @@ tsv
+          ORDER BY rank DESC
+          LIMIT %s OFFSET %s
+          """, (string, 2, ((page - 1) * 2)))
+
+    except Exception as e:
+      print >>sys.stderr, e.pgerror
+      cur.execute("ROLLBACK;")  # else one error can wedge entire service
+      rows = []
+      return list(rows)
+    #  return None
+    #  raise e
+
+    rows = sorted(cur.fetchall(), key=lambda row: orderOfClass[row['class']])
+    rows = sorted(rows, key=lambda row: row['consensus'], reverse=True)
+    return list(rows)
+
+
+  def searchLength(self, string):
+    """ Search table by term_string, definition and examples. Rank
+        results by relevance to query, consensus, and classificaiton.
+
+    :param string: Search query.
+    :type string: str
+    :rtype: dict list
+    """
+    try:
+      string = string.replace("'", "''")
+      string = ' & '.join(string.split(' '))
+      # |'s are also allowed, and paranthesis TODO
+      # xxx are we correctly insulating naive queriers?
+      cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+      cur.execute("""
+        SELECT count(id)
+          FROM SI.Terms, to_tsquery('english', %s) query
+          WHERE query @@ tsv
+          """, (string,))
+
+    except Exception as e:
+      print >>sys.stderr, e.pgerror
+      cur.execute("ROLLBACK;")	# else one error can wedge entire service
+      rows = []
+      return 0 # this seems good?
+    #  return None
+    #  raise e
+
+    return cur.fetchone()["count"]
 
 
   def updateTerm(self, id, term, pid, prod_mode):
