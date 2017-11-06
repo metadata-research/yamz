@@ -494,22 +494,43 @@ def returnQuery():
   if request.method == "POST":
     # XXX whoa -- this use of term_string variable name (in all html forms)
     #     is totally different from term_string as used in the database!
-    search_words = hash2uniquerifier_regex.sub(
-        seaice.pretty.ixuniq + '\\1',
-        request.form['term_string'])
-    terms = g.db.search(search_words)
-    #terms = g.db.search(request.form['term_string'])
-    if len(terms) == 0:
-      return render_template("search.html", user_name = l.current_user.name,
-        term_string = request.form['term_string'])
-    else:
-      result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
-      return render_template("search.html", user_name = l.current_user.name,
-        term_string = request.form['term_string'],
-	result = Markup(result.decode('utf-8')))
-
+    # search_words = hash2uniquerifier_regex.sub(
+    #     seaice.pretty.ixuniq + '\\1',
+    #     request.form['term_string'])
+    # terms = g.db.search(search_words)
+    # #terms = g.db.search(request.form['term_string'])
+    # if len(terms) == 0:
+    #   return render_template("search.html", user_name = l.current_user.name,
+    #     term_string = request.form['term_string'])
+    # else:
+    #   result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
+    #   return render_template("search.html", user_name = l.current_user.name,
+    #     term_string = request.form['term_string'],
+    #     result = Markup(result.decode('utf-8')))
+    return redirect("/search/" + request.form['term_string'] + '/1')
   else: # GET
     return render_template("search.html", user_name = l.current_user.name)
+
+@app.route("/search/<search_term>/<int:page>")
+def returnQueryPaginated(search_term=None, page=1):
+  g.db = app.dbPool.getScoped()
+    # XXX whoa -- this use of term_string variable name (in all html forms)
+    #     is totally different from term_string as used in the database!
+  search_words = hash2uniquerifier_regex.sub(
+      seaice.pretty.ixuniq + '\\1',
+      search_term)
+  terms = g.db.searchPage(search_words, page)
+  #terms = g.db.search(request.form['term_string'])
+  if len(terms) == 0:
+    return render_template("search.html", user_name = l.current_user.name,
+      term_string = search_term)
+  else:
+    result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
+    return render_template("search.html", user_name = l.current_user.name,
+      term_string = search_term,
+	    result = Markup(result.decode('utf-8')),
+      termCount = g.db.searchLength(search_words),
+      page = page)
 
 
 # yyy to do: display tag definition at top of search results

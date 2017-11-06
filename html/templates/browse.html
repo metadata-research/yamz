@@ -91,22 +91,45 @@
     {% endif %}
 
 <!-- Newer version of bootstrap will do well with these and make nice pagination links. Doesn't work with current bootstrap, but john wants to update anyway, so we'll keep it like this for now. Not updating atm because it'll mess up everything else  -->
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        {% for i in range(1, (1 + (termCount//2) + (termCount%2))) %} <!-- change 2 to page size -->
-          {% if i == page %}
-            <li class="page-item active">
-              <span class="page-link">
-                {{ i }}
-                <span class="sr-only">(current)</span>
-              </span>
+    {% if page %}
+      <nav aria-label="Page navigation example">
+        <ul class="pagination">
+          {% if page == 1 %}
+            <li class="page-item disabled">
+              <span class="page-link">Prev</span>
             </li>
           {% else %}
-            <li class="page-item"><a class="page-link" href="/browse/{{ listing }}/{{ i }}">{{ i }}</a></li>
+            <li class="page-item">
+              <a class="page-link" href="/browse/{{ listing }}/{{ page - 1 }}">Prev</a>
+            </li>
           {% endif %}
-        {% endfor %}
-      </ul>
-    </nav>
+
+          {% for i in range(1, (1 + (termCount//2) + (0 if termCount%2 == 0 else 1))) %} <!-- change 2 to page size.  -->
+            {% if i == page %}
+              <li class="page-item active">
+                <span class="page-link">
+                  {{ i }}
+                  <span class="sr-only">(current)</span>
+                </span>
+              </li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="/browse/{{ listing }}/{{ i }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page == (termCount//2) + (0 if termCount%2 == 0 else 1) %}
+            <li class="page-item disabled">
+              <span class="page-link">Next</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="/browse/{{ listing }}/{{ page + 1 }}">Next</a>
+            </li>
+          {% endif %}
+
+        </ul>
+      </nav>
+    {% endif %}
 
       <hr>
 
