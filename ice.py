@@ -37,6 +37,8 @@ from urllib2 import Request, urlopen, URLError
 import os, sys, optparse, re
 import json, psycopg2 as pgdb
 
+from pagination import *
+
 ## Parse command line options. ##
 
 parser = optparse.OptionParser()
@@ -425,7 +427,8 @@ def browse(listing = None, page = None):
     return redirect("/browse/" + listing + '/1')
 
   g.db = app.dbPool.getScoped()
-  terms = g.db.getChunkTerms(sortBy="term_string", page=page)
+  pagination_details = getBrowsePaginationDetails(dbConnector=g.db, page=page, listing=listing)
+  terms = pagination_details['terms']
   letter = '~'
   result = "<h5>{0} | {1} | {2} | {3} | {4}</h5><hr>".format(
      '<a href="/browse/score">high score</a>' if listing != "score" else 'high score',
@@ -479,9 +482,7 @@ def browse(listing = None, page = None):
                                         title = "Browse",
                                         headline = "Browse dictionary",
                                         content = Markup(result.decode('utf-8')),
-                                        termCount = g.db.getLengthTerms(),
-                                        page = page,
-                                        listing = listing)
+                                        pagination_details = pagination_details)
 
 
 hash2uniquerifier_regex = re.compile('(?<!#)#(\w[\w.-]+)')
