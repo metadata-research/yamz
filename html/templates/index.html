@@ -40,7 +40,7 @@
   <body>
 
     <div class="container-narrow">
-      
+
       <div class="masthead">
         <ul class="nav nav-pills pull-right">
           <li><a href="/browse">Browse</a></li>
@@ -52,13 +52,13 @@
              <a href="/logout">Log out of {{ user_name }}</a>
             {% else %}
              <a href="/login">Login</a>
-            {% endif %} 
+            {% endif %}
           </li>
         </ul>
         <h3 class="muted" style="background-image: noneY; background-position: 0% 0%; background-repeat: repeat repeat;">YAMZ</h3>
       </div>
 
-      <div> 
+      <div>
         {% if user_name %}
         <h6 class="muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to yamzalot at gmail dot com.</h6>
         {% endif %}
@@ -69,7 +69,7 @@
       </div>
 
       {% if not user_name %}
-      
+
         <div class="jumbotron">
           <h1 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Metadictionary</h1>
           <p class="lead" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">
@@ -79,7 +79,7 @@
       {% endif %}
 
       {% if user_name %}
-     
+
         <div class="row-fluid marketing">
           <table width=100%>
             <tr>
@@ -87,27 +87,27 @@
 
               <td rowspan=2 width=75% valign=top>
                 <h4>Notifications</h4>
-                {% if notify %} 
+                {% if notify %}
                   {{ notify }}
                 {% else %}
                   <font color="#B8B8B8"><i>No new notifications.</i></font>
                 {% endif %}
               </td>
-            
+
               <td valign=top>
                 <h4>My terms</h4>
-                {% if my %} 
+                {% if my %}
                   {{ my }}
                 {% else %}
                   <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
                 {% endif %}
                 <br>
               </td>
-    
+
             <tr>
               <td valign=top>
                 <hr><h4>Watching</h4>
-                {% if star %} 
+                {% if star %}
                   {{ star }}
                 {% else %}
                   <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
@@ -116,7 +116,7 @@
               </td>
             </tr>
           </table>
-        
+
      <!-- <div class="span6">
             <h4>Subheading</h4>
             <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
@@ -138,7 +138,7 @@
             <h4>Subheading</h4>
             <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
           </div> -->
-        
+
         <!-- </div> -->
 
       {% endif %}
@@ -148,7 +148,7 @@
       <div class="footer" align=right><font size="2" color="#8B8B8B">
         Contributions to the <i>YAMZ</i> metadictionary are dedicated to the public
         domain under the terms of CC0. By <br> using this site, you agree to Terms
-        of Use and Privacy Policy statements similar to 
+        of Use and Privacy Policy statements similar to
         <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
       </font></div><br>
 
@@ -203,3 +203,5 @@
     </script>
   </body>
 </html>
+
+<!-- different enough that it might want a second layout or no layout if unique -->
