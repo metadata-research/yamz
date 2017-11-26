@@ -5,10 +5,14 @@ should be easily adaptable to any system; YAMZ is written in Python and uses
 only cross-platform packages.  This file is formatted by hand and does not
 contain markdown.
 
-  Authored by Chris Patton. Last updated 5 March 2016 (jak).
+  Authored by Chris Patton. Last updated 2 November 2017 (Dillon Arevalo).
 
 YAMZ is formerly known as SeaIce; for this reason, the database tables
 and API use names based on "SeaIce".
+
+  NOTE: My (Dillon Arevalo's) edits are not meant to be the final edit version.
+        This file will be cleaned up and my notes/comments (wrapped in
+        ================ sections) will be incorporated more readably.
 
 
 Contents
@@ -356,7 +360,9 @@ Start the local server with:
 
   $ ./ice.py --config=.seaice --deploy=dev
   ==========
-  add a not about minter password?
+    Adding terms won't work without a minter password, even on local dev version.
+    Note also that minter password can't be set on local (doesn't do anything) and
+    will currently only read from the heroku chunk in .seaice_auth
   ==========
 
 If all goes well, you should be able to navigate to your server by typing
