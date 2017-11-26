@@ -1,78 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'layout.html' %}
 
-  <head>
-    <meta charset="utf-8">
-    <title>YAMZ metadata dictionary
-    </title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="A crowdsourced metadata dictionary">
-    <meta name="author" content="Karthik Ram">
-    <!-- Le styles -->
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body { padding-top: 60px; /* 60px to make the container go all the way
-      to the bottom of the topbar */ }
-    </style>
-    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
-      </script>
-    <![endif]-->
-    <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="/static/ico/favicon.ico">
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/static/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/static/ico/apple-touch-icon-114-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/static/ico/apple-touch-icon-72-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" href="/static/ico/apple-touch-icon-57-precomposed.png">
-    <style>
-.input-lg {
-    width: 750px;
-    height: 44px;
-    margin-bottom: 10px;
-    line-height: 30px;
-    padding: 11px 19px;
-    font-size: 17.5px;
-}
-    </style>
-  </head>
-  <body>
+{% block title %}
+YAMZ metadata dictionary
+{% endblock %}
 
-    <div class="container-narrow">
+{% block description %}
+A crowdsourced metadata dictionary
+{% endblock %}
 
-      <div class="masthead">
-        <ul class="nav nav-pills pull-right">
-          <li><a href="/browse">Browse</a></li>
-          <li><a href="/contribute">Add</a></li>
-          <li><a href="/about">About</a></li>
-          <li><a href="/contact">Contact</a></li>
-          <li><a href="/account">Account</a></li>
-          <li class="active">{% if user_name %}
-             <a href="/logout">Log out of {{ user_name }}</a>
-            {% else %}
-             <a href="/login">Login</a>
-            {% endif %}
-          </li>
-        </ul>
-        <h3 class="muted" style="background-image: noneY; background-position: 0% 0%; background-repeat: repeat repeat;">YAMZ</h3>
-      </div>
+{% block author %}
+Karthik Ram{% endblock %}
 
+{% block links %}
+<li><a href="/browse">Browse</a></li>
+<li><a href="/contribute">Add</a></li>
+<li><a href="/about">About</a></li>
+<li><a href="/contact">Contact</a></li>
+<li><a href="/account">Account</a></li>
+{% endblock %}
+
+{% block body %}
       <div>
-        {% if user_name %}
-        <h6 class="muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to yamzalot at gmail dot com.</h6>
-        {% endif %}
         <form action="/search" method="post">
           <div class="control-group"><label class="control-label"></label><div class="controls">
-          <input name="term_string" type="text" class="input-lg search-query form-control" placeholder="Search for a term"></div></div><hr>
+          <input name="term_string" type="text" class="input-lg search-query form-control" placeholder="Search for a term"></div></div>
         </form>
+        {% if user_name %}
+        <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to yamzalot at gmail dot com.</h6>
+        {% endif %}
+          <hr>
       </div>
 
       {% if not user_name %}
 
         <div class="jumbotron">
-          <h1 style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">Metadictionary</h1>
-          <p class="lead" style="background-image: none; background-position: 0% 0%; background-repeat: repeat repeat;">
-            A crowdsourced metadata dictionary. Search for terms, upvote useful ones.</p>
+          <h1>Metadictionary</h1>
+          <p class="lead">
+            A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
+          </p>
         </div>
 
       {% endif %}
@@ -116,91 +81,10 @@
             </tr>
           </table>
 
-     <!-- <div class="span6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-          </div>
-
-          <div class="span6">
-            <h4>Subheading</h4>
-            <p>Donec id elit non mi porta gravida at eget metus. Maecenas faucibus mollis interdum.</p>
-
-            <h4>Subheading</h4>
-            <p>Morbi leo risus, porta ac consectetur ac, vestibulum at eros. Cras mattis consectetur purus sit amet fermentum.</p>
-
-            <h4>Subheading</h4>
-            <p>Maecenas sed diam eget risus varius blandit sit amet non magna.</p>
-          </div> -->
-
-        <!-- </div> -->
-
       {% endif %}
 
       <hr>
 
-      <div class="footer" align=right><font size="2" color="#8B8B8B">
-        Contributions to the <i>YAMZ</i> metadictionary are dedicated to the public
-        domain under the terms of CC0. By <br> using this site, you agree to Terms
-        of Use and Privacy Policy statements similar to
-        <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
-      </font></div><br>
-
-    </div> <!-- /container -->
+{% endblock %}
 
 
-    <style>
-
-      body {
-        padding-top: 20px;
-        padding-bottom: 40px;
-      }
-
-      /* Custom container */
-      .container-narrow {
-        margin: 0 auto;
-        max-width: 700px;
-      }
-      .container-narrow > hr {
-        margin: 30px 0;
-      }
-
-      /* Main marketing message and sign up button */
-      .jumbotron {
-        margin: 60px 0;
-        text-align: center;
-      }
-      .jumbotron h1 {
-        font-size: 72px;
-        line-height: 1;
-      }
-      .jumbotron .btn {
-        font-size: 21px;
-        padding: 14px 24px;
-      }
-
-      /* Supporting marketing content */
-      .marketing {
-        margin: 60px 0;
-      }
-      .marketing p + h4 {
-        margin-top: 28px;
-      }
-
-    </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js">
-    </script>
-    <script src="/static/js/bootstrap.min.js">
-    </script>
-    <script>
-
-    </script>
-  </body>
-</html>
-
-<!-- different enough that it might want a second layout or no layout if unique -->
