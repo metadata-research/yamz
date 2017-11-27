@@ -37,6 +37,8 @@ from urllib2 import Request, urlopen, URLError
 import os, sys, optparse, re
 import json, psycopg2 as pgdb
 
+from pagination import *
+
 ## Parse command line options. ##
 
 parser = optparse.OptionParser()
@@ -425,7 +427,8 @@ def browse(listing = None, page = None):
     return redirect("/browse/" + listing + '/1')
 
   g.db = app.dbPool.getScoped()
-  terms = g.db.getChunkTerms(sortBy="term_string", page=page)
+  pagination_details = getPaginationDetails(dbConnector=g.db, page=page, listing=listing)
+  terms = pagination_details['terms']
   letter = '~'
   result = "<h5>{0} | {1} | {2} | {3} | {4}</h5><hr>".format(
      '<a href="/browse/score">high score</a>' if listing != "score" else 'high score',
@@ -479,9 +482,7 @@ def browse(listing = None, page = None):
                                         title = "Browse",
                                         headline = "Browse dictionary",
                                         content = Markup(result.decode('utf-8')),
-                                        termCount = g.db.getLengthTerms(),
-                                        page = page,
-                                        listing = listing)
+                                        pagination_details = pagination_details)
 
 
 hash2uniquerifier_regex = re.compile('(?<!#)#(\w[\w.-]+)')
@@ -507,9 +508,12 @@ def returnQuery():
     #   return render_template("search.html", user_name = l.current_user.name,
     #     term_string = request.form['term_string'],
     #     result = Markup(result.decode('utf-8')))
-    return redirect("/search/" + request.form['term_string'] + '/1')
+    if request.form['term_string'] == '':
+      return render_template("search.html", user_name = l.current_user.name, term_string='', pagination_details = {})
+    else:
+      return redirect("/search/" + request.form['term_string'] + '/1')
   else: # GET
-    return render_template("search.html", user_name = l.current_user.name)
+    return render_template("search.html", user_name = l.current_user.name, pagination_details = {})
 
 @app.route("/search/<search_term>/<int:page>")
 def returnQueryPaginated(search_term=None, page=1):
@@ -519,18 +523,18 @@ def returnQueryPaginated(search_term=None, page=1):
   search_words = hash2uniquerifier_regex.sub(
       seaice.pretty.ixuniq + '\\1',
       search_term)
-  terms = g.db.searchPage(search_words, page)
+  pagination_details = getPaginationDetails(dbConnector=g.db, page=page, browse=False, search_words=search_words)
+  terms = pagination_details['terms']
   #terms = g.db.search(request.form['term_string'])
   if len(terms) == 0:
     return render_template("search.html", user_name = l.current_user.name,
-      term_string = search_term)
+      term_string = search_term, pagination_details = pagination_details)
   else:
     result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
     return render_template("search.html", user_name = l.current_user.name,
       term_string = search_term,
 	    result = Markup(result.decode('utf-8')),
-      termCount = g.db.searchLength(search_words),
-      page = page)
+      pagination_details = pagination_details)
 
 
 # yyy to do: display tag definition at top of search results
