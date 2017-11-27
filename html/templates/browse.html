@@ -46,6 +46,17 @@
     {% if pagination_details['page'] %}
       <nav aria-label="Page navigation">
         <ul class="pagination">
+
+          {% if pagination_details['prev_ten'] %}
+            <li class="page-item">
+              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] - 10 }}"> << </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link"><<</span>
+            </li>
+          {% endif %}
+
           {% if pagination_details['page'] == 1 %}
             <li class="page-item disabled">
               <span class="page-link">Prev</span>
@@ -56,26 +67,51 @@
             </li>
           {% endif %}
 
-          {% for i in range(1, pagination_details['end']) %} <!-- change 2 to page size.  -->
-            {% if i == pagination_details['page'] %}
+          {% if pagination_details['dots_left'] %}
+            <li class="page-item disabled">
+              <span class="page-link">. . .</span>
+            </li>
+          {% endif %}
+
+          {% for i in range(pagination_details['first'], pagination_details['page']) %}
+              <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a></li>
+          {% endfor %}
+
               <li class="page-item active">
                 <span class="page-link">
-                  {{ i }}
+                  {{ pagination_details['page'] }}
                   <span class="sr-only">(current)</span>
                 </span>
               </li>
-            {% else %}
+
+          {% for i in range(pagination_details['page'] + 1, pagination_details['last']) %}
               <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a></li>
-            {% endif %}
           {% endfor %}
 
-          {% if pagination_details['page'] == (pagination_details['termCount']//2) + (0 if pagination_details['termCount']%2 == 0 else 1) %}
+
+          {% if pagination_details['dots_right'] %}
+            <li class="page-item disabled">
+              <span class="page-link">. . .</span>
+            </li>
+          {% endif %}
+
+          {% if pagination_details['page'] == pagination_details['end'] %}
             <li class="page-item disabled">
               <span class="page-link">Next</span>
             </li>
           {% else %}
             <li class="page-item">
               <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 1 }}">Next</a>
+            </li>
+          {% endif %}
+
+          {% if pagination_details['next_ten'] %}
+            <li class="page-item">
+              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 10 }}"> >> </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link"> >> </span>
             </li>
           {% endif %}
 
