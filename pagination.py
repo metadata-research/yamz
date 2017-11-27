@@ -8,8 +8,6 @@ def getPaginationDetails(dbConnector=None, page=1, listing=None, browse=True, se
     details['terms'] = dbConnector.searchPage(search_words, page)
     details['termCount'] = dbConnector.searchLength(search_words)
 
-  print details['termCount']
-
   if details['termCount'] > 0:
     details['page'] = page
     details['listing'] = listing
@@ -21,5 +19,4 @@ def getPaginationDetails(dbConnector=None, page=1, listing=None, browse=True, se
     details['dots_right'] = details['last'] < details['end']
     details['next_ten'] = (page + 10) <= details['end']
     details['prev_ten'] = (page - 10) >= details['start']
-    print details['end']
   return details
