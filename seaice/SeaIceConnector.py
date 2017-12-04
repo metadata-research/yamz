@@ -525,6 +525,27 @@ class SeaIceConnector:
         """, (concept_id,))
     return cur.fetchone()
 
+  def getTermsByTermString(self, term_string):
+    """ Get term by term string.
+
+    :param term_string: natural language string for term.
+    :type term_string: str
+    :rtype: dict iterator
+    """
+    cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
+    cur.execute("""
+        SELECT id, owner_id, created, modified, term_string,
+               definition, examples, up, down, consensus, class,
+               U_sum, D_sum, T_last, T_stable, tsv, concept_id, persistent_id
+            FROM SI.Terms
+            WHERE term_string=%s;
+        """, (term_string,))
+    results = cur.fetchall()
+
+    for row in results:
+      yield row
+
+
   def getTermString(self, id):
     """ Get term string by ID.
 

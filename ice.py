@@ -383,7 +383,7 @@ def getTerm(term_concept_id = None, message = ""):
                title = "Term not found",
                headline = "Term",
                content = Markup("Term <strong>#%s</strong> not found!" \
-	           % term_concept_id))
+             % term_concept_id))
 
     result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
     result = message + "<hr>" + result + "<hr>"
@@ -416,6 +416,55 @@ def getTerm(term_concept_id = None, message = ""):
                             title = "Term %s" % term['term_string'],
                             headline = "Term",
                             content = Markup(result.decode('utf-8')))
+
+  ## Look up terms by name and concept id (for order) ##
+
+# @app.route("/term/concept=<term_concept_id>")
+@app.route("/name=<term_string>")
+@app.route("/term=<term_concept_id>/name=<term_string>")
+def getTermByName(term_concept_id = None, term_string = None, message = ""):
+
+
+    g.db = app.dbPool.getScoped()
+    terms = g.db.getTermsByTermString(term_string)
+    if not any(terms):
+      return render_template("basic_page.html",
+               user_name = l.current_user.name,
+               title = "Term not found",
+               headline = "Term",
+               content = Markup("Term <strong>#%s</strong> not found!" \
+	           % term_string))
+
+    content = ""
+
+    for term in terms:
+      result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
+      result = message + "<hr style='border-top:1px solid gray;'>" + result + "<hr>"
+      result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
+                                                 l.current_user.id)
+      if l.current_user.id:
+        result += """
+        <form action="/term={0}/comment" method="post">
+          <table cellpadding=16 width=60%>
+            <tr><td><textarea type="text" name="comment_string" rows=3
+              style="width:100%; height:100%"
+              placeholder="Add comment"></textarea></td></tr>
+            <tr><td align=right><input type="submit" value="Comment"><td>
+            </td>
+          </table>
+        </form>""".format(term['id'])
+      else:
+        result += "<a href='/login'> Log in to comment </a>"
+
+      if term['concept_id'] == term_concept_id:
+        content = result + content
+      else:
+        content += result
+
+    return render_template("basic_page.html", user_name = l.current_user.name,
+                            title = "Term %s" % term['term_string'],
+                            headline = "Term",
+                            content = Markup(content.decode('utf-8')))
 
 @app.route("/browse")
 @app.route("/browse/<listing>")
