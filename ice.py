@@ -406,8 +406,8 @@ def getTerm(term_concept_id = None, message = ""):
       <form action="/login" method="get">
         <table cellpadding=16 width=60%>
           <tr><td><textarea type="text" rows=3
-            style="width:100%; height:100%"
-            placeholder="Log in to comment." readonly></textarea></td></tr>
+            style="width:100%; height:100%; background-color: #d2d2d2"
+            placeholder="Log in to comment." readonly disabled></textarea></td></tr>
           <tr><td align=right><input type="submit" value="Login"><td>
           </td>
         </table>
