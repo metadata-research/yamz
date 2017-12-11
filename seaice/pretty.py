@@ -1,8 +1,8 @@
 # pretty.py - Pretty formatting for db table rows. There are routines defined
-# here for use in a terminal as well as on the web. 
+# here for use in a terminal as well as on the web.
 #
 # Copyright (c) 2013, Christopher Patton, all rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #   * Redistributions of source code must retain the above copyright
@@ -12,7 +12,7 @@
 #     documentation and/or other materials provided with the distribution.
 #   * The names of contributors may be used to endorse or promote products
 #     derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -33,8 +33,8 @@ from dateutil import tz
 js_confirmRemoveTerm = """
   function ConfirmRemoveTerm(id, concept_id) {
     var r=window.confirm("Are you sure you want to delete term '" + concept_id + "'?");
-    if (r==true) { 
-      x=id; 
+    if (r==true) {
+      x=id;
       var form = document.createElement("form");
       form.setAttribute("method", "post");
       form.setAttribute("action", "/term=" + id + "/remove");
@@ -42,15 +42,15 @@ js_confirmRemoveTerm = """
       field.setAttribute("name", "id");
       field.setAttribute("value", id);
       form.appendChild(field);
-      document.body.appendChild(form); 
+      document.body.appendChild(form);
       form.submit();
     } else { x="nil"; } } """
 
 js_confirmRemoveComment = """
   function ConfirmRemoveComment(id) {
     var r=window.confirm("Are you sure you want to delete your comment?");
-    if (r==true) { 
-      x=id; 
+    if (r==true) {
+      x=id;
       var form = document.createElement("form");
       form.setAttribute("method", "post");
       form.setAttribute("action", "/comment=" + id + "/remove");
@@ -58,26 +58,26 @@ js_confirmRemoveComment = """
       field.setAttribute("name", "id");
       field.setAttribute("value", id);
       form.appendChild(field);
-      document.body.appendChild(form); 
+      document.body.appendChild(form);
       form.submit();
     } else { x="nil"; } } """
 
 js_termAction = """
   function TermAction(id, v) {
-    var form = document.createElement("form"); 
+    var form = document.createElement("form");
     form.setAttribute("method", "post");
     if (v == "up" || v == "down") {
-      var action = "vote"; 
+      var action = "vote";
     } else {
-      var action = "track"; 
+      var action = "track";
     }
-    form.setAttribute("action", "/term=" + id + "/" + action); 
-    field = document.createElement("input"); 
+    form.setAttribute("action", "/term=" + id + "/" + action);
+    field = document.createElement("input");
     field.setAttribute("name", "action")
     field.setAttribute("value", v);
     form.appendChild(field);
     document.body.appendChild(form);
-    form.submit(); 
+    form.submit();
   } """
 
 js_copyToClipboard = """
@@ -88,17 +88,17 @@ js_copyToClipboard = """
   }
 """
 
-#: Background color to display with term class. 
-colorOf = { 'vernacular' : '#FFFF66', 
-            'canonical' : '#3CEB10', 
+#: Background color to display with term class.
+colorOf = { 'vernacular' : '#FFFF66',
+            'canonical' : '#3CEB10',
             'deprecated' : '#E8E8E8' }
 
 #: Name of months. See :func:`seaice.pretty.printPrettyDate`.
-monthOf = [ 'January', 'February', 'March', 
-            'April', 'May', 'June', 
-            'July', 'August', 'September', 
+monthOf = [ 'January', 'February', 'March',
+            'April', 'May', 'June',
+            'July', 'August', 'September',
             'October', 'November', 'December' ]
-  
+
 # A nice color: A5C6D6
 tag_style = '''
 style="font-size: 95%;
@@ -148,7 +148,7 @@ tagstart = '#{g: '		# note: final space is important
 def token_ref_norm(m):
   """ Promote "&ref" to "#{t: ref} and promote "#ref" to "#{g: ref}".
 
-  :param string: The input string. 
+  :param string: The input string.
   :returns: Modified plain text string.
   """
 
@@ -179,14 +179,14 @@ def token_ref_norm(m):
 #  return '#{t: %s | %s }' % (term_string, concept_id)
 
 
-def refs_norm(db_con, string, force=False): 
+def refs_norm(db_con, string, force=False):
   """ Resolve references in text entries before storing in DB.
   First promote each simple "#ref" into "#{g: ixuniq+ref | concept_id}
   and each simple "&ref" into #{t: ref | concept_id}
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param string: The input string. 
+  :param string: The input string.
   :returns: Modified plain text string.
   """
 
@@ -194,13 +194,13 @@ def refs_norm(db_con, string, force=False):
   # now convert each curly "#{reference}
   string = ref_regex.sub(lambda m: ref_norm(db_con, m, force), string)
   return string
-    
+
 
 # looks a lot like printRefAsHTML, but is about how we _store_ things
-def ref_norm(db_con, m, force=False): 
+def ref_norm(db_con, m, force=False):
   """ Input a regular expression match and output a normalized reference.
-  
-  A DB connector is required to resolve the tag string by ID. 
+
+  A DB connector is required to resolve the tag string by ID.
   A reference has the form #{reftype: humstring [ | IDstring ]}
   - reftype is one of
         t (term), g (tag), m (mtype), k (link)
@@ -215,7 +215,7 @@ def ref_norm(db_con, m, force=False):
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param m: Regular expression match. 
+  :param m: Regular expression match.
   :type m: re.MatchObject
   :param force: flag to force humstring lookup
   :type m: boolean
@@ -241,7 +241,7 @@ def ref_norm(db_con, m, force=False):
   # force=True, humstring is looked up in order to resolve it to a unique
   # IDstring (so if IDstring is wrong, delete it or use force=True to
   # correct it).
-  # 
+  #
   if IDstring and not force:
     return '#{%s: %s | %s}' % (reftype, humstring, IDstring)
   if humstring.startswith('---'):		# reserved magic string
@@ -267,7 +267,7 @@ def ref_norm(db_con, m, force=False):
 
 def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
   """ Input ...
-  
+
   A DB connector is required to resolve the concept_id to a definition.
   A term_string is either a literal string or of the form
     '#{g: humstring | concept_id}'.
@@ -288,7 +288,7 @@ def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
   else:
     attribs = 'href="#" title="Click to get a reference link to this term."'
     attribs += ' id="copyLink"'
- 
+
   if not term_string.startswith('#{g:'):
     if definition == None:
       attribs += ''' onclick="CopyToClipboard('#{t: %s | %s}');"''' % (
@@ -302,11 +302,11 @@ def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
     attribs += ''' onclick="CopyToClipboard('%s');"''' % term_string
   return attribs + '>' + t
 
-def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm): 
+def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
   """ Input reftype, human readable string, machine readable string,
       and output the reference as HTML.
-  
-  A DB connector is required to resolve the tag string by ID. 
+
+  A DB connector is required to resolve the tag string by ID.
   A reference has the form #{ reftype: humstring [ | IDstring ] }
   - reftype is one of
     t (term), g (tag), s (section), m (mtype), k (link)
@@ -341,10 +341,10 @@ def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
       return '<br>Values: '
     if humstring.startswith('---t'):
       return '<br> '
-    
+
   # If we get here, reftype is not k, and IDstring (concept_id)
   # is expected to reference a term in the dictionary.
-  # 
+  #
   term = db_con.getTermByConceptId(IDstring)
   term_def = "Def: " + (term['definition'] if term else "(undefined)")
   # yyy can we improve poor search for '#tag' query?
@@ -361,9 +361,9 @@ def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
   return ref_string.format(IDstring, humstring, term_def)
 
 # xxx not using tagAsTerm -- remove?
-def printRefAsText(m, tagAsTerm): 
+def printRefAsText(m, tagAsTerm):
   """ Input a regular expression match and return the reference as Text.
-  
+
   A reference has the form #{ reftype: humstring [ | IDstring ] }
   - reftype is one of
     t (term), g (tag), s (section), m (mtype), k (link)
@@ -374,7 +374,7 @@ def printRefAsText(m, tagAsTerm):
   - Note that the reference should have been normalized before being
     stored in the database. (xxx check if that's true for API uploading)
 
-  :param m: Regular expression match. 
+  :param m: Regular expression match.
   :type m: re.MatchObject
   """
 
@@ -401,10 +401,10 @@ def printRefAsText(m, tagAsTerm):
       return '\nValues: '
     if humstring.startswith('---t'):
       return '\n '
-    
+
   # If we get here, reftype is not k, and IDstring (concept_id)
   # is expected to reference a term in the dictionary.
-  # 
+  #
   if reftype == 'g':
     # yyy in theory don't need to check before removing uniquerifier string
     #     as all normalized tag ids will start with it
@@ -414,12 +414,12 @@ def printRefAsText(m, tagAsTerm):
   return humstring
 
 
-def processTagsAsHTML(db_con, string, tagAsTerm = False): 
-  """  Process tags in DB text entries into HTML. 
+def processTagsAsHTML(db_con, string, tagAsTerm = False):
+  """  Process tags in DB text entries into HTML.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param string: The input string. 
+  :param string: The input string.
   :returns: HTML-formatted string.
   """
 
@@ -437,10 +437,10 @@ def printRefReAsHTML(db_con, m, tagAsTerm):
   reftype, humstring, IDstring = rp[1], rp[2], rp[4]
   return printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm)
 
-def processRefsAsText(string, tagAsTerm = False): 
-  """  Render references in DB text entries into plain text. 
+def processRefsAsText(string, tagAsTerm = False):
+  """  Render references in DB text entries into plain text.
 
-  :param string: The input string. 
+  :param string: The input string.
   :returns: tag-neutralized string.
   """
 
@@ -453,17 +453,17 @@ def processRefsAsText(string, tagAsTerm = False):
   ## Pretty prints. ##
 
 def printPrettyDate(T, brief=False):
-  """ Format output of a timestamp. 
+  """ Format output of a timestamp.
 
-    If a small amount of time has elapsed between *T_now* 
+    If a small amount of time has elapsed between *T_now*
     and *T*, then return the interval. **TODO:** This should
-    be localized based on the HTTP request. 
+    be localized based on the HTTP request.
 
-  :param T: Timestamp. 
+  :param T: Timestamp.
   :type T: datetime.datetime
   :rtype: str
   """
-  
+
   T = T.astimezone(tz.tzlocal())
   T_elapsed = (datetime.datetime.now(tz=tz.tzlocal()) - T)
 
@@ -475,46 +475,46 @@ def printPrettyDate(T, brief=False):
     return "%s minute%s ago" % (T_elapsed.seconds / 60, '' if T_elapsed.seconds / 60 == 1 else 's')
   elif T_elapsed < datetime.timedelta(hours=24):
     return "%s hour%s ago" % (T_elapsed.seconds / 3600, '' if T_elapsed.seconds / 3600 == 1 else 's')
-  elif T_elapsed < datetime.timedelta(days=7): 
+  elif T_elapsed < datetime.timedelta(days=7):
     return "%s day%s ago" % (T_elapsed.days, '' if T_elapsed.days == 1 else 's')
-  else: 
+  else:
     mth = monthOf[T.month-1]
     if brief:
       mth = mth[0:3]
     return "%s %s %s" % (T.day, mth, T.year)
 
 def printAsJSObject(rows, fd = sys.stdout):
-  """ Print table rows as JSON-formatted object. 
+  """ Print table rows as JSON-formatted object.
 
-  :param rows: Table rows. 
+  :param rows: Table rows.
   :type rows: dict iterator
-  :param fd: File descriptor to which to output the result (default is sys.stdout). 
+  :param fd: File descriptor to which to output the result (default is sys.stdout).
   :type fd: file
   """
   for row in rows:
-    for (col, value) in row.iteritems(): 
+    for (col, value) in row.iteritems():
       if type(value) == datetime.datetime:
         row[col] = str(value)
   print >>fd, json.dumps(rows, sort_keys=True, indent=2, separators=(',', ': '))
 
-def getPrettyParagraph(db_con, text, leftMargin=8, width=60): 
-  """ Format some text into a nice paragraph for displaying in the terminal. 
-      Output the result directly to sys.stdout. 
+def getPrettyParagraph(db_con, text, leftMargin=8, width=60):
+  """ Format some text into a nice paragraph for displaying in the terminal.
+      Output the result directly to sys.stdout.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param text: The paragraph. 
+  :param text: The paragraph.
   :type text: str
-  :param leftMargin: Number of spaces to print before the start of each line. 
+  :param leftMargin: Number of spaces to print before the start of each line.
   :type leftMargin: int
-  :param width: Number of characters to print per line. 
+  :param width: Number of characters to print per line.
   :type wdith: int
   """
   lineLength = 0
   fella = " " * (leftMargin-1)
   for word in text.split(" "):
     if lineLength < width:
-      fella += word + " " 
+      fella += word + " "
       lineLength += len(word) + 1
     else:
       fella += word + "\n" + (" " * (leftMargin-1))
@@ -522,7 +522,7 @@ def getPrettyParagraph(db_con, text, leftMargin=8, width=60):
   return fella
 
 def getPrettyTerm(db_con, row, leftMargin=5):
-  """ Return a term string. 
+  """ Return a term string.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
@@ -538,44 +538,44 @@ def getPrettyTerm(db_con, row, leftMargin=5):
 
   text += "\n\n"
   text += getPrettyParagraph(db_con, "DEFINITION: " + row['definition'])
-  
+
   text += "\n\n"
   text += getPrettyParagraph(db_con, "EXAMPLES: " + row['examples'])
-            
+
   #text += "\n    Ownership: %s" % db_con.getUserNameById(row['owner_id'])
   return text
 
-def getPrettyComment(db_con, row, leftMargin=5): 
+def getPrettyComment(db_con, row, leftMargin=5):
   """ Return a comment string.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param rows: Table rows. 
+  :param rows: Table rows.
   :type rows: dict iterator
   """
   return 'yeah'
 
 def printTermsPretty(db_con, rows):
-  """ Print term rows to terminal. 
+  """ Print term rows to terminal.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param rows: Table rows. 
+  :param rows: Table rows.
   :type rows: dict iterator
   """
   for row in rows:
-    print getPrettyTerm(db_con, row) 
+    print getPrettyTerm(db_con, row)
 
 
 def printTermsAsLinks(db_con, rows):
-  """ Print terms as a link list (pun intended). 
+  """ Print terms as a link list (pun intended).
 
-  :param rows: Table rows. 
+  :param rows: Table rows.
   :type rows: dict iterator
-  :returns: HTML-formatted string. 
+  :returns: HTML-formatted string.
   """
   string = ""
-  for row in rows: 
+  for row in rows:
     #string += '<li><a href="/term=%s">%s</a></li>' % (row['concept_id'], row['term_string'])
     string += '<li><a %s</a></li>' % innerAnchor(db_con, row['term_string'], row['concept_id'], row['definition'], tagAsTerm=True)
   return string
@@ -584,16 +584,16 @@ def printTermsAsLinks(db_con, rows):
 def printTermAsHTML(db_con, row, user_id=0):
   """ Format a term for the term page, e.g. `this <http://seaice.herokuapp.com/term=1001>`_.
 
-    This is the main page where you can look at a term. It includes a term definition, 
-    examples, a voting form, ownership, and other stuff.  
+    This is the main page where you can look at a term. It includes a term definition,
+    examples, a voting form, ownership, and other stuff.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param row: Term row. 
+  :param row: Term row.
   :type row: dict
-  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is 
-                  unauthenticated. 
-  :type user_id: int 
+  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is
+                  unauthenticated.
+  :type user_id: int
   :returns: HTML-formatted string.
   """
 
@@ -601,7 +601,7 @@ def printTermAsHTML(db_con, row, user_id=0):
   string = '<script>' + js_confirmRemoveTerm + js_termAction + js_copyToClipboard + '</script>'
 
   # Voting
-  string += '<table>' 
+  string += '<table>'
   string += "  <tr><td width=150px rowspan=4 align=center valign=top>"
   string += '    <a id="voteUp" title="+1" href="#up" onclick="return TermAction(%s, \'up\');">' % row['id']
   string += '     <img src="/static/img/%s.png"></a><br>' % ('up_set' if vote == 1 else 'up')
@@ -609,7 +609,7 @@ def printTermAsHTML(db_con, row, user_id=0):
   string += '    <h4>'
   if row['up'] > 0:
     string += '    <font color="#004d73">+%s</font> &nbsp;' % row['up']
-  if row['down'] > 0: 
+  if row['down'] > 0:
     string += '    <font color="#797979">-%s</font>' % row['down']
   if row['up'] == 0 and row['down'] == 0:
     string += '0'
@@ -617,8 +617,8 @@ def printTermAsHTML(db_con, row, user_id=0):
 
   string += '    <a id="voteDown" title="-1" href="#down" onclick="return TermAction(%s, \'down\');">' % row['id']
   string += '     <img src="/static/img/%s.png"></a><br>' % ('down_set' if vote == -1 else 'down')
-  
-  
+
+
   good = db_con.checkTracking(0 if not user_id else user_id, row['id'])
   string += '    <br><a id="star" title="Track this term" href="#star"' + \
             '     onclick="return TermAction({1}, \'{0}\');">[{2}]</a><br> '.format(
@@ -648,7 +648,7 @@ def printTermAsHTML(db_con, row, user_id=0):
       persistent_id = term_persistent_id
       permalink = permalink_regex.search(persistent_id).groups(0)[0]
 
-  # Created/modified/Owner 
+  # Created/modified/Owner
   string += "    <td valign=top width=20% rowspan=3>"
   string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
   string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
@@ -660,7 +660,7 @@ def printTermAsHTML(db_con, row, user_id=0):
     string += "    <br><a href=\"/term=%s/edit\">[edit]</a>" % row['concept_id']
     string += """  <a id="removeTerm" title="Click to delete term" href="#"
                    onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a><br>\n""" % (row['id'], row['concept_id'])
- 
+
   ## Copy reference tag
   #string += '''    <hr><a id="copyLink" title="Click to get a reference link to this term." href="#"
   #                      onclick="CopyToClipboard('#{t: %s | %s}');">Get term link</a>''' % (row['term_string'], row['concept_id'])
@@ -681,19 +681,19 @@ def printTermAsHTML(db_con, row, user_id=0):
   return string
 
 # xxx not called right now -- needed?
-def printTermsAsHTML(db_con, rows, user_id=0): 
-  """ Format search results for display on the web page. 
-  
+def printTermsAsHTML(db_con, rows, user_id=0):
+  """ Format search results for display on the web page.
+
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param row: Term rows. 
+  :param row: Term rows.
   :type row: dict iterator
-  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is 
-                  unauthenticated. 
-  :type user_id: int 
+  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is
+                  unauthenticated.
+  :type user_id: int
   :returns: HTML-formatted string.
   """
-  
+
   string = '<script>' + js_confirmRemoveTerm + '</script><table>'
   for row in rows:
     string += "  <tr>"
@@ -706,7 +706,7 @@ def printTermsAsHTML(db_con, rows, user_id=0):
                      onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a>""" % (row['id'], row['concept_id'])
     string += '      &nbsp;<i>Class:</i>&nbsp;<font style="background-color:{2}">&nbsp;{0}&nbsp;</font> <i>&nbsp;({1}%)</i>'.format(
                  row['class'], int(100 * row['consensus']), colorOf[row['class']])
-    string += "    </td>" 
+    string += "    </td>"
     string += "    <td valign=top rowspan=2>"
     string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
     string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
@@ -734,37 +734,37 @@ def summarizeConsensus(consensus):
     else:
 	return 'low'
 
-def printTermsAsBriefHTML(db_con, rows, user_id=0): 
-  """ Format table rows as abbreviated HTML table, e.g. 
+def printTermsAsBriefHTML(db_con, rows, user_id=0):
+  """ Format table rows as abbreviated HTML table, e.g.
       `this <http://seaice.herokuapp.com/browse/volatile>`_.
-  
+
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param row: Term rows. 
+  :param row: Term rows.
   :type row: dict iterator
-  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is 
-                  unauthenticated. 
-  :type user_id: int 
+  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is
+                  unauthenticated.
+  :type user_id: int
   :returns: HTML-formatted string.
   """
 
-  string =  '<table width=70%>'
-  string += '''<tr style="background-color:#E8E8E8"><td>Term</td>
-                  <td>Score</td><td>Consensus</td><td>Class</td><td>Contributed by</td>
-                  <td>Last modified</td></tr>'''
+  string =  '<table width=100%>'
+  string += '''<tr style="background-color:#E8E8E8"><td class='col-lg-5'>Term</td>
+                  <td class='col-lg-1'>Score</td><td class='col-lg-1'>Consensus</td><td class='col-lg-1'>Class</td><td class='col-lg-2'>Contributed by</td>
+                  <td class='col-lg-2'>Last modified</td></tr>'''
   for row in rows:
     iAnchor = innerAnchor(db_con, row['term_string'], row['concept_id'],
                  row['definition'], tagAsTerm=True)
     #string += '''<tr><td><a title="Def: {8}" href=/term={5}>{0}</a></td><td>{1}</td><td>{2}</td>
-    string += "<tr><td><a %s</a></td>" % iAnchor
-    string += '''<td>{0}</td><td>{1}</td>
-                     <td><font style="background-color:{4}">&nbsp;{2}&nbsp;</font></td>
-                     <td>{3}</td>
-                     <td>{5}</tr>'''.format(
+    string += "<tr><td class='col-lg-5'><a %s</a></td>" % iAnchor
+    string += '''<td class='col-lg-1'>{0}</td><td class='col-lg-1'>{1}</td>
+                     <td class='col-lg-1'><font style="background-color:{4}">&nbsp;{2}&nbsp;</font></td>
+                     <td class='col-lg-2'>{3}</td>
+                     <td class='col-lg-2'>{5}</tr>'''.format(
           #processTagsAsHTML(db_con, row['term_string'], tagAsTerm = True),
           row['up'] - row['down'],
           summarizeConsensus(row['consensus']),
-          row['class'], 
+          row['class'],
           db_con.getUserNameById(row['owner_id'], full=True),
           #row['concept_id'],
           colorOf[row['class']],
@@ -772,16 +772,16 @@ def printTermsAsBriefHTML(db_con, rows, user_id=0):
   string += "</table>"
   return string
 
-def printCommentsAsHTML(db_con, rows, user_id=0): 
-  """ Format comments for display on the term page. 
+def printCommentsAsHTML(db_con, rows, user_id=0):
+  """ Format comments for display on the term page.
 
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
-  :param row: Comment rows. 
+  :param row: Comment rows.
   :type row: dict iterator
-  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is 
-                  unauthenticated. 
-  :type user_id: int 
+  :param user_id: Surrogate ID of user requesting the page. Defaults to 0 if session is
+                  unauthenticated.
+  :type user_id: int
   :returns: HTML-formatted string.
   """
 
@@ -796,7 +796,7 @@ def printCommentsAsHTML(db_con, rows, user_id=0):
     string += "  </td>"
     string += "  <td align=right valign=top><font color=\"#B8B8B8\"><i>Submitted {0}<br>by {1}</i></font></td>".format(
       printPrettyDate(row['created']), db_con.getUserNameById(row['owner_id']))
-    string += "</tr>" 
+    string += "</tr>"
     string += "</tr><tr height=16><td></td></tr>"
   string += "</table>"
   return string
