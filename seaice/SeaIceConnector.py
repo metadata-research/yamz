@@ -620,11 +620,16 @@ class SeaIceConnector:
     for row in cur.fetchall():
       yield row
 
-  def getChunkTerms(self, sortBy=None, page=1):
+  def getChunkTerms(self, sortBy=None, page=1, tpp=10):
     """ Return an iterator over one page of ``SI.Terms``.
 
     :param sortBy: Column by which sort the results in ascending order.
     :type sortBy: str
+    :param page: Page number being served
+    :type page: int
+    :param tpp: terms per page
+    :type tpp: int
+
     :rtype: dict iterator
     """
     cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
@@ -634,7 +639,7 @@ class SeaIceConnector:
                             T_stable, T_last, concept_id, persistent_id
                        FROM SI.Terms
                       ORDER BY %s
-                      LIMIT %s OFFSET %s""" % (sortBy, 2, ((page - 1) * 2))) # set to 2 to test. probably wants to be around 50?
+                      LIMIT %s OFFSET %s""" % (sortBy, tpp, ((page - 1) * tpp)))
     else:
       cur.execute("""SELECT id, owner_id, term_string, definition, examples,
                             modified, created, up, down, consensus, class,
@@ -806,12 +811,17 @@ class SeaIceConnector:
     rows = sorted(rows, key=lambda row: row['consensus'], reverse=True)
     return list(rows)
 
-  def searchPage(self, string, page=1):
+  def searchPage(self, string, page=1, tpp=10):
     """ Search table by term_string, definition and examples. Rank
         results by relevance to query, consensus, and classificaiton.
 
     :param string: Search query.
     :type string: str
+    :param page: which page you're currently on
+    :type page: int
+    :param tpp: Terms per page
+    :type tpp: int
+
     :rtype: dict list
     """
     try:
@@ -828,7 +838,7 @@ class SeaIceConnector:
           WHERE query @@ tsv
           ORDER BY rank DESC
           LIMIT %s OFFSET %s
-          """, (string, 2, ((page - 1) * 2)))
+          """, (string, tpp, ((page - 1) * tpp)))
 
     except Exception as e:
       print >>sys.stderr, e.pgerror
