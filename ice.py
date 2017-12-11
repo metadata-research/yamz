@@ -385,7 +385,8 @@ def getTerm(term_concept_id = None, message = ""):
                content = Markup("Term <strong>#%s</strong> not found!" \
              % term_concept_id))
 
-    result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
+    result = '<p><a href="/term=%s/name=%s">view all terms with the natural language string %s</a></p>' % (term_concept_id, term['term_string'], term['term_string'])
+    result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
     result = message + "<hr>" + result + "<hr>"
     result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
                                                l.current_user.id)
@@ -405,8 +406,8 @@ def getTerm(term_concept_id = None, message = ""):
       <form action="/login" method="get">
         <table cellpadding=16 width=60%>
           <tr><td><textarea type="text" rows=3
-            style="width:100%; height:100%"
-            placeholder="Log in to comment." readonly></textarea></td></tr>
+            style="width:100%; height:100%; background-color: #d2d2d2"
+            placeholder="Log in to comment." readonly disabled></textarea></td></tr>
           <tr><td align=right><input type="submit" value="Login"><td>
           </td>
         </table>
