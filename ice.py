@@ -115,6 +115,9 @@ try:
   google = seaice.auth.get_google_auth(credentials.get(options.deployment_mode, 'google_client_id'),
                                        credentials.get(options.deployment_mode, 'google_client_secret'))
 
+  orcid = seaice.auth.get_orcid_auth(credentials.get(options.deployment_mode, 'orcid_client_id'),
+                                       credentials.get(options.deployment_mode, 'orcid_client_secret'))
+
 except OSError:
   print >>sys.stderr, "error: config file '%s' not found" % options.config_file
   sys.exit(1)
@@ -249,7 +252,7 @@ def authorized(resp):
 
   g.db = app.dbPool.getScoped()
   user = g.db.getUserByAuth('google', g_user['id'])
-  if not user: 		# not seen this person before, so create user
+  if not user:    # not seen this person before, so create user
     g_user['authority'] = 'google'
     g_user['auth_id'] = g_user['id']
     g_user['id'] = app.userIdPool.ConsumeId()
@@ -271,6 +274,55 @@ def authorized(resp):
   l.login_user(app.SeaIceUsers.get(user['id']))
   flash("Logged in successfully")
   return redirect(url_for('index'))
+
+
+
+@app.route("/login/orcid")
+def login_orcid():
+  callback=url_for('orcid_authorized', _external=True)
+  return orcid.authorize(callback=callback)
+
+@app.route(seaice.auth.REDIRECT_URI_ORCID)
+@orcid.authorized_handler
+def orcid_authorized(resp):
+  print resp
+  access_token = resp['access_token']
+  session['orcid_access_token'] = access_token, ''
+
+#   headers = {'Authorization': 'OAuth '+access_token}
+#   req = Request('https://www.googleapis.com/oauth2/v1/userinfo', None, headers)
+#   try:
+#     res = urlopen(req)
+#   except URLError, e:
+#     if e.code == 401: # Unauthorized - bad token
+#       session.pop('access_token', None)
+#       return 'l'
+#   g_user = json.load(res)
+
+#   g.db = app.dbPool.getScoped()
+#   user = g.db.getUserByAuth('google', g_user['id'])
+#   if not user: 		# not seen this person before, so create user
+#     g_user['authority'] = 'google'
+#     g_user['auth_id'] = g_user['id']
+#     g_user['id'] = app.userIdPool.ConsumeId()
+#     g_user['last_name'] = "nil"
+#     g_user['first_name'] = "nil"
+#     g_user['reputation'] = "30"
+#     g.db.insertUser(g_user)
+#     g.db.commit()
+#     user = g.db.getUserByAuth('google', g_user['auth_id'])
+#     app.SeaIceUsers[user['id']] = seaice.user.User(user['id'], user['first_name'])
+#     l.login_user(app.SeaIceUsers.get(user['id']))
+#     return render_template("account.html", user_name = l.current_user.name,
+#                                            email = g_user['email'],
+#                                            message = """
+#         According to our records, this is the first time you've logged onto
+#         SeaIce with this account. Please provide your first and last name as
+#         you would like it to appear with your contributions. Thank you!""")
+
+#   l.login_user(app.SeaIceUsers.get(user['id']))
+#   flash("Logged in successfully")
+#   return redirect(url_for('index'))
 
 
 @google.tokengetter
