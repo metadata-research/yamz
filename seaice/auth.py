@@ -111,5 +111,3 @@ def get_orcid_auth(client_id, client_secret):
         consumer_key=client_id,
         consumer_secret=client_secret)
   return orcid
-
-

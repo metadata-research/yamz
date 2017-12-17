@@ -51,7 +51,11 @@ YAMZ Account Settings
           </tr>
           <tr>
             <td valign=top>Email:</td>
-            <td>{{ email }}</td>
+            {% if email_edit %}
+              <td><input type="email" name="email" value="{{ email }}"></td>
+            {% else %}
+              <td>{{ email }}</td>
+            {% endif %}
           </tr>
           {% if reputation %}
           <tr>
