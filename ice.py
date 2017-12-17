@@ -31,6 +31,7 @@ from flask import Markup
 from flask import render_template, render_template_string
 from flask import url_for, redirect, flash
 from flask import request, session, g
+from itertools import chain
 import flask_login as l
 
 from urllib2 import Request, urlopen, URLError
@@ -114,6 +115,9 @@ try:
 
   google = seaice.auth.get_google_auth(credentials.get(options.deployment_mode, 'google_client_id'),
                                        credentials.get(options.deployment_mode, 'google_client_secret'))
+
+  orcid = seaice.auth.get_orcid_auth(credentials.get(options.deployment_mode, 'orcid_client_id'),
+                                       credentials.get(options.deployment_mode, 'orcid_client_secret'))
 
 except OSError:
   print >>sys.stderr, "error: config file '%s' not found" % options.config_file
@@ -249,7 +253,7 @@ def authorized(resp):
 
   g.db = app.dbPool.getScoped()
   user = g.db.getUserByAuth('google', g_user['id'])
-  if not user: 		# not seen this person before, so create user
+  if not user:    # not seen this person before, so create user
     g_user['authority'] = 'google'
     g_user['auth_id'] = g_user['id']
     g_user['id'] = app.userIdPool.ConsumeId()
@@ -267,6 +271,60 @@ def authorized(resp):
         According to our records, this is the first time you've logged onto
         SeaIce with this account. Please provide your first and last name as
         you would like it to appear with your contributions. Thank you!""")
+
+  l.login_user(app.SeaIceUsers.get(user['id']))
+  flash("Logged in successfully")
+  return redirect(url_for('index'))
+
+
+
+@app.route("/login/orcid")
+def login_orcid():
+  # make get to https://orcid.org/userStatus.json?logUserOut=true here to log user out
+  # urlopen("https://orcid.org/userStatus.json?logUserOut=true") #live version. maybe make a variable for it?
+  a = urlopen("https://sandbox.orcid.org/signout") #not currently working. something to look into.
+
+  callback=url_for('orcid_authorized', _external=True)
+  return orcid.authorize(callback=callback)
+
+@app.route(seaice.auth.REDIRECT_URI_ORCID)
+@orcid.authorized_handler
+def orcid_authorized(resp):
+  print resp
+  access_token = resp['access_token']
+  session['orcid_access_token'] = access_token, ''
+
+  orcid_user = resp
+
+  g.db = app.dbPool.getScoped()
+  user = g.db.getUserByAuth('orcid', orcid_user['orcid']) #should i attach the https://orcid.org/ to the beginning of it?
+  if not user: 		# not seen this person before, so create user
+    name = orcid_user['name'].split(' ')
+    orcid_user['authority'] = 'orcid'
+    orcid_user['auth_id'] = orcid_user['orcid']
+    orcid_user['id'] = app.userIdPool.ConsumeId()
+    orcid_user['last_name'] = name[-1]
+    orcid_user['first_name'] = name[0]
+    orcid_user['reputation'] = "30" #maybe make this higher to start as they are an orcid user?
+    orcid_user['email'] = "testYamzFakeEmail" + str(orcid_user['id'] - 1000) + '@mailinator.com'
+    users =  g.db.getAllUsers()
+    for user in users:
+      print user
+    print g.db.insertUser(orcid_user)
+    g.db.commit()
+    user = g.db.getUserByAuth('orcid', orcid_user['orcid'])
+    print user
+    print user['id']
+    print user['first_name']
+    print seaice.user.User(user['id'], user['first_name'])
+    app.SeaIceUsers[user['id']] = seaice.user.User(user['id'], user['first_name'])
+    l.login_user(app.SeaIceUsers.get(user['id']))
+    return render_template("account.html", user_name = l.current_user.name,
+                                           email_edit = True,
+                                           message = """
+#         According to our records, this is the first time you've logged onto
+#         SeaIce with this account. Please provide your first and last name as
+#         you would like it to appear with your contributions and your email. Thank you!""")
 
   l.login_user(app.SeaIceUsers.get(user['id']))
   flash("Logged in successfully")
@@ -298,7 +356,8 @@ def settings():
     g.db.updateUser(l.current_user.id,
                    request.form['first_name'],
                    request.form['last_name'],
-                   True if request.form.get('enotify') else False)
+                   True if request.form.get('enotify') else False,
+                   request.form['email'])
     g.db.commit()
     app.dbPool.enqueue(g.db)
     l.current_user.name = request.form['first_name']
@@ -402,16 +461,7 @@ def getTerm(term_concept_id = None, message = ""):
         </table>
       </form>""".format(term['id'])
     else:
-      result += """
-      <form action="/login" method="get">
-        <table cellpadding=16 width=60%>
-          <tr><td><textarea type="text" rows=3
-            style="width:100%; height:100%; background-color: #d2d2d2"
-            placeholder="Log in to comment." readonly disabled></textarea></td></tr>
-          <tr><td align=right><input type="submit" value="Login"><td>
-          </td>
-        </table>
-      </form>"""
+      result += "<a href='/login'> Log in to comment </a>"
 
     return render_template("basic_page.html", user_name = l.current_user.name,
                             title = "Term %s" % term['term_string'],
@@ -421,51 +471,55 @@ def getTerm(term_concept_id = None, message = ""):
   ## Look up terms by name and concept id (for order) ##
 
 # @app.route("/term/concept=<term_concept_id>")
-@app.route("/name=<term_string>")
-@app.route("/term=<term_concept_id>/name=<term_string>")
+@app.route("/name=<path:term_string>")
+@app.route("/term=<term_concept_id>/name=<path:term_string>")
 def getTermByName(term_concept_id = None, term_string = None, message = ""):
 
+  g.db = app.dbPool.getScoped()
+  terms = g.db.getTermsByTermString(term_string)
+  # check if there are terms
+  try:
+    first = next(terms)
+  except StopIteration:
+    return render_template("basic_page.html",
+             user_name = l.current_user.name,
+             title = "Term not found",
+             headline = "Term",
+             content = Markup("Term <strong>#%s</strong> not found!" \
+           % term_string))
 
-    g.db = app.dbPool.getScoped()
-    terms = g.db.getTermsByTermString(term_string)
-    if not any(terms):
-      return render_template("basic_page.html",
-               user_name = l.current_user.name,
-               title = "Term not found",
-               headline = "Term",
-               content = Markup("Term <strong>#%s</strong> not found!" \
-	           % term_string))
+  terms = chain([first], terms)
 
-    content = ""
+  content = ""
 
-    for term in terms:
-      result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
-      result = message + "<hr style='border-top:1px solid gray;'>" + result + "<hr>"
-      result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
-                                                 l.current_user.id)
-      if l.current_user.id:
-        result += """
-        <form action="/term={0}/comment" method="post">
-          <table cellpadding=16 width=60%>
-            <tr><td><textarea type="text" name="comment_string" rows=3
-              style="width:100%; height:100%"
-              placeholder="Add comment"></textarea></td></tr>
-            <tr><td align=right><input type="submit" value="Comment"><td>
-            </td>
-          </table>
-        </form>""".format(term['id'])
-      else:
-        result += "<a href='/login'> Log in to comment </a>"
+  for term in terms:
+    result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
+    result = message + "<hr style='border-top:1px solid gray;'>" + result + "<hr>"
+    result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
+                                               l.current_user.id)
+    if l.current_user.id:
+      result += """
+      <form action="/term={0}/comment" method="post">
+        <table cellpadding=16 width=60%>
+          <tr><td><textarea type="text" name="comment_string" rows=3
+            style="width:100%; height:100%"
+            placeholder="Add comment"></textarea></td></tr>
+          <tr><td align=right><input type="submit" value="Comment"><td>
+          </td>
+        </table>
+      </form>""".format(term['id'])
+    else:
+      result += "<a href='/login'> Log in to comment </a>"
 
-      if term['concept_id'] == term_concept_id:
-        content = result + content
-      else:
-        content += result
+    if term['concept_id'] == term_concept_id:
+      content = result + content
+    else:
+      content += result
 
-    return render_template("basic_page.html", user_name = l.current_user.name,
-                            title = "Term %s" % term['term_string'],
-                            headline = "Term",
-                            content = Markup(content.decode('utf-8')))
+  return render_template("basic_page.html", user_name = l.current_user.name,
+                          title = "Term %s" % term_string,
+                          headline = "Term",
+                          content = Markup(content.decode('utf-8')))
 
 @app.route("/browse")
 @app.route("/browse/<listing>")

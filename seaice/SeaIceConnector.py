@@ -1039,7 +1039,7 @@ class SeaIceConnector:
     finally:
       cur.close()
 
-  def updateUser(self, id, first, last, enotify):
+  def updateUser(self, id, first, last, enotify, email=None):
     """ Update user's name.
 
     :param id: User ID.
@@ -1048,10 +1048,16 @@ class SeaIceConnector:
     :type first: str
     :param last: Last name.
     :type last: str
+    :param email: email of user.
+    :type email: str
     """
     cur = self.con.cursor()
-    cur.execute("UPDATE SI.Users SET first_name=%s, last_name=%s, enotify='%s' WHERE id=%s",
-      (first, last, enotify, id))
+    if not email:
+      cur.execute("UPDATE SI.Users SET first_name=%s, last_name=%s, enotify='%s' WHERE id=%s",
+        (first, last, enotify, id))
+    else:
+      cur.execute("UPDATE SI.Users SET first_name=%s, last_name=%s, email=%s, enotify='%s' WHERE id=%s",
+        (first, last, email, enotify, id))
 
   def updateUserReputation(self, id, rep):
     """ Set reputation of user. This triggers an update of the consensus score

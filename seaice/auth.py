@@ -1,9 +1,9 @@
 # auth.py - credentials and datastructures for authenticating users through
-# third party accounts. So far we have Google via the Oauth2 protocol. 
+# third party accounts. So far we have Google via the Oauth2 protocol.
 #
-# Copyright (c) 2013, Christopher Patton, Nassib Nassar 
+# Copyright (c) 2013, Christopher Patton, Nassib Nassar
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #   * Redistributions of source code must retain the above copyright
@@ -13,7 +13,7 @@
 #     documentation and/or other materials provided with the distribution.
 #   * The names of contributors may be used to endorse or promote products
 #     derived from this software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -28,10 +28,10 @@
 from flask_oauth import OAuth
 import os, stat, configparser, sys
 
-  ## Local PostgreSQL server configuration ## 
+  ## Local PostgreSQL server configuration ##
 
 def accessible_by_group_or_world(file):
-  """ Verify the permissions of configuration file. 
+  """ Verify the permissions of configuration file.
       *Contributed by Nassib Nassar*.
 
   :param file: File name.
@@ -43,13 +43,13 @@ def accessible_by_group_or_world(file):
 
 def get_config(config_file = '.seaice'):
   """ Get local db configuration. *Contributed by Nassib Nassar*.
-            
-    Structure with DB connection parameters for particular 
-    roles. See the top-level program *ice* for example usage.  
+
+    Structure with DB connection parameters for particular
+    roles. See the top-level program *ice* for example usage.
 
   :param config_file: File Name.
   :type config_file: str
-  :rtype: dict 
+  :rtype: dict
   """
   config = configparser.RawConfigParser()
   if os.path.isfile(config_file):
@@ -67,16 +67,17 @@ def get_config(config_file = '.seaice'):
 #: **TODO**: Change to *google_oauth*.
 oauth = OAuth()
 
-#: Variable prescribed by the Google OAuth API. 
-#: **TODO:** To accomadate other authentication 
+#: Variable prescribed by the Google OAuth API.
+#: **TODO:** To accomadate other authentication
 #: services, change this to '/authorized/google'
 #: (also on code.google.com/apis/console).
-REDIRECT_URI = '/authorized' 
+REDIRECT_URI = '/authorized'
+REDIRECT_URI_ORCID = '/authorized/orcid'
 
-#: Get Google authentication. Client ID and secrets are drawn from a 
-#: config file which may contain multiple values for various 
+#: Get Google authentication. Client ID and secrets are drawn from a
+#: config file which may contain multiple values for various
 #: deplo9yments. NOTE The client ID **should** never be published
-#: and the secret **must** never be published. 
+#: and the secret **must** never be published.
 def get_google_auth(client_id, client_secret):
   google = oauth.remote_app('google',
         base_url='https://www.google.com/accounts/',
@@ -87,6 +88,26 @@ def get_google_auth(client_id, client_secret):
         access_token_url='https://accounts.google.com/o/oauth2/token',
         access_token_method='POST',
         access_token_params={'grant_type': 'authorization_code'},
-        consumer_key=client_id, 
+        consumer_key=client_id,
         consumer_secret=client_secret)
   return google
+
+
+
+#: Get Orcid authentication. Client ID and secrets are drawn from a
+#: config file which may contain multiple values for various
+#: deplo9yments. NOTE The client ID **should** never be published
+#: and the secret **must** never be published.
+def get_orcid_auth(client_id, client_secret):
+  orcid = oauth.remote_app('orcid',
+        base_url='https://sandbox.orcid.org/',
+        authorize_url='https://sandbox.orcid.org/oauth/authorize',
+        request_token_url=None,
+        request_token_params={'scope': '/authenticate',
+                              'response_type': 'code'},
+        access_token_url='https://sandbox.orcid.org/oauth/token',
+        access_token_method='POST',
+        access_token_params={'grant_type': 'authorization_code'},
+        consumer_key=client_id,
+        consumer_secret=client_secret)
+  return orcid
