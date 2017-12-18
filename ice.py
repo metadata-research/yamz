@@ -444,7 +444,7 @@ def getTerm(term_concept_id = None, message = ""):
                content = Markup("Term <strong>#%s</strong> not found!" \
              % term_concept_id))
 
-    result = '<p><a href="/term=%s/name=%s">view all terms with the natural language string %s</a></p>' % (term_concept_id, term['term_string'], term['term_string'])
+    result = '<p><a href="/term/all_of_name/concept=%s">view all terms with the natural language string %s</a></p>' % (term_concept_id, term['term_string'])
     result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
     result = message + "<hr>" + result + "<hr>"
     result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
@@ -471,11 +471,12 @@ def getTerm(term_concept_id = None, message = ""):
   ## Look up terms by name and concept id (for order) ##
 
 # @app.route("/term/concept=<term_concept_id>")
-@app.route("/name=<path:term_string>")
-@app.route("/term=<term_concept_id>/name=<path:term_string>")
-def getTermByName(term_concept_id = None, term_string = None, message = ""):
+@app.route("/term/all_of_name/concept=<term_concept_id>")
+def getTermsOfName(term_concept_id = None, message = ""):
 
   g.db = app.dbPool.getScoped()
+  term = g.db.getTermByConceptId(term_concept_id)
+  term_string = term["term_string"]
   terms = g.db.getTermsByTermString(term_string)
   # check if there are terms
   try:
