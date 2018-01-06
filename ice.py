@@ -353,15 +353,26 @@ def unauthorized():
 def settings():
   g.db = app.dbPool.dequeue()
   if request.method == "POST":
-    g.db.updateUser(l.current_user.id,
-                   request.form['first_name'],
-                   request.form['last_name'],
-                   True if request.form.get('enotify') else False,
-                   request.form['email'])
-    g.db.commit()
-    app.dbPool.enqueue(g.db)
-    l.current_user.name = request.form['first_name']
-    return getUser(str(l.current_user.id))
+    # error handling:
+    if request.form['first_name'] == "" or request.form['last_name'] == "":
+      user = g.db.getUser(l.current_user.id) # fetch user for reputation and email
+      return render_template("account.html", user_name = l.current_user.name,
+       email = user['email'].decode('utf-8'),
+       last_name_edit = request.form['last_name'].decode('utf-8'),
+       first_name_edit = request.form['first_name'].decode('utf-8'),
+       reputation = user['reputation'] + ' *' if user['super_user'] else ' _',
+       enotify = 'yes' if user['enotify'] else 'no',
+       message = "Please don't leave any fields blank!")
+    # if their data is fine:
+    else:
+      g.db.updateUser(l.current_user.id,
+                     request.form['first_name'],
+                     request.form['last_name'],
+                     True if request.form.get('enotify') else False)
+      g.db.commit()
+      app.dbPool.enqueue(g.db)
+      l.current_user.name = request.form['first_name']
+      return getUser(str(l.current_user.id))
 
   # method was GET
   user = g.db.getUser(l.current_user.id)
