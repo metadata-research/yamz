@@ -313,6 +313,14 @@ IMPORTANT NOTE: A template of this file is provided in the github
 repository. This file should remain secret and must not be published.
 We provide the template, since heroku requires a commited file.
 
+IMPORTANT WIP NOTE FOR CURRENT DEV VERSION: There are currently orcid
+oauth keys being asked for as well. the dev credentials above will also
+want to have an orcid_client_id and an orcid_client_secret obtainable
+from sandbox. Alternatively (and the recommended option): Comment out
+mentions to orcid oauth in ice.py
+lines to comment: 119-120
+                  281-331
+
 For convenience, this file will also keep the Flask app's secret key. For
 this key, enter a long, random string of characters. Finally, set the correct
 file permissions with:
