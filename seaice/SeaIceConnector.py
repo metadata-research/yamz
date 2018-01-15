@@ -540,7 +540,7 @@ class SeaIceConnector:
                definition, examples, up, down, consensus, class,
                U_sum, D_sum, T_last, T_stable, tsv, concept_id, persistent_id
             FROM SI.Terms
-            WHERE term_string=%s;
+            WHERE LOWER(term_string)=LOWER(%s);
         """, (term_string,))
     results = cur.fetchall()
 
