@@ -215,7 +215,8 @@ class SeaIceConnector:
           super_user   BOOLEAN default false,
           UNIQUE (email)
         );
-      ALTER SEQUENCE SI.Users_id_seq RESTART WITH 1001;"""
+      ALTER SEQUENCE SI.Users_id_seq RESTART WITH 1001;
+      ALTER TABLE SI.Users ADD COLUMN IF NOT EXISTS orcid VARCHAR(64);"""
     )
 
     #: Create Terms table if it doesn't exist.
@@ -252,7 +253,8 @@ class SeaIceConnector:
           tsv tsvector,
           FOREIGN KEY (owner_id) REFERENCES SI.Users(id)
         );
-      ALTER SEQUENCE SI.Terms_id_seq RESTART WITH 1001;"""
+      ALTER SEQUENCE SI.Terms_id_seq RESTART WITH 1001;
+      CREATE INDEX IF NOT EXISTS lower_term_string ON SI.Terms (LOWER(term_string));"""
     )
 
     #: Create Comments table if it doesn't exist.
@@ -970,7 +972,7 @@ class SeaIceConnector:
     cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
     cur.execute("""
         select id, authority, auth_id, email, last_name, first_name,
-               reputation, enotify, super_user
+               reputation, enotify, super_user, orcid
             from SI.Users where id=%s;
         """ % (id,))
     return cur.fetchone()
@@ -983,7 +985,7 @@ class SeaIceConnector:
     cur = self.con.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
     cur.execute("""
         select id, authority, auth_id, email, last_name, first_name,
-               reputation, enotify, super_user
+               reputation, enotify, super_user, orcid
             from SI.Users;
         """)
     for row in cur.fetchall():
@@ -1009,7 +1011,7 @@ class SeaIceConnector:
     # yyy no enotify or super_user returned
     cur.execute("""
         select id, authority, auth_id, email, last_name, first_name,
-               reputation
+               reputation, orcid
             from SI.Users where auth_id=%s and authority=%s;
         """, (auth_id, authority))
     res = cur.fetchone()
