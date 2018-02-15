@@ -1041,6 +1041,25 @@ class SeaIceConnector:
     finally:
       cur.close()
 
+  def getOrcidById(self, id):
+    """ Get username by ID.
+
+    :param id: User ID.
+    :type id: int
+    :returns: the orcid of the user who had their id passed in, or none
+    :rtype: str or None
+    """
+    cur = self.con.cursor()
+    try:
+      cur.execute("SELECT orcid FROM SI.Users WHERE id=%s", (id,))
+      res = cur.fetchone()
+      if res:
+        return res[0]
+      else:
+        return None
+    finally:
+      cur.close()
+
   def updateUser(self, id, first, last, enotify, email=None):
     """ Update user's name.
 
@@ -1060,6 +1079,16 @@ class SeaIceConnector:
     else:
       cur.execute("UPDATE SI.Users SET first_name=%s, last_name=%s, email=%s, enotify='%s' WHERE id=%s",
         (first, last, email, enotify, id))
+
+  def setOrcid(self, id, orcid):
+    """ Add an OrcId to a user's account
+    :param id: User ID.
+    :type id: int
+    :param orcid: OrcId.
+    :type orcid: str
+    """
+    cur = self.con.cursor()
+    cur.execute("UPDATE SI.Users SET orcid=%s WHERE id=%s", (orcid, id))
 
   def updateUserReputation(self, id, rep):
     """ Set reputation of user. This triggers an update of the consensus score

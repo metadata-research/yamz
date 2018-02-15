@@ -290,46 +290,19 @@ def login_orcid():
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
 @orcid.authorized_handler
 def orcid_authorized(resp):
-  print resp
   access_token = resp['access_token']
   session['orcid_access_token'] = access_token, ''
 
   orcid_user = resp
 
   g.db = app.dbPool.getScoped()
-  user = g.db.getUserByAuth('orcid', orcid_user['orcid']) #should i attach the https://orcid.org/ to the beginning of it?
-  if not user: 		# not seen this person before, so create user
-    name = orcid_user['name'].split(' ')
-    orcid_user['authority'] = 'orcid'
-    orcid_user['auth_id'] = orcid_user['orcid']
-    orcid_user['id'] = app.userIdPool.ConsumeId()
-    orcid_user['last_name'] = name[-1]
-    orcid_user['first_name'] = name[0]
-    orcid_user['reputation'] = "30" #maybe make this higher to start as they are an orcid user?
-    orcid_user['email'] = "testYamzFakeEmail" + str(orcid_user['id'] - 1000) + '@mailinator.com'
-    users =  g.db.getAllUsers()
-    for user in users:
-      print user
-    print g.db.insertUser(orcid_user)
-    g.db.commit()
-    user = g.db.getUserByAuth('orcid', orcid_user['orcid'])
-    print user
-    print user['id']
-    print user['first_name']
-    print seaice.user.User(user['id'], user['first_name'])
-    app.SeaIceUsers[user['id']] = seaice.user.User(user['id'], user['first_name'])
-    l.login_user(app.SeaIceUsers.get(user['id']))
-    return render_template("account.html", user_name = l.current_user.name,
-                                           email_edit = True,
-                                           message = """
-#         According to our records, this is the first time you've logged onto
-#         SeaIce with this account. Please provide your first and last name as
-#         you would like it to appear with your contributions and your email. Thank you!""")
-
-  l.login_user(app.SeaIceUsers.get(user['id']))
+  g.db.setOrcid(l.current_user.id, orcid_user['orcid'])
+  g.db.commit()
+  a = urlopen("https://sandbox.orcid.org/signout") # remove sandbox when put to live
+  print a.read
+  print '^^^^^^^^^^^^'
   flash("Logged in successfully")
-  return redirect(url_for('index'))
-
+  return redirect('/account')
 
 @google.tokengetter
 def get_access_token():
@@ -360,6 +333,7 @@ def settings():
        email = user['email'].decode('utf-8'),
        last_name_edit = request.form['last_name'].decode('utf-8'),
        first_name_edit = request.form['first_name'].decode('utf-8'),
+       orcid = user['orcid'],
        reputation = user['reputation'] + ' *' if user['super_user'] else ' _',
        enotify = 'yes' if user['enotify'] else 'no',
        message = "Please don't leave any fields blank!")
@@ -377,12 +351,14 @@ def settings():
   # method was GET
   user = g.db.getUser(l.current_user.id)
   app.dbPool.enqueue(g.db)
+  print user['orcid']
   return render_template("account.html", user_name = l.current_user.name,
        email = user['email'].decode('utf-8'),
        last_name_edit = user['last_name'].decode('utf-8'),
        first_name_edit = user['first_name'].decode('utf-8'),
        reputation = user['reputation'] + ' *' if user['super_user'] else ' _',
        enotify = 'yes' if user['enotify'] else 'no',
+       orcid = user['orcid'],
        message = """
          Here you can change how your name will appear to other users.
          Navigating away from this page will safely discard any changes.""")
@@ -590,6 +566,7 @@ def browse(listing = None, page = None):
         g.db, term['term_string'], term['concept_id'], term['definition'],
 	      tagAsTerm=True)
       result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'])
+      orcid = g.db.getOrcidById(term['owner_id'])
     result += "</table>"
     # yyy temporary proof that this code is running
     print >>sys.stderr, "note: end alpha listing"

@@ -653,6 +653,9 @@ def printTermAsHTML(db_con, row, user_id=0):
   string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
   string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
   string += "      <nobr><i>Contributed by</i> %s</nobr><br>"% db_con.getUserNameById(row['owner_id'], full=True)
+  orcid = db_con.getOrcidById(row['owner_id'])
+  if orcid:
+    string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s<a></nobr><br>"% (orcid, orcid)
   if persistent_id != '':
       string += "      <br>"
       string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
@@ -711,6 +714,9 @@ def printTermsAsHTML(db_con, rows, user_id=0):
     string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
     string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
     string += "      <nobr><i>Contributed by</i> %s</nobr><br>" % db_con.getUserNameById(row['owner_id'], full=True)
+    orcid = db_con.getOrcidById(row['owner_id'])
+    if orcid:
+      string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s<a></nobr><br>"% (orcid, orcid)
     string += "    </td>"
     string += "  </tr>"
     string += "  <tr>"
