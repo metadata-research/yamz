@@ -655,7 +655,7 @@ def printTermAsHTML(db_con, row, user_id=0):
   string += "      <nobr><i>Contributed by</i> %s</nobr><br>"% db_con.getUserNameById(row['owner_id'], full=True)
   orcid = db_con.getOrcidById(row['owner_id'])
   if orcid:
-    string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
+    string += "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
   if persistent_id != '':
       string += "      <br>"
       string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
@@ -716,7 +716,7 @@ def printTermsAsHTML(db_con, rows, user_id=0):
     string += "      <nobr><i>Contributed by</i> %s</nobr><br>" % db_con.getUserNameById(row['owner_id'], full=True)
     orcid = db_con.getOrcidById(row['owner_id'])
     if orcid:
-      string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
+      string += "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
     string += "    </td>"
     string += "  </tr>"
     string += "  <tr>"
@@ -791,7 +791,7 @@ def printCommentsAsHTML(db_con, rows, user_id=0):
   :returns: HTML-formatted string.
   """
 
-  string = '<script>' + js_confirmRemoveComment + '</script><table>'
+  string = '<script>' + js_confirmRemoveComment + '</script><table style="margin-left: 50px"><tr><td><hr></td></tr>'
   for row in rows:
     string += "<tr>"
     string += "  <td align=left valign=top width=70%>{0}".format(processTagsAsHTML(db_con, row['comment_string']))
@@ -799,11 +799,16 @@ def printCommentsAsHTML(db_con, rows, user_id=0):
       string += " <nobr><a href=\"/comment=%d/edit\">[edit]</a>" % row['id']
       string += """ <a id="removeComment" title="Click to remove this comment" href="#"
                     onclick="return ConfirmRemoveComment(%s);">[remove]</a></nobr>""" % row['id']
-    string += "  </td>"
-    string += "  <td align=right valign=top><font color=\"#B8B8B8\"><i>Submitted {0}<br>by {1}</i></font></td>".format(
-      printPrettyDate(row['created']), db_con.getUserNameById(row['owner_id']))
-    string += "</tr>"
-    string += "</tr><tr height=16><td></td></tr>"
+    orcid = db_con.getOrcidById(row['owner_id'])
+    name = db_con.getUserNameById(row['owner_id'], True)
+    string += " - "
+    if orcid:
+      string += "<a target='_blank'  href='https://sandbox.orcid.org/{0}'>{1}</a>".format(orcid, name)
+    else:
+      string += name
+    string += " <font color=\"#B8B8B8\"> <i>{0}</i></font>".format(
+      printPrettyDate(row['created']))
+    string += "<hr></td></tr>"
   string += "</table>"
   return string
 
