@@ -629,7 +629,7 @@ def printTermAsHTML(db_con, row, user_id=0):
                  None, tagAsTerm=True)
   # Name/Class
   string += "  <tr>"
-  string += "    <td valign=top width=8%><i>Term:</i></td>"
+  string += "    <td valign=top width=8%><i><a href='/term=" + row['concept_id'] +"'>Term:</a></i></td>"
   string += "    <td valign=top width=25%><font size=\"3\"><strong><a {0}</a></strong></font><td>".format(iAnchor)
   string += "    <td valign=top width=5% rowspan=2>"
   string += "      <nobr><i>Class:&nbsp;&nbsp;</i></nobr><br>"
@@ -655,7 +655,7 @@ def printTermAsHTML(db_con, row, user_id=0):
   string += "      <nobr><i>Contributed by</i> %s</nobr><br>"% db_con.getUserNameById(row['owner_id'], full=True)
   orcid = db_con.getOrcidById(row['owner_id'])
   if orcid:
-    string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s<a></nobr><br>"% (orcid, orcid)
+    string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
   if persistent_id != '':
       string += "      <br>"
       string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
@@ -716,7 +716,7 @@ def printTermsAsHTML(db_con, rows, user_id=0):
     string += "      <nobr><i>Contributed by</i> %s</nobr><br>" % db_con.getUserNameById(row['owner_id'], full=True)
     orcid = db_con.getOrcidById(row['owner_id'])
     if orcid:
-      string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s<a></nobr><br>"% (orcid, orcid)
+      string += "      <nobr><i>ORCID</i> <a href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"% (orcid, orcid)
     string += "    </td>"
     string += "  </tr>"
     string += "  <tr>"
