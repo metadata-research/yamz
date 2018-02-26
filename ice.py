@@ -257,8 +257,8 @@ def authorized(resp):
     g_user['authority'] = 'google'
     g_user['auth_id'] = g_user['id']
     g_user['id'] = app.userIdPool.ConsumeId()
-    g_user['last_name'] = "nil"
-    g_user['first_name'] = "nil"
+    g_user['last_name'] = "Name"
+    g_user['first_name'] = "Placeholder"
     g_user['reputation'] = "30"
     g.db.insertUser(g_user)
     g.db.commit()
@@ -267,6 +267,7 @@ def authorized(resp):
     l.login_user(app.SeaIceUsers.get(user['id']))
     return render_template("account.html", user_name = l.current_user.name,
                                            email = g_user['email'],
+                                           orcid = None,
                                            message = """
         According to our records, this is the first time you've logged onto
         SeaIce with this account. Please provide your first and last name as
