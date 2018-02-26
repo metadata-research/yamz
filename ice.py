@@ -485,8 +485,8 @@ def getTermsOfName(term_concept_id = None, message = ""):
   for term in terms:
     result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
     result = message + "<hr style='border-top:1px solid gray;'>" + result + "<hr>"
-    result += "<a class='expandComments' style='cursor: pointer' data-id='" + term['concept_id']
-    result += "'>Toggle Comments</a> <div style='display: none' class='comments-"
+    result += "<a class='expandComments' style='cursor: pointer' data-direction='down' data-id='" + term['concept_id']
+    result += "'>Comments &#x25BC;</a> <div style='display: none' class='comments-"
     result += term['concept_id'] + "'>"
     result += seaice.pretty.printCommentsAsHTML(g.db, g.db.getCommentHistory(term['id']),
                                                l.current_user.id)
