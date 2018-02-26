@@ -265,7 +265,7 @@ def ref_norm(db_con, m, force=False):
 
   ## Processing tags in text areas. ##
 
-def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
+def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm, contentAsTerm=False):
   """ Input ...
 
   A DB connector is required to resolve the concept_id to a definition.
@@ -281,7 +281,6 @@ def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
   :param db_con: DB connection.
   :type db_con: seaice.SeaIceConnector.SeaIceConnector
   """
-
   if definition != None:
     attribs = 'href="/term=%s" title="%s"' % (concept_id,
       processRefsAsText(definition, tagAsTerm=True).replace('"', '&quot;'))
@@ -293,7 +292,10 @@ def innerAnchor (db_con, term_string, concept_id, definition, tagAsTerm):
     if definition == None:
       attribs += ''' onclick="CopyToClipboard('#{t: %s | %s}');"''' % (
         term_string, concept_id)
-    return attribs + '>' + term_string
+    if contentAsTerm:
+      return attribs + '>Term:'
+    else:
+      return attribs + '>' + term_string
 
   # yyy compile these regex's? -- maybe not since execution is rare
   t = re.sub('^#{g:\s*(%s)?' % ixuniq, '', term_string)
@@ -626,11 +628,11 @@ def printTermAsHTML(db_con, row, user_id=0):
   string += "  </td></tr>\n"
 
   iAnchor = innerAnchor(db_con, row['term_string'], row['concept_id'],
-                 None, tagAsTerm=True)
+                 None, tagAsTerm=True, contentAsTerm=True)
   # Name/Class
   string += "  <tr>"
-  string += "    <td valign=top width=8%><i><a href='/term=" + row['concept_id'] +"'>Term:</a></i></td>"
-  string += "    <td valign=top width=25%><font size=\"3\"><strong><a {0}</a></strong></font><td>".format(iAnchor)
+  string += "    <td valign=top width=8%><i><a {0}</a></i></td>".format(iAnchor)
+  string += "    <td valign=top width=25%><font size=\"3\"><strong><a href='/term=" + row['concept_id'] +"'>" + row['term_string'] + "</a></strong></font><td>"
   string += "    <td valign=top width=5% rowspan=2>"
   string += "      <nobr><i>Class:&nbsp;&nbsp;</i></nobr><br>"
   string += "    </td>\n"
