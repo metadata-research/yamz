@@ -763,6 +763,8 @@ def printTermsAsBriefHTML(db_con, rows, user_id=0):
                  row['definition'], tagAsTerm=True)
     #string += '''<tr><td><a title="Def: {8}" href=/term={5}>{0}</a></td><td>{1}</td><td>{2}</td>
     string += "<tr><td class='col-lg-5'><a %s</a></td>" % iAnchor
+    orcid = db_con.getOrcidById(row['owner_id'])
+    name = db_con.getUserNameById(row['owner_id'], full=True)
     string += '''<td class='col-lg-1' style="text-align: center">{0}</td><td class='col-lg-1' style="text-align: center">{1}</td>
                      <td class='col-lg-1'><font style="background-color:{4}">&nbsp;{2}&nbsp;</font></td>
                      <td class='col-lg-2'>{3}</td>
@@ -771,7 +773,7 @@ def printTermsAsBriefHTML(db_con, rows, user_id=0):
           row['up'] - row['down'],
           summarizeConsensus(row['consensus']),
           row['class'],
-          db_con.getUserNameById(row['owner_id'], full=True),
+          "<a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a>" % (orcid, name) if orcid else name,
           #row['concept_id'],
           colorOf[row['class']],
           printPrettyDate(row['modified']))

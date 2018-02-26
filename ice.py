@@ -473,7 +473,7 @@ def getTermsOfName(term_concept_id = None, message = ""):
     return render_template("basic_page.html",
              user_name = l.current_user.name,
              title = "Term not found",
-             headline = "Term",
+             headline = "Terms",
              content = Markup("Term <strong>#%s</strong> not found!" \
            % term_string))
 
@@ -511,7 +511,7 @@ def getTermsOfName(term_concept_id = None, message = ""):
 
   return render_template("basic_page.html", user_name = l.current_user.name,
                           title = "Term %s" % term_string,
-                          headline = "Term",
+                          headline = "Terms",
                           content = Markup(content.decode('utf-8')))
 
 @app.route("/browse")
@@ -570,8 +570,11 @@ def browse(listing = None, page = None):
       result += "<p><a %s</a>" % seaice.pretty.innerAnchor(
         g.db, term['term_string'], term['concept_id'], term['definition'],
 	      tagAsTerm=True)
-      result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'])
       orcid = g.db.getOrcidById(term['owner_id'])
+      if orcid:
+        result += " <i>contributed by <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></i></p>" % (orcid, g.db.getUserNameById(term['owner_id'], full=True))
+      else:
+        result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'], full=True)
     result += "</table>"
     # yyy temporary proof that this code is running
     print >>sys.stderr, "note: end alpha listing"
