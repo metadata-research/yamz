@@ -8,5 +8,12 @@ var expandCommentsListener = function() {
     var link = $(this);
     var divSuffix = link.data('id');
     $('.comments-' + divSuffix).toggle();
+    if(link.data('direction') === 'down'){
+      link.html("Comments &#x25B2;");
+      link.data('direction', 'up');
+    } else {
+      link.html("Comments &#x25BC;");
+      link.data('direction', 'down');
+    }
   })
 }
