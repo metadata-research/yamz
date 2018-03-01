@@ -278,13 +278,8 @@ def authorized(resp):
   return redirect(url_for('index'))
 
 
-
 @app.route("/login/orcid")
 def login_orcid():
-  # make get to https://orcid.org/userStatus.json?logUserOut=true here to log user out
-  # urlopen("https://orcid.org/userStatus.json?logUserOut=true") #live version. maybe make a variable for it?
-  a = urlopen("https://sandbox.orcid.org/signout") #not currently working. something to look into.
-
   callback=url_for('orcid_authorized', _external=True)
   return orcid.authorize(callback=callback)
 
@@ -299,9 +294,7 @@ def orcid_authorized(resp):
   g.db = app.dbPool.getScoped()
   g.db.setOrcid(l.current_user.id, orcid_user['orcid'])
   g.db.commit()
-  a = urlopen("https://sandbox.orcid.org/signout") # remove sandbox when put to live
-  print a.read
-  print '^^^^^^^^^^^^'
+
   flash("Logged in successfully")
   return redirect('/account')
 
