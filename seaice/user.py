@@ -27,151 +27,144 @@
 
 from threading import Lock
 
-##
-# class BaseUser
-#
-#
+
 class BaseUser:
-  """
-    Base class for users. Users are used in Flask fo storing
-    information about active and authenticated user sessions.
-    This implements. BaseUser implements the basic routines needed
-    for the Flask login manager. See the
-    `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_
-    documenttation for details.
+    """
+        Base class for users. Users are used in Flask fo storing
+        information about active and authenticated user sessions.
+        This implements. BaseUser implements the basic routines needed
+        for the Flask login manager. See the
+        `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_
+        documenttation for details.
 
-  :param id: User's surrogate ID in the database.
-  :type id: int
-  :param name: First name of user (for display purposes).
-  :type name: str
-  """
+    :param id: User's surrogate ID in the database.
+    :type id: int
+    :param name: First name of user (for display purposes).
+    :type name: str
+    """
 
-  def __init__(self, id, name):
-    self.id = id
-    self.name = name
-    # self.logged_in = True not
-    """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
-    self.is_authenticated = True
-    self.is_active = True
-    self.is_anonymous = False
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name
+        # self.logged_in = True not
+        """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
+        self.is_authenticated = True
+        self.is_active = True
+        self.is_anonymous = False
 
-  # def is_authenticated(self):
-  #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
-  #   return self.logged_in
+    # def is_authenticated(self):
+    #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
+    #   return self.logged_in
 
-  # def is_active(self):
-  #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
-  #   return self.logged_in
+    # def is_active(self):
+    #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
+    #   return self.logged_in
 
-  # def is_anonymous(self):
-  #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
-  #   return False
+    # def is_anonymous(self):
+    #   """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
+    #   return False
 
-  def get_id(self):
-    """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_.
+    def get_id(self):
+        """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_.
 
-    :rtype: unicode str"""
-    return unicode(self.id)
+        :rtype: unicode str"""
+        return unicode(self.id)
+
 
 class AnonymousUser(BaseUser):
-  """ Handler for non-authenticated sessions. """
+    """ Handler for non-authenticated sessions. """
 
-  def __init__(self):
-    self.id = None #: When polled, return None for ID, as prescribed by Flask-Login.
-    self.name = None
-    # self.logged_in = False #: When asked if you are logged in, always respond with **no**.
-    """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
-    self.is_authenticated = False
-    self.is_active = False
-    self.is_anonymous = True
+    def __init__(self):
+        self.id = None  #: When polled, return None for ID, as prescribed by Flask-Login.
+        self.name = None
+        # self.logged_in = False #: When asked if you are logged in, always respond with **no**.
+        """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_. """
+        self.is_authenticated = False
+        self.is_active = False
+        self.is_anonymous = True
 
-##
-# class User
-#
-#
-#
 
 class User(BaseUser):
-  """ Handler for authenticated sessions. """
+    """ Handler for authenticated sessions. """
 
-  def __init__(self, id, name):
-    BaseUser.__init__(self, id, name)
-    self.notifications = []
-    self.L_notify = Lock()
+    def __init__(self, id, name):
+        BaseUser.__init__(self, id, name)
+        self.notifications = []
+        self.L_notify = Lock()
 
-  def notify(self, notif, db_con=None):
-    """ Receive notification from another user.
+    def notify(self, notif, db_con=None):
+        """ Receive notification from another user.
 
-      If *db_con* is specified,
-      insert the notifiation into the databse. The reason for having this
-      option is that not all deployments of SeaIce will need to have
-      persistent notifications. This method is thread-safe, as it's
-      possible to receive many notifications simultaneously.
+            If *db_con* is specified,
+            insert the notifiation into the databse. The reason for having this
+            option is that not all deployments of SeaIce will need to have
+            persistent notifications. This method is thread-safe, as it's
+            possible to receive many notifications simultaneously.
 
-    :param notif: Notification instance.
-    :type notif: seaice.notify.BaseNotification
-    :param db_con: DB connection.
-    :type db_con: seaice.SeaIceConnector.SeaIceConnector
-    """
-    if db_con:
-      db_con.insertNotification(int(self.id), notif)
-    self.L_notify.acquire()
-    self.notifications.append(notif)
-    self.L_notify.release()
+        :param notif: Notification instance.
+        :type notif: seaice.notify.BaseNotification
+        :param db_con: DB connection.
+        :type db_con: seaice.SeaIceConnector.SeaIceConnector
+        """
+        if db_con:
+            db_con.insertNotification(int(self.id), notif)
+        self.L_notify.acquire()
+        self.notifications.append(notif)
+        self.L_notify.release()
 
-  def remove(self, i, db_con=None):
-    """ Remove notification at index *i* from the list.
+    def remove(self, i, db_con=None):
+        """ Remove notification at index *i* from the list.
 
-      If *db_con* is specified, then remove notification from the database.
-      This method is thread-safe. **NOTE:** If the order of notifications
-      changed sometime between this point and the last time the HTML page was
-      generated, the wrong notification will be removed.
+            If *db_con* is specified, then remove notification from the database.
+            This method is thread-safe. **NOTE:** If the order of notifications
+            changed sometime between this point and the last time the HTML page was
+            generated, the wrong notification will be removed.
 
-    :param i: Index of notification.
-    :type i: int
-    :param db_con: DB connection.
-    :type db_con: seaice.SeaIceConnector.SeaIceConnector
-    """
-    if db_con:
-      db_con.removeNotification(int(self.id), self.notifications[i])
-      db_con.commit()
-    self.L_notify.acquire()
-    self.notifications.remove(self.notifications[i])
-    self.L_notify.release()
+        :param i: Index of notification.
+        :type i: int
+        :param db_con: DB connection.
+        :type db_con: seaice.SeaIceConnector.SeaIceConnector
+        """
+        if db_con:
+            db_con.removeNotification(int(self.id), self.notifications[i])
+            db_con.commit()
+        self.L_notify.acquire()
+        self.notifications.remove(self.notifications[i])
+        self.L_notify.release()
 
-  def getNotificationsAsHTML(self, db_con):
-    """ Get notifications as HTML.
+    def getNotificationsAsHTML(self, db_con):
+        """ Get notifications as HTML.
 
-      Create a link next each one which, when clicked, calls
-      :func:`User.remove`.
+            Create a link next each one which, when clicked, calls
+            :func:`User.remove`.
 
-    :param db_con: DB connection.
-    :type db_con: seaice.SeaIceConnector.SeaIceConnector
-    :returns: HTML-formatted string.
-    """
-    self.L_notify.acquire()
-    result = ''
-    for i in reversed(range(len(self.notifications))):
-      notify = self.notifications[i].getAsHTML(db_con)
-      if notify:
-        result += '''<p><a href="/user=%d/notif=%d/remove"
-                         title="Click to remove this notification">[x]</a>
-                         &nbsp;&nbsp;%s</p>''' % (self.id, i, notify)
-    self.L_notify.release()
-    return result
+        :param db_con: DB connection.
+        :type db_con: seaice.SeaIceConnector.SeaIceConnector
+        :returns: HTML-formatted string.
+        """
+        self.L_notify.acquire()
+        result = ''
+        for i in reversed(range(len(self.notifications))):
+            notify = self.notifications[i].getAsHTML(db_con)
+            if notify:
+                result += '''<p><a href="/user=%d/notif=%d/remove"
+                                                 title="Click to remove this notification">[x]</a>
+                                                 &nbsp;&nbsp;%s</p>''' % (self.id, i, notify)
+        self.L_notify.release()
+        return result
 
-  def getNotificationsAsPlaintext(self, db_con):
-    """ Get notifications in plaintext form.
+    def getNotificationsAsPlaintext(self, db_con):
+        """ Get notifications in plaintext form.
 
-    :param db_con: DB connection.
-    :type db_con: seaice.SeaIceConnector.SeaIceConnector
-    :returns: Plaintext string.
-    """
-    self.L_notify.acquire()
-    result = ''
-    for i in reversed(range(len(self.notifications))):
-      notify = self.notifications[i].getAsPlaintext(db_con)
-      if notify:
-        result += notify + '\n\n'
-    self.L_notify.release()
-    return result.strip()
+        :param db_con: DB connection.
+        :type db_con: seaice.SeaIceConnector.SeaIceConnector
+        :returns: Plaintext string.
+        """
+        self.L_notify.acquire()
+        result = ''
+        for i in reversed(range(len(self.notifications))):
+            notify = self.notifications[i].getAsPlaintext(db_con)
+            if notify:
+                result += notify + '\n\n'
+        self.L_notify.release()
+        return result.strip()
