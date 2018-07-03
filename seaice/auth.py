@@ -26,42 +26,47 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from flask_oauth import OAuth
-import os, stat, configparser, sys
+import os
+import stat
+import configparser
+import sys
 
-  ## Local PostgreSQL server configuration ##
+# Local PostgreSQL server configuration #
+
 
 def accessible_by_group_or_world(file):
-  """ Verify the permissions of configuration file.
-      *Contributed by Nassib Nassar*.
+    """ Verify the permissions of configuration file.
+            *Contributed by Nassib Nassar*.
 
-  :param file: File name.
-  :type file: str
-  :rtype: bool
-  """
-  st = os.stat(file)
-  return bool( st.st_mode & (stat.S_IRWXG | stat.S_IRWXO) )
+    :param file: File name.
+    :type file: str
+    :rtype: bool
+    """
+    st = os.stat(file)
+    return bool(st.st_mode & (stat.S_IRWXG | stat.S_IRWXO))
 
-def get_config(config_file = '.seaice'):
-  """ Get local db configuration. *Contributed by Nassib Nassar*.
 
-    Structure with DB connection parameters for particular
-    roles. See the top-level program *ice* for example usage.
+def get_config(config_file='.seaice'):
+    """ Get local db configuration. *Contributed by Nassib Nassar*.
 
-  :param config_file: File Name.
-  :type config_file: str
-  :rtype: dict
-  """
-  config = configparser.RawConfigParser()
-  if os.path.isfile(config_file):
-      if accessible_by_group_or_world(config_file):
-        print ('error: config file ' + config_file +
-          ' has group or world ' +
-          'access; permissions should be set to u=rw')
-        sys.exit(1)
-      config.read(config_file)
-  return config
+        Structure with DB connection parameters for particular
+        roles. See the top-level program *ice* for example usage.
 
-  ## Google authentication. ##
+    :param config_file: File Name.
+    :type config_file: str
+    :rtype: dict
+    """
+    config = configparser.RawConfigParser()
+    if os.path.isfile(config_file):
+        if accessible_by_group_or_world(config_file):
+            print ('error: config file ' + config_file +
+                   ' has group or world ' +
+                   'access; permissions should be set to u=rw')
+            sys.exit(1)
+        config.read(config_file)
+    return config
+
+# Google authentication. #
 
 #: Google authentication (OAuth)
 #: **TODO**: Change to *google_oauth*.
@@ -74,24 +79,27 @@ oauth = OAuth()
 REDIRECT_URI = '/authorized'
 REDIRECT_URI_ORCID = '/authorized/orcid'
 
+
 #: Get Google authentication. Client ID and secrets are drawn from a
 #: config file which may contain multiple values for various
 #: deplo9yments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_google_auth(client_id, client_secret):
-  google = oauth.remote_app('google',
+    google = oauth.remote_app(
+        'google',
         base_url='https://www.google.com/accounts/',
         authorize_url='https://accounts.google.com/o/oauth2/auth',
         request_token_url=None,
-        request_token_params={'scope': 'https://www.googleapis.com/auth/userinfo.email',
-                              'response_type': 'code'},
+        request_token_params={
+            'scope': 'https://www.googleapis.com/auth/userinfo.email',
+            'response_type': 'code'
+            },
         access_token_url='https://accounts.google.com/o/oauth2/token',
         access_token_method='POST',
         access_token_params={'grant_type': 'authorization_code'},
         consumer_key=client_id,
         consumer_secret=client_secret)
-  return google
-
+    return google
 
 
 #: Get Orcid authentication. Client ID and secrets are drawn from a
@@ -99,7 +107,8 @@ def get_google_auth(client_id, client_secret):
 #: deplo9yments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_orcid_auth(client_id, client_secret):
-  orcid = oauth.remote_app('orcid',
+    orcid = oauth.remote_app(
+        'orcid',
         base_url='https://sandbox.orcid.org/',
         authorize_url='https://sandbox.orcid.org/oauth/authorize',
         request_token_url=None,
@@ -110,4 +119,4 @@ def get_orcid_auth(client_id, client_secret):
         access_token_params={'grant_type': 'authorization_code'},
         consumer_key=client_id,
         consumer_secret=client_secret)
-  return orcid
+    return orcid
