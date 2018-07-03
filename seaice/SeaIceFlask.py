@@ -32,59 +32,64 @@ import user
 #: The number of DB connections that will be instantiated.
 MAX_CONNECTIONS = 18
 
-class SeaIceFlask (Flask):
-  """
-    A subclass of the main Flask interface. This includes various live data structures
-    used in the web interface, as well as a pool of database connectors.
-    All features in the SeaIce API that the top-level progams make use of
-    are available as attributes of this class.
 
-  :param user: Name of DB role (see :class:`seaice.SeaIceConnector.SeaIceConnector` for
-               default behavior).
-  :type user: str
-  :param password: User's password.
-  :type password: str
-  :param db: Name of database.
-  :type db: str
-  """
+class SeaIceFlask(Flask):
+    """
+        A subclass of the main Flask interface. This includes various live data structures
+        used in the web interface, as well as a pool of database connectors.
+        All features in the SeaIce API that the top-level progams make use of
+        are available as attributes of this class.
 
-  def __init__(self, import_name, static_path=None, static_url_path=None,
-                     static_folder='html/static', template_folder='html/templates',
-                     instance_path=None, instance_relative_config=False,
-                     db_user=None, db_password=None, db_name=None):
+    :param user: Name of DB role (see :class:`seaice.SeaIceConnector.SeaIceConnector` for
+                             default behavior).
+    :type user: str
+    :param password: User's password.
+    :type password: str
+    :param db: Name of database.
+    :type db: str
+    """
 
-    Flask.__init__(self, import_name = import_name, static_url_path = static_url_path, #didn't recognize static path so i took it out?
-                         static_folder = static_folder, template_folder = template_folder,
-                         instance_path = instance_path, instance_relative_config =instance_relative_config)
+    def __init__(self, import_name, static_path=None,
+                 static_url_path=None,
+                 static_folder='html/static', template_folder='html/templates',
+                 instance_path=None, instance_relative_config=False,
+                 db_user=None, db_password=None, db_name=None):
 
-    #: DB connector pool.
-    self.dbPool = SeaIceConnectorPool(MAX_CONNECTIONS, db_user, db_password, db_name)
+        Flask.__init__(self, import_name=import_name,
+                       static_url_path=static_url_path,  # didn't recognize static path so i took it out?
+                       static_folder=static_folder,
+                       template_folder=template_folder,
+                       instance_path=instance_path,
+                       instance_relative_config=instance_relative_config)
 
-    # Id pools.
-    db_con = self.dbPool.getScoped()
+        #: DB connector pool.
+        self.dbPool = SeaIceConnectorPool(MAX_CONNECTIONS, db_user, db_password, db_name)
 
-    self.userIdPool = IdPool(db_con, "Users") #: Pool for user surrogate IDs.
-    self.termIdPool = IdPool(db_con, "Terms") #: Pool for term surrogate IDs.
-    self.commentIdPool = IdPool(db_con, "Comments") #: Pool for comment surrogate IDs.
+        # Id pools.
+        db_con = self.dbPool.getScoped()
 
-    #: Live User data structures. This includes storage of notifications.
-    self.SeaIceUsers = {}
-    for row in db_con.getAllUsers():
-      self.SeaIceUsers[row['id']] = user.User(row['id'],
-                                    row['first_name'].decode('utf-8'))
+        self.userIdPool = IdPool(db_con, "Users")  #: Pool for user surrogate IDs.
+        self.termIdPool = IdPool(db_con, "Terms")  #: Pool for term surrogate IDs.
+        self.commentIdPool = IdPool(db_con, "Comments")  #: Pool for comment surrogate IDs.
 
-    # Load notifcations
-    for (user_id, notif_class, T_notify,
-         term_id, from_user_id, term_string,
-         enotified) in db_con.getAllNotifications():
+        #: Live User data structures. This includes storage of notifications.
+        self.SeaIceUsers = {}
+        for row in db_con.getAllUsers():
+            self.SeaIceUsers[row['id']] = user.User(
+                row['id'], row['first_name'].decode('utf-8'))
 
-      if notif_class == 'Base':
-        notif = notify.BaseNotification(term_id, T_notify)
-      elif notif_class == 'Comment':
-        notif = notify.Comment(term_id, from_user_id, term_string, T_notify)
-      elif notif_class == 'TermUpdate':
-        notif = notify.TermUpdate(term_id, from_user_id, T_notify)
-      elif notif_class == 'TermRemoved':
-        notif = notify.TermRemoved(from_user_id, term_string, T_notify)
+        # Load notifcations
+        for (user_id, notif_class, T_notify,
+             term_id, from_user_id, term_string,
+             enotified) in db_con.getAllNotifications():
 
-      self.SeaIceUsers[user_id].notify(notif)
+            if notif_class == 'Base':
+                notif = notify.BaseNotification(term_id, T_notify)
+            elif notif_class == 'Comment':
+                notif = notify.Comment(term_id, from_user_id, term_string, T_notify)
+            elif notif_class == 'TermUpdate':
+                notif = notify.TermUpdate(term_id, from_user_id, T_notify)
+            elif notif_class == 'TermRemoved':
+                notif = notify.TermRemoved(from_user_id, term_string, T_notify)
+
+            self.SeaIceUsers[user_id].notify(notif)
