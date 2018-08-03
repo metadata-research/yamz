@@ -103,11 +103,10 @@ try:
 
     else:
         db_config = seaice.auth.get_config(options.config_file)
-        app = seaice.SeaIceFlask(
-            __name__,
+        app = seaice.SeaIceFlask(__name__,
             db_user=db_config.get(options.db_role, 'user'),
             db_password=db_config.get(options.db_role, 'password'),
-            db_names=db_config.get(options.db_role, 'dbname'))
+            db_name=db_config.get(options.db_role, 'dbname'))
 
 except pgdb.DatabaseError, e:
     print >>sys.stderr, "error: %s" % e
