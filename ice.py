@@ -24,24 +24,24 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-import seaice
-import ConfigParser
-from flask import Markup
-from flask import render_template
-from flask import url_for, redirect, flash
-from flask import request, session, g
+from __future__ import print_function
+import configparser
 from itertools import chain
-import flask_login as l
-
 from urllib2 import Request, urlopen, URLError
 import sys
 import optparse
 import re
 import json
-import psycopg2 as pgdb
 
-from pagination import *
+import psycopg2 as pgdb
+from flask import Markup
+from flask import render_template
+from flask import url_for, redirect, flash
+from flask import request, session, g
+import flask_login as l
+
+import seaice
+from pagination import getPaginationDetails
 
 # Parse command line options. #
 
@@ -64,7 +64,7 @@ parser.add_option("--config", dest="config_file", metavar="FILE",
                   "DATABASE_URL is established.",
                   default='heroku')
 
-parser.add_option('--credentials', dest='credentials_file',  metavar='FILE',
+parser.add_option('--credentials', dest='credentials_file', metavar='FILE',
                   help='File with OAuth-2.0 credentials. (Defaults to `.seaice_auth`.)',
                   default='.seaice_auth')
 
@@ -84,7 +84,7 @@ parser.add_option("--role", dest="db_role", metavar="USER",
 (options, args) = parser.parse_args()
 
 # Figure out if we're in production mode.  Look in 'heroku' section only.
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('.seaice_auth')
 if config.has_option('heroku', 'prod_mode'):
     prod_mode = config.getboolean('heroku', 'prod_mode')
@@ -92,7 +92,7 @@ else:
     prod_mode = False       # default
 
 # Setup flask application #
-print "ice: starting ..."
+print("ice: starting ...")
 
 db_config = None
 
@@ -103,13 +103,15 @@ try:
 
     else:
         db_config = seaice.auth.get_config(options.config_file)
-        app = seaice.SeaIceFlask(__name__,
+        app = seaice.SeaIceFlask(
+            __name__,
             db_user=db_config.get(options.db_role, 'user'),
             db_password=db_config.get(options.db_role, 'password'),
-            db_name=db_config.get(options.db_role, 'dbname'))
+            db_name=db_config.get(options.db_role, 'dbname')
+            )
 
 except pgdb.DatabaseError, e:
-    print >>sys.stderr, "error: %s" % e
+    print("error: %s" % e, file=sys.stderr)
     sys.exit(1)
 
 
@@ -125,7 +127,7 @@ try:
         credentials.get(options.deployment_mode, 'orcid_client_secret'))
 
 except OSError:
-    print >>sys.stderr, "error: config file '%s' not found" % options.config_file
+    print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
     sys.exit(1)
 
 
@@ -151,7 +153,7 @@ login_manager.anonymous_user = seaice.user.AnonymousUser
 #  db_con.commit()
 
 
-print "ice: setup complete."
+print("ice: setup complete.")
 
 
 @login_manager.user_loader
@@ -175,12 +177,12 @@ def teardown_request(exception):
 
 @app.errorhandler(404)
 def pageNotFound(e):
-        return render_template(
-            'basic_page.html',
-            user_name=l.current_user.name,
-            title="Oops! - 404",
-            headline="404",
-            content="The page you requested doesn't exist."), 404
+    return render_template(
+        'basic_page.html',
+        user_name=l.current_user.name,
+        title="Oops! - 404",
+        headline="404",
+        content="The page you requested doesn't exist."), 404
 
 
 # home page
@@ -232,11 +234,11 @@ def contact():
 @app.route("/login")
 def login():
     if l.current_user.id:
-            return render_template(
-                "basic_page.html",
-                user_name=l.current_user.name,
-                title="Oops!",
-                content="You are already logged in!")
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Oops!",
+            content="You are already logged in!")
 
     form = '''
         <p>
@@ -268,7 +270,7 @@ def authorized(resp):
     req = Request('https://www.googleapis.com/oauth2/v1/userinfo', None, headers)
     try:
         res = urlopen(req)
-    except URLError, e:
+    except URLError as e:
         if e.code == 401:  # Unauthorized - bad token
             session.pop('access_token', None)
             return 'l'
@@ -378,7 +380,7 @@ def settings():
     # method was GET
     user = g.db.getUser(l.current_user.id)
     app.dbPool.enqueue(g.db)
-    print user['orcid']
+    print(user['orcid'])
     return render_template(
         "account.html",
         user_name=l.current_user.name,
@@ -407,11 +409,11 @@ def getUser(user_id=None):
                     <tr><td valign=top>Reputation:</td><td>{3}</td></td>
                     <tr><td valign=top>Receive email notifications:</td><td>{4}</td>
                 </table> """.format(
-                user['first_name'],
-                user['last_name'],
-                user['email'],
-                user['reputation'] + ' *' if user['super_user'] else '',
-                user['enotify'])
+                    user['first_name'],
+                    user['last_name'],
+                    user['email'],
+                    user['reputation'] + ' *' if user['super_user'] else '',
+                    user['enotify'])
 
             return render_template(
                 "basic_page.html",
@@ -446,7 +448,7 @@ def remNotification(user_id, notif_index):
             title="Oops!",
             content='You may only delete your own notifications.')
 
-    except AssertionError:
+    except IndexError:
         return render_template(
             "basic_page.html",
             user_name=l.current_user.name,
@@ -614,7 +616,7 @@ def browse(listing=None, page=None):
         for term in terms:
             # skip if term is empty
             if not term['term_string']:
-                print >>sys.stderr, "error: empty term string in alpha listing"
+                print("error: empty term string in alpha listing", file=sys.stderr)
                 continue
             # firstc = term['term_string'][0].upper()
             firstc = term['term_string'][0].upper() if term['term_string'] else ' '
@@ -634,7 +636,7 @@ def browse(listing=None, page=None):
                 result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'], full=True)
         result += "</table>"
         # yyy temporary proof that this code is running
-        print >>sys.stderr, "note: end alpha listing"
+        print("note: end alpha listing", file=sys.stderr)
 
     return render_template(
         "browse.html",
@@ -899,7 +901,7 @@ def addComment(term_id):
         term_id = int(term_id)
         g.db = app.dbPool.getScoped()
         comment = {'comment_string': seaice.pretty.refs_norm(
-                   g.db, request.form['comment_string']),
+            g.db, request.form['comment_string']),
                    'term_id': term_id,
                    'owner_id': l.current_user.id,
                    'id': app.commentIdPool.ConsumeId()}
@@ -938,7 +940,7 @@ def editComment(comment_id=None):
 
         if request.method == "POST":
             updatedComment = {'comment_string': seaice.pretty.refs_norm(
-                              g.db, request.form['comment_string']),
+                g.db, request.form['comment_string']),
                               'owner_id': l.current_user.id}
 
             g.db.updateComment(int(comment_id), updatedComment)
@@ -1019,7 +1021,7 @@ def voteOnTerm(term_id):
     else:
         g.db.castVote(l.current_user.id, term_id, 0)
     g.db.commit()
-    print "User #%d voted %s term #%d" % (l.current_user.id, request.form['action'], term_id)
+    print("User #%d voted %s term #%d" % (l.current_user.id, request.form['action'], term_id))
     return redirect("/term=%s" % g.db.getTermConceptId(term_id))
 
 
@@ -1032,8 +1034,9 @@ def trackTerm(term_id):
     else:
         g.db.untrackTerm(l.current_user.id, term_id)
     g.db.commit()
-    print "User #%d %sed term #%d" % (l.current_user.id, request.form['action'], term_id)
+    print("User #%d %sed term #%d" % (l.current_user.id, request.form['action'], term_id))
     return redirect("/term=%s" % g.db.getTermConceptId(term_id))
+
 
 # Start HTTP server. (Not relevant on Heroku.) ##
 if __name__ == '__main__':
