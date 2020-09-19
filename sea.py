@@ -24,15 +24,16 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+from __future__ import print_function
 import sys
 import optparse
+import configparser
+
 import psycopg2 as pqdb
 import seaice
-import ConfigParser
 
 # Figure out if we're in production mode.  Look in 'heroku' section only.
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('.seaice_auth')
 if config.has_option('heroku', 'prod_mode'):
     prod_mode = config.getboolean('heroku', 'prod_mode')
@@ -100,7 +101,7 @@ parser.add_option("--score-terms", action="store_true", dest="score",
                   default=False,
                   help="Compute and print scores of terms. This will modify the term.")
 
-parser.add_option("--classify-terms", action="store_true", dest="classify",              default=False,
+parser.add_option("--classify-terms", action="store_true", dest="classify", default=False,
                   help="Classify stable terms in the dictionary. This will modify the term's class.")
 
 parser.add_option("--set-reputation", dest="reputation",
@@ -153,7 +154,7 @@ try:
         try:
             config = seaice.auth.get_config(options.config_file)
         except OSError:
-            print >>sys.stderr, "error: config file '%s' not found" % options.config_file
+            print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
             sys.exit(1)
 
         sea = seaice.SeaIceConnector(
@@ -165,13 +166,13 @@ try:
 
     if options.remove_id:
         if not sea.removeTerm(int(options.remove_id)):
-            print >>sys.stderr, "sea: no such term (Id=%s not found)" % options.remove_id
+            print("sea: no such term (Id=%s not found)" % options.remove_id, file=sys.stderr)
 
     if options.reputation:
         if not options.user_id:
-            print >>sys.stderr, "sea: must specify user Id"
+            print("sea: must specify user Id", file=sys.stderr)
         elif not sea.updateUserReputation(int(options.user_id), int(options.reputation)):
-            print >>sys.stderr, "sea: no such user (Id=%s not found)" % options.user_id
+            print("sea: no such user (Id=%s not found)" % options.user_id, file=sys.stderr)
 
     if options.truncate_table:
         sea.Truncate(options.truncate_table)
@@ -185,8 +186,8 @@ try:
 
     if options.drop_tables:
         if not options.quiet:
-            print >>sys.stderr, "warning: this will erase all terms. Are you sure? [y/n] ",
-            if raw_input() in ['y', 'yes', 'Y']:
+            print("warning: this will erase all terms. Are you sure? [y/n] ", end=' ', file=sys.stderr)
+            if input() in ['y', 'yes', 'Y']:
                 sea.dropSchema()
         else:
             sea.dropSchema()
@@ -206,22 +207,22 @@ try:
             (U, V) = sea.preScore(term['id'])
             s = sea.postScore(term['id'], U, V)
             if header:
-                print "%-8s%-20s%-8s%-8s%-8s" % ('Id', 'Term', 'Up', 'Down', 'Score')
+                print("%-8s%-20s%-8s%-8s%-8s" % ('Id', 'Term', 'Up', 'Down', 'Score'))
                 header = False
-            print "%-8d%-20s%-8d%-8d%-8.2f" % (
+            print("%-8d%-20s%-8d%-8d%-8.2f" % (
                 term['id'],
                 term['term_string'],
                 term['up'],
                 term['down'],
-                (100 * s))
+                (100 * s)))
 
     header = True
     if options.classify:
-        for (term, id) in map(lambda term: (term['term_string'], term['id']), sea.getAllTerms()):
+        for (term, id) in [(term['term_string'], term['id']) for term in sea.getAllTerms()]:
             if header:
-                print "%-8s%-20s%-8s" % ('Id', 'Term', 'Class')
+                print("%-8s%-20s%-8s" % ('Id', 'Term', 'Class'))
                 header = False
-            print "%-8s%-20s%-8s" % (id, term, sea.classifyTerm(id))
+            print("%-8s%-20s%-8s" % (id, term, sea.classifyTerm(id)))
             sea.commit()
 
     if options.search_term:
@@ -229,21 +230,21 @@ try:
         if options.json:
             seaice.pretty.printAsJSObject(terms)
         elif len(terms) == 0:
-            print >>sys.stderr, "sea: no matches for '%s'" % options.search_term
+            print("sea: no matches for '%s'" % options.search_term, file=sys.stderr)
         else:
             seaice.pretty.printTermsPretty(sea, terms)
 
     # Commit database mutations. #
     sea.commit()
 
-except pqdb.DatabaseError, e:
-    print 'error: %s' % e
+except pqdb.DatabaseError as e:
+    print('error: %s' % e)
     sys.exit(1)
 
 # xxx commenting these out makes for better diagnostics?
 # except IOError:
-#     print >>sys.stderr, "error: file not found"
+#     print("error: file not found", file=sys.stderr)
 #     sys.exit(1)
 #
 # except ValueError:
-#     print >>sys.stderr, "error: incorrect parameter type(s)"
+#     print("error: incorrect parameter type(s)", file=sys.stderr)
