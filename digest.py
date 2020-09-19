@@ -24,15 +24,18 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+from __future__ import print_function
 import os
 import sys
 import optparse
-import psycopg2 as pqdb
-import seaice
-
 import smtplib
 from email.mime.text import MIMEText
+
+import psycopg2 as pqdb
+
+import seaice
+
+
 
 # Parse command line options. #
 
@@ -70,7 +73,7 @@ try:
         try:
             config = seaice.auth.get_config(options.config_file)
         except OSError:
-            print >>sys.stderr, "error: config file '%s' not found" % options.config_file
+            print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
             sys.exit(1)
 
         sea = seaice.SeaIceConnector(
@@ -92,10 +95,10 @@ try:
     msg_subject = 'YAMZ digest (%s %s %s)' % (
         t.day, seaice.pretty.monthOf[t.month - 1], t.year)
 
-    for (id, name, notify, to_addr) in map(lambda(u): (
+    for (id, name, notify, to_addr) in [(
             u['id'],
             u['first_name'] + ' ' + u['last_name'],
-            u['enotify'], u['email']), sea.getAllUsers()):
+            u['enotify'], u['email']) for u in sea.getAllUsers()]:
         user = seaice.user.User(id, name)
 
         if notify:
@@ -117,9 +120,9 @@ try:
 
             text = user.getNotificationsAsPlaintext(sea)
 
-            if len(text) == 0:
+            if text:
 
-                print "No notifications for `%s`." % to_addr
+                print("No notifications for `%s`." % to_addr)
 
             else:
 
@@ -132,10 +135,10 @@ try:
                 msg += "http://yamz.net/account."
                 msg += "\n\n - YAMZ development team\n\n"
 
-                print "Sending the following message to `%s`:" % to_addr
-                print "-----------------------------------------------------------"
-                print msg
-                print "-----------------------------------------------------------\n"
+                print("Sending the following message to `%s`:" % to_addr)
+                print("-----------------------------------------------------------")
+                print(msg)
+                print("-----------------------------------------------------------\n")
 
                 # Send message
                 msg = MIMEText(msg)
@@ -152,10 +155,10 @@ try:
     s.quit()
     sea.commit()
 
-except pqdb.DatabaseError, e:
-    print 'error: %s' % e
+except pqdb.DatabaseError as e:
+    print('error: %s' % e)
     sys.exit(1)
 
 except IOError:
-    print >>sys.stderr, "error: file not found"
+    print("error: file not found", file=sys.stderr)
     sys.exit(1)
