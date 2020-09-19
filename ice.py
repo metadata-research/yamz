@@ -110,7 +110,7 @@ try:
             db_name=db_config.get(options.db_role, 'dbname')
             )
 
-except pgdb.DatabaseError, e:
+except pgdb.DatabaseError as e:
     print("error: %s" % e, file=sys.stderr)
     sys.exit(1)
 
