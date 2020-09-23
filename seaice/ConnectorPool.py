@@ -26,12 +26,11 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-from SeaIceConnector import *
 from threading import Condition
+from .SeaIceConnector import SeaIceConnector
 
 
-class ScopedSeaIceConnector (SeaIceConnector):
+class ScopedSeaIceConnector(SeaIceConnector):
     """
         A SeaIce DB Connector which is released to the pool from whence it
         came when it goes out of scope. This type of connector is produced by
@@ -56,7 +55,7 @@ class ScopedSeaIceConnector (SeaIceConnector):
         self.pool.enqueue(self.db_con)
 
 
-class ConnectorPool:
+class ConnectorPool(object):
     """ A thread-safe connection pool.
 
     TODO: Make this an actual queue, not a stack. Nomenclature is important
@@ -91,7 +90,7 @@ class ConnectorPool:
         self.C_pool.release()
 
 
-class SeaIceConnectorPool (ConnectorPool):
+class SeaIceConnectorPool(ConnectorPool):
     """
         A thread-safe connection pool which can produce scoped SeaIce
         connectors.
