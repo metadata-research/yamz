@@ -22,12 +22,12 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-from SeaIceConnector import *
+from __future__ import print_function
 from threading import Lock
+from SeaIceConnector import *
 
 
-class IdPool:
+class IdPool(object):
     """
     A thread-safe object for producing and consuming table row IDs within
     a particluar context, i.e. ``SI.Terms``, ``SI.Users``, and ``SI.Comments``.
@@ -43,7 +43,7 @@ class IdPool:
     :param db_con: Connection to the SeaIce database.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
     :param table: Name of the table for which a pool will be created. The table
-                                should have a column of surrogate ID scalled "id".
+                  should have a column of surrogate ID scalled "id".
     :type table: str
 
     """
@@ -58,14 +58,14 @@ class IdPool:
 
         self.pool = []
         prev = 1000
-        for row in map(lambda x: x[0], cur.fetchall()):
+        for row in [x[0] for x in cur.fetchall()]:
             if row > prev + 1:
-                self.pool += range(prev + 1, row)
+                self.pool += list(range(prev + 1, row))
             prev = row
 
         self.next = prev + 1
 
-        print "Table %s pool:" % table, (self.pool, self.next)
+        print("Table %s pool:" % table, (self.pool, self.next))  # TODO => .__next__
 
     def ConsumeId(self):
         """ Consume the next available ID.
@@ -76,8 +76,8 @@ class IdPool:
         if len(self.pool) > 0:
             ret = self.pool.pop()
         else:
-            ret = self.next
-            self.next += 1
+            ret = self.next  # TODO => .__next__
+            self.next += 1   # TODO => .__next__
         self.L_pool.release()
         return ret
 
@@ -90,7 +90,7 @@ class IdPool:
         if len(self.pool) > 0:
             ret = self.pool[-1]
         else:
-            ret = self.next
+            ret = self.next  # TODO => .__next__
         self.L_pool.release()
         return ret
 
@@ -101,6 +101,6 @@ class IdPool:
         :type id: int
         """
         self.L_pool.acquire()
-        if id < self.next:
+        if id < self.next:  # TODO => .__next__
             self.pool.append(id)
         self.L_pool.release()
