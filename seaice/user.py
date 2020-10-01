@@ -28,7 +28,7 @@
 from threading import Lock
 
 
-class BaseUser:
+class BaseUser(object):
     """
         Base class for users. Users are used in Flask fo storing
         information about active and authenticated user sessions.
@@ -68,7 +68,7 @@ class BaseUser:
         """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_.
 
         :rtype: unicode str"""
-        return unicode(self.id)
+        return unicode(self.id)  # TODO str() instead of unicode()
 
 
 class AnonymousUser(BaseUser):
