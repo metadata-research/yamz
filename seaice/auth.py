@@ -25,11 +25,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from flask_oauth import OAuth
 import os
 import stat
 import configparser
 import sys
+
+from flask_oauth import OAuth
 
 # Local PostgreSQL server configuration #
 
@@ -65,6 +66,7 @@ def get_config(config_file='.seaice'):
             sys.exit(1)
         config.read(config_file)
     return config
+
 
 # Google authentication. #
 
