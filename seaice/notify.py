@@ -23,10 +23,10 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import pretty
+from . import pretty
 
 
-class BaseNotification:
+class BaseNotification(object):
     """ Base class for notifications in the SeaIce web interface Each sub class
             should implement __init__(), __str__(), and getAsHTML(db_con) This data
             structure only stores surrogate keys for users, terms, and comments. so
@@ -108,9 +108,9 @@ class Comment(BaseNotification):
 
         return '''<font color="#4D6C82">%s</font> commented on <a href="/term=%s">%s</a>.
                             <font color="#B8B8B8"><i>%s</i></font>''' % (
-            user, term['concept_id'],
-            term['term_string'],
-            pretty.printPrettyDate(self.T_notify))
+                                user, term['concept_id'],
+                                term['term_string'],
+                                pretty.printPrettyDate(self.T_notify))
 
     def getAsPlaintext(self, db_con):
         term = db_con.getTerm(self.term_id)
@@ -151,8 +151,8 @@ class TermUpdate(BaseNotification):
 
         return '''<font color="#4D6C82">%s</font> modified <a href="/term=%s">%s</a>.
                             <font color="#B8B8B8"><i>%s</i></font>''' % (
-            user, term['concept_id'], term['term_string'],
-            pretty.printPrettyDate(self.T_notify))
+                                user, term['concept_id'], term['term_string'],
+                                pretty.printPrettyDate(self.T_notify))
 
     def getAsPlaintext(self, db_con):
         term = db_con.getTerm(self.term_id)
@@ -179,7 +179,7 @@ class TermRemoved(BaseNotification):
     """
 
     def __init__(self, user_id, term_string, T_notify):
-        BaseNotification.__init__(self, None,  T_notify)
+        BaseNotification.__init__(self, None, T_notify)
         self.user_id = user_id
         self.term_string = term_string
 
@@ -195,8 +195,8 @@ class TermRemoved(BaseNotification):
         return '''<font color="#4D6C82">%s</font> has removed
                   <font color="#0088CC"><strong>%s</strong></font> from the metadictionary.
                   <font color="#B8B8B8"><i>%s</i></font>''' % (
-            user, self.term_string,
-            pretty.printPrettyDate(self.T_notify))
+                      user, self.term_string,
+                      pretty.printPrettyDate(self.T_notify))
 
     def getAsPlaintext(self, db_con):
         user = db_con.getUserNameById(self.user_id, full=True)
