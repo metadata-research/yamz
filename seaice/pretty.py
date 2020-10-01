@@ -24,6 +24,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
 import sys
 import datetime
 import json
@@ -508,10 +510,10 @@ def printAsJSObject(rows, fd=sys.stdout):
     :type fd: file
     """
     for row in rows:
-        for (col, value) in row.iteritems():
+        for (col, value) in row.items():
             if type(value) == datetime.datetime:
                 row[col] = str(value)
-    print >>fd, json.dumps(rows, sort_keys=True, indent=2, separators=(',', ': '))
+    print(json.dumps(rows, sort_keys=True, indent=2, separators=(',', ': ')), file=fd)
 
 
 def getPrettyParagraph(db_con, text, leftMargin=8, width=60):
@@ -584,7 +586,7 @@ def printTermsPretty(db_con, rows):
     :type rows: dict iterator
     """
     for row in rows:
-        print getPrettyTerm(db_con, row)
+        print(getPrettyTerm(db_con, row))
 
 
 def printTermsAsLinks(db_con, rows):
@@ -666,11 +668,11 @@ def printTermAsHTML(db_con, row, user_id=0):
     # Retrieve persistent_id
     term_persistent_id = row['persistent_id']
     if term_persistent_id is None:
-            persistent_id = ''
-            permalink = ''
+        persistent_id = ''
+        permalink = ''
     else:
-            persistent_id = term_persistent_id
-            permalink = permalink_regex.search(persistent_id).groups(0)[0]
+        persistent_id = term_persistent_id
+        permalink = permalink_regex.search(persistent_id).groups(0)[0]
 
     # Created/modified/Owner
     string += "    <td valign=top width=20% rowspan=3>"
@@ -681,8 +683,8 @@ def printTermAsHTML(db_con, row, user_id=0):
     if orcid:
         string += "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>" % (orcid, orcid)
     if persistent_id != '':
-            string += "      <br>"
-            string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
+        string += "      <br>"
+        string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
     if user_id == row['owner_id']:
         string += "    <br><a href=\"/term=%s/edit\">[edit]</a>" % row['concept_id']
         string += """  <a id="removeTerm" title="Click to delete term" href="#"
@@ -799,14 +801,14 @@ def printTermsAsBriefHTML(db_con, rows, user_id=0):
              <td class='col-lg-1'><font style="background-color:{4}">&nbsp;{2}&nbsp;</font></td>
              <td class='col-lg-2'>{3}</td>
              <td class='col-lg-2'>{5}</tr>'''.format(
-            # processTagsAsHTML(db_con, row['term_string'], tagAsTerm=True),
-            row['up'] - row['down'],
-            summarizeConsensus(row['consensus']),
-            row['class'],
-            "<a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a>" % (orcid, name) if orcid else name,
-            # row['concept_id'],
-            colorOf[row['class']],
-            printPrettyDate(row['modified']))
+                 # processTagsAsHTML(db_con, row['term_string'], tagAsTerm=True),
+                 row['up'] - row['down'],
+                 summarizeConsensus(row['consensus']),
+                 row['class'],
+                 "<a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a>" % (orcid, name) if orcid else name,
+                 # row['concept_id'],
+                 colorOf[row['class']],
+                 printPrettyDate(row['modified']))
     string += "</table>"
     return string
 
