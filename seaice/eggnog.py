@@ -1,12 +1,13 @@
 # Contributed by Greg Janee
-
+from __future__ import print_function
 import re
 import os
 import urllib2
 import ssl
-import auth
 import sys
 import time
+
+from . import auth
 
 REALM = "yamz"
 USERNAME = "yamz"
@@ -76,7 +77,7 @@ def mintArkIdentifier(prod_mode):
         # xxx catch assert exceptions
         assert len(r) == 3 and r[0].startswith("s:") and r[1] == "nog-status: 0\n"
         arkId = r[0][3:].strip()
-        assert re.match("99152/[a-z]+\d+$", arkId)
+        assert re.match(r"99152/[a-z]+\d+$", arkId)
         arkId = "ark:/" + arkId
     finally:
         if c:
@@ -95,7 +96,7 @@ def _encode(s):        # ^HH encodes chars (for egg :hx)
     # s.encode('UTF-8', 'ignore'))
 
 
-# XXX redo encoding to use more robust (less prone to shell quotes) @ technique
+# FIXME redo encoding to use more robust (less prone to shell quotes) @ technique
 def bindArkIdentifier(arkId, prod_mode, who, what, peek):
     # Returns the identifier passed in as a string.
     global _opener, _binder
@@ -117,8 +118,8 @@ def bindArkIdentifier(arkId, prod_mode, who, what, peek):
         c = _opener.open(_binder + "?-", d)
         r = c.readlines()
         if len(r) != 2 or r[0] != "egg-status: 0\n":
-            print >>sys.stderr, "error: bad binder return (%s), input=%s" % (
-                r[0], d)
+            print("error: bad binder return (%s), input=%s" % (
+                r[0], d), file=sys.stderr)
 
     finally:
         if c:
@@ -137,13 +138,14 @@ def removeArkIdentifier(arkId, prod_mode):
         c = _opener.open(_binder + "?-", d)
         r = c.readlines()
         if len(r) != 2 or r[0] != "egg-status: 0\n":
-            print >>sys.stderr, "error: purge: bad binder return (%s), input=%s" % (
-                r[0], d)
+            print("error: purge: bad binder return (%s), input=%s" % (
+                r[0], d), file=sys.stderr)
 
     finally:
         if c:
             c.close()
     return arkId
+
 
 _resolver_base = 'http://n2t.net/'
 _resolver_base_len = len(_resolver_base)
