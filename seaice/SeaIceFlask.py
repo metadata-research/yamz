@@ -24,10 +24,10 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from flask import Flask
-from ConnectorPool import *
-from IdPool import *
-import notify
-import user
+from .ConnectorPool import SeaIceConnectorPool
+from .IdPool import IdPool
+from . import notify
+from . import user
 
 #: The number of DB connections that will be instantiated.
 MAX_CONNECTIONS = 18
