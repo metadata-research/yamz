@@ -25,11 +25,10 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-from __future__ import print_function
 import os
 import sys
 import re
-import urlparse
+import urllib.parse
 import json
 from functools import reduce
 
@@ -166,8 +165,8 @@ class SeaIceConnector(object):
 
         if not user:
 
-            urlparse.uses_netloc.append("postgres")
-            url = urlparse.urlparse(os.environ["DATABASE_URL"])
+            urllib.parse.uses_netloc.append("postgres")
+            url = urllib.parse.urlparse(os.environ["DATABASE_URL"])
 
             #: The PostgreSQL database connector provided
             #: by the psycopg2 package.
@@ -951,7 +950,7 @@ class SeaIceConnector(object):
 
         # Format entries for db query
         for (key, value) in user.items():
-            defUser[key] = unicode(value).replace("'", "''")  # TODO unicode -> str
+            defUser[key] = str(value).replace("'", "''")
 
         try:
             cur = self.con.cursor()
@@ -1272,7 +1271,7 @@ class SeaIceConnector(object):
         }
 
         for (key, value) in tracking.items():
-            defTracking[key] = unicode(value)
+            defTracking[key] = str(value)
 
         try:
             cur = self.con.cursor()
