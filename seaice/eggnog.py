@@ -1,8 +1,7 @@
 # Contributed by Greg Janee
-from __future__ import print_function
 import re
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import ssl
 import sys
 import time
@@ -54,12 +53,12 @@ def minderOpener(prod_mode):
             _minter = TEST_MINTER_URL
             _binder = TEST_BINDER_URL
     if not _opener:
-        m = urllib2.HTTPPasswordMgr()
+        m = urllib.request.HTTPPasswordMgr()
         m.add_password(REALM, _minter, USERNAME, PASSWORD)
         m.add_password(REALM, _binder, USERNAME, PASSWORD)
-        _opener = urllib2.build_opener(
-            urllib2.HTTPSHandler(debuglevel=0, context=ctxt),
-            urllib2.HTTPBasicAuthHandler(m))
+        _opener = urllib.request.build_opener(
+            urllib.request.HTTPSHandler(debuglevel=0, context=ctxt),
+            urllib.request.HTTPBasicAuthHandler(m))
 
         _opener.addheaders = [("Content-Type", "text/plain")]
         return _opener
