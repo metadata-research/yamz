@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # Fix concept id's on terms.
-
+from __future__ import print_function
 import sys
 import optparse
 import psycopg2 as pqdb
@@ -38,7 +38,7 @@ try:
         try:
             config = seaice.auth.get_config(options.config_file)
         except OSError:
-            print >>sys.stderr, "error: config file '%s' not found" % options.config_file
+            print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
             sys.exit(1)
 
         sea = seaice.SeaIceConnector(config.get(options.db_role, 'user'),
@@ -51,6 +51,7 @@ try:
     (t,) = cur.fetchone()
     print('{} {} {}'.format(t.day, seaice.pretty.monthOf[t.month - 1], t.year))
 
+
     #  Commit database mutations. #
     sea.commit()
 
@@ -59,8 +60,8 @@ except pqdb.DatabaseError as e:
     sys.exit(1)
 
 except IOError:
-    print >>sys.stderr, "error: file not found"
+    print("error: file not found", file=sys.stderr)
     sys.exit(1)
 
 except ValueError:
-    print >>sys.stderr, "error: incorrect paramater type(s)"
+    print("error: incorrect paramater type(s)", file=sys.stderr)
