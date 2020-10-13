@@ -25,21 +25,23 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
+from __future__ import print_function
 import os
 import sys
 import re
 import urlparse
 import json
+from functools import reduce
+
 import psycopg2 as pgdb
 import psycopg2.extras
-import pretty
-import notify
-import eggnog
 
-"""
-    Some constants for stability calculation.
-"""
+from . import pretty
+from . import notify
+from . import eggnog
+
+
+# Some constants for stability calculation.
 
 # The maximum varation in consensus allowed
 # for score to be considered stable (S/hour).
@@ -141,7 +143,7 @@ orderOfClass = {'deprecated': 2, 'vernacular': 1, 'canonical': 0}
 concept_id_regex = re.compile('/([a-zA-Z0-9]+)$')
 
 
-class SeaIceConnector:
+class SeaIceConnector(object):
     """ Connection to the PostgreSQL database.
 
         This object is capable of either connecting to a local database
@@ -398,8 +400,8 @@ class SeaIceConnector:
         }
 
         #: Format entries for db query
-        for (key, value) in term.iteritems():
-                defTerm[key] = value
+        for (key, value) in term.items():
+            defTerm[key] = value
 
         try:
             cur.execute(
@@ -449,15 +451,15 @@ class SeaIceConnector:
                     pretty.processRefsAsText(defTerm['examples']))
 
             if not persistent_id:       # if that didn't work, bail
-                print >>sys.stderr, "warning: aborting insert for id=%s -- no persistent_id" % defTerm['id']
+                print("warning: aborting insert for id=%s -- no persistent_id" % defTerm['id'], file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
 
             concept_id = concept_id_regex.search(persistent_id).group(1)
             if not concept_id:
-                print >>sys.stderr, "warning: aborting insert for id=%s, persistent_id=%s" % (
+                print("warning: aborting insert for id=%s, persistent_id=%s" % (
                     defTerm['id'],
-                    persistent_id)
+                    persistent_id), file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
 
@@ -469,8 +471,8 @@ class SeaIceConnector:
 
         except pgdb.DatabaseError as e:
             if e.pgcode == '23505':  # Duplicate primary key
-                print >>sys.stderr, "skipping duplicate: ", defTerm['term_string']
-                print >>sys.stderr, e.pgerror
+                print("skipping duplicate: ", defTerm['term_string'], file=sys.stderr)
+                print(e.pgerror, file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
             raise e
@@ -815,7 +817,7 @@ class SeaIceConnector:
              """, (string,))
 
         except Exception as e:
-            print >>sys.stderr, e.pgerror
+            print(e.pgerror, file=sys.stderr)
             cur.execute("ROLLBACK;")  # else one error can wedge entire service
             rows = []
             return list(rows)
@@ -856,7 +858,7 @@ class SeaIceConnector:
                     """, (string, tpp, ((page - 1) * tpp)))
 
         except Exception as e:
-            print >>sys.stderr, e.pgerror
+            print(e.pgerror, file=sys.stderr)
             cur.execute("ROLLBACK;")  # else one error can wedge entire service
             rows = []
             return list(rows)
@@ -888,7 +890,7 @@ class SeaIceConnector:
                     """, (string,))
 
         except Exception as e:
-            print >>sys.stderr, e.pgerror
+            print(e.pgerror, file=sys.stderr)
             cur.execute("ROLLBACK;")  # else one error can wedge entire service
             return 0  # this seems good?
 
@@ -948,8 +950,8 @@ class SeaIceConnector:
         }
 
         # Format entries for db query
-        for (key, value) in user.iteritems():
-            defUser[key] = unicode(value).replace("'", "''")
+        for (key, value) in user.items():
+            defUser[key] = unicode(value).replace("'", "''")  # TODO unicode -> str
 
         try:
             cur = self.con.cursor()
@@ -970,7 +972,7 @@ class SeaIceConnector:
 
         except pgdb.DatabaseError as e:
             if e.pgcode == '23505':  # Duplicate primary key
-                print >>sys.stderr, "warning: skipping duplicate primary key Id=%s" % defUser['id']
+                print("warning: skipping duplicate primary key Id=%s" % defUser['id'], file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
             raise e
@@ -1143,7 +1145,14 @@ class SeaIceConnector:
 
             cur.execute("""UPDATE SI.Terms SET consensus={1}, T_last='{2}', T_stable={3},
                                          U_sum={4}, D_sum={5} WHERE id={0}; COMMIT""".format(
-                term_id, S, str(T_now), repr(str(T_stable)) if T_stable else "NULL", U_sum, D_sum))
+                                             term_id,
+                                             S,
+                                             str(T_now),
+                                             repr(str(T_stable)) if T_stable else "NULL",
+                                             U_sum,
+                                             D_sum
+                                             )
+                       )
 
         cur.execute("UPDATE SI.Users SET reputation=%d WHERE id=%d RETURNING id; COMMIT" % (rep, id))
         return id
@@ -1166,7 +1175,7 @@ class SeaIceConnector:
         }
 
         #: Format entries for db query
-        for (key, value) in comment.iteritems():
+        for (key, value) in comment.items():
             defComment[key] = value
 
         try:
@@ -1185,9 +1194,9 @@ class SeaIceConnector:
             else:
                 return None
 
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             if e.pgcode == '23505':  # Duplicate primary key
-                print >>sys.stderr, "warning: skipping duplicate primary key Id=%s" % defComment['id']
+                print("warning: skipping duplicate primary key Id=%s" % defComment['id'], file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
             raise e
@@ -1262,7 +1271,7 @@ class SeaIceConnector:
             "vote": "default"
         }
 
-        for (key, value) in tracking.iteritems():
+        for (key, value) in tracking.items():
             defTracking[key] = unicode(value)
 
         try:
@@ -1270,15 +1279,15 @@ class SeaIceConnector:
             cur.execute("""INSERT INTO SI.Tracking (user_id, term_id, vote)
                            VALUES (%s, %s, %s)
                            RETURNING user_id, term_id""", (
-                        defTracking['user_id'],
-                        defTracking['term_id'],
-                        defTracking['vote']))
+                               defTracking['user_id'],
+                               defTracking['term_id'],
+                               defTracking['vote']))
             return cur.fetchone()
 
-        except pgdb.DatabaseError, e:
+        except pgdb.DatabaseError as e:
             if e.pgcode == '23505':  # Duplicate primary key
-                print >>sys.stderr, "warning: skipping duplicate (TermId=%s, UserId=%s)" % (
-                    defTracking['term_id'], defTracking['user_id'])
+                print("warning: skipping duplicate (TermId=%s, UserId=%s)" % (
+                    defTracking['term_id'], defTracking['user_id']), file=sys.stderr)
                 cur.execute("ROLLBACK;")
                 return None
             raise e
@@ -1385,9 +1394,9 @@ class SeaIceConnector:
         d = len(D)
 
         U_sum = reduce(lambda ri, rj: ri+rj,
-                       [0] + map(lambda Ri: Ri, U.values()))
+                       [0] + [Ri for Ri in list(U.values())])
         D_sum = reduce(lambda ri, rj: ri+rj,
-                       [0] + map(lambda Ri: Ri, D.values()))
+                       [0] + [Ri for Ri in list(D.values())])
 
         S = calculateConsensus(u, d, t, float(U_sum), float(D_sum))
 
@@ -1455,7 +1464,16 @@ class SeaIceConnector:
         #: Update term
         cur.execute("""UPDATE SI.Terms SET consensus={1}, T_last='{2}', t_stable={3},
                                      up={4}, down={5}, U_sum={6}, D_sum={7} WHERE id={0}""".format(
-            term_id, S, str(T_now), repr(str(T_stable)) if T_stable else "NULL", u, d, U_sum, D_sum))
+                                         term_id,
+                                         S,
+                                         str(T_now),
+                                         repr(str(T_stable)) if T_stable else "NULL",
+                                         u,
+                                         d,
+                                         U_sum,
+                                         D_sum
+                                         )
+                   )
 
         return S
 
@@ -1571,26 +1589,26 @@ class SeaIceConnector:
         elif isinstance(notif, notify.TermUpdate):
             cur.execute("""INSERT INTO SI_Notify.Notify( class, user_id, term_id, from_user_id, T )
                         VALUES( 'TermUpdate', %s, %s, %s, %s ); """, (
-                        user_id,
-                        notif.term_id,
-                        notif.user_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_id,
+                            notif.user_id,
+                            repr(str(notif.T_notify))))
 
         elif isinstance(notif, notify.TermRemoved):
             notif.term_string = notif.term_string.replace("'", "''")
             cur.execute("""INSERT INTO SI_Notify.Notify( class, user_id, term_string, from_user_id, T )
                         VALUES( 'TermRemoved', %s, %s, %s, %s ); """, (
-                        user_id,
-                        notif.term_string,
-                        notif.user_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_string,
+                            notif.user_id,
+                            repr(str(notif.T_notify))))
 
         else:
             cur.execute("""INSERT INTO SI_Notify.Notify( class, user_id, term_id, T )
                         VALUES( 'Base', %s, %s, %s ); """, (
-                        user_id,
-                        notif.term_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_id,
+                            repr(str(notif.T_notify))))
 
     def removeNotification(self, user_id, notif):
         """ Remove a notification.
@@ -1599,25 +1617,25 @@ class SeaIceConnector:
         :type notif: seaice.notify.BaseNotification
         """
         cur = self.con.cursor()
-        print "Lonestar!"
+        print("Lonestar!")
         if isinstance(notif, notify.Comment):
             cur.execute("""DELETE FROM SI_Notify.Notify
                         WHERE class='Comment' AND user_id=%s AND term_id=%s
                         AND from_user_id=%s AND T=%s ; """, (
-                        user_id,
-                        notif.term_id,
-                        notif.user_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_id,
+                            notif.user_id,
+                            repr(str(notif.T_notify))))
 
         elif isinstance(notif, notify.TermUpdate):
             cur.execute("""DELETE FROM SI_Notify.Notify
                         WHERE class='TermUpdate' AND user_id=%s
                         AND term_id=%s AND from_user_id=%s
                         AND T=%s ; """, (
-                        user_id,
-                        notif.term_id,
-                        notif.user_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_id,
+                            notif.user_id,
+                            repr(str(notif.T_notify))))
 
         elif isinstance(notif, notify.TermRemoved):
             notif.term_string = notif.term_string.replace("'", "''")
@@ -1625,18 +1643,18 @@ class SeaIceConnector:
                         WHERE class='TermRemoved' AND user_id=%s
                         AND term_string=%s AND from_user_id=%s
                         AND T=%s ; """, (
-                        user_id,
-                        notif.term_string,
-                        notif.user_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_string,
+                            notif.user_id,
+                            repr(str(notif.T_notify))))
 
         else:
             cur.execute("""DELETE FROM SI_Notify.Notify( class, user_id, term_id, T )
                         WHERE class='Base' AND user_id=%s
                         AND term_id=%s and T=%s ; """, (
-                        user_id,
-                        notif.term_id,
-                        repr(str(notif.T_notify))))
+                            user_id,
+                            notif.term_id,
+                            repr(str(notif.T_notify))))
 
     def Export(self, table, outf=None):
         """ Export database in JSON format to *outf*. If no file name
@@ -1648,7 +1666,7 @@ class SeaIceConnector:
         :type outf: str
         """
         if table not in ['Users', 'Terms', 'Comments', 'Tracking']:
-            print >>sys.stderr, "error (export): table '%s' is not defined in the db schema" % table
+            print("error (export): table '%s' is not defined in the db schema" % table, file=sys.stderr)
             return
 
         if outf:
@@ -1668,7 +1686,7 @@ class SeaIceConnector:
         :type table: str
         """
         if table not in ['Users', 'Terms', 'Comments', 'Tracking']:
-            print >>sys.stderr, "error (truncate): table '%s' is not defined in the db schema" % table
+            print("error (truncate): table '%s' is not defined in the db schema" % table, file=sys.stderr)
             return
 
         cur = self.con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -1685,7 +1703,7 @@ class SeaIceConnector:
         :type inf: str
         """
         if table not in ['Users', 'Terms', 'Comments', 'Tracking']:
-            print >>sys.stderr, "error (import): table '%s' is not defined in the db schema" % table
+            print("error (import): table '%s' is not defined in the db schema" % table, file=sys.stderr)
             return
 
         if inf:
