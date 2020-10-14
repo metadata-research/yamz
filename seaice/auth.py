@@ -30,7 +30,9 @@ import stat
 import configparser
 import sys
 
-from flask_oauth import OAuth
+from flask import Flask
+
+from authlib.integrations.flask_client import OAuth
 
 # Local PostgreSQL server configuration #
 
@@ -72,7 +74,8 @@ def get_config(config_file='.seaice'):
 
 #: Google authentication (OAuth)
 #: **TODO**: Change to *google_oauth*.
-oauth = OAuth()
+app = Flask(__name__)
+oauth = OAuth(app)
 
 #: Variable prescribed by the Google OAuth API.
 #: **TODO:** To accomadate other authentication
@@ -87,9 +90,9 @@ REDIRECT_URI_ORCID = '/authorized/orcid'
 #: deplo9yments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_google_auth(client_id, client_secret):
-    google = oauth.remote_app(
-        'google',
-        base_url='https://www.google.com/accounts/',
+    google = oauth.register(
+        name='google',
+        api_base_url='https://www.google.com/accounts/',
         authorize_url='https://accounts.google.com/o/oauth2/auth',
         request_token_url=None,
         request_token_params={
@@ -99,8 +102,10 @@ def get_google_auth(client_id, client_secret):
         access_token_url='https://accounts.google.com/o/oauth2/token',
         access_token_method='POST',
         access_token_params={'grant_type': 'authorization_code'},
-        consumer_key=client_id,
-        consumer_secret=client_secret)
+        client_id=client_id,
+        client_secret=client_secret,
+        client_kwargs={'scope': 'openid email profile'}
+        )
     return google
 
 
@@ -109,8 +114,8 @@ def get_google_auth(client_id, client_secret):
 #: deplo9yments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_orcid_auth(client_id, client_secret):
-    orcid = oauth.remote_app(
-        'orcid',
+    orcid = oauth.register(
+        name='orcid',
         base_url='https://sandbox.orcid.org/',
         authorize_url='https://sandbox.orcid.org/oauth/authorize',
         request_token_url=None,
