@@ -76,7 +76,7 @@ class SeaIceFlask(Flask):
         self.SeaIceUsers = {}
         for row in db_con.getAllUsers():
             self.SeaIceUsers[row['id']] = user.User(
-                row['id'], row['first_name'].decode('utf-8'))
+                row['id'], row['first_name'])
 
         # Load notifcations
         for (user_id, notif_class, T_notify,
