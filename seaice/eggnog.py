@@ -73,6 +73,7 @@ def mintArkIdentifier(prod_mode):
     try:
         c = _opener.open(_minter + "?mint%201")
         r = c.readlines()
+        r = [l.decode('utf-8') for l in r] # convert from bytes to str
         # xxx catch assert exceptions
         assert len(r) == 3 and r[0].startswith("s:") and r[1] == "nog-status: 0\n"
         arkId = r[0][3:].strip()
@@ -91,7 +92,7 @@ enc_pat = re.compile("""[%'"]|[^!-~]""")
 def _encode(s):        # ^HH encodes chars (for egg :hx)
     if len(s) == 0:
         return '""'         # empty string must be explicit
-    return enc_pat.sub(lambda c: "^%02X" % ord(c.group(0)), s.encode("UTF-8"))
+    return enc_pat.sub(lambda c: "^%02X" % ord(c.group(0)), s)
     # s.encode('UTF-8', 'ignore'))
 
 
@@ -114,8 +115,9 @@ def bindArkIdentifier(arkId, prod_mode, who, what, peek):
         d += "%s when %s\n" % (op, _encode(when))   # created
         d += "%s peek %s\n" % (op, _encode(peek))   # examples
 
-        c = _opener.open(_binder + "?-", d)
+        c = _opener.open(_binder + "?-", d.encode('utf-8'))
         r = c.readlines()
+        r = [l.decode('utf-8') for l in r] # convert from bytes to str
         if len(r) != 2 or r[0] != "egg-status: 0\n":
             print("error: bad binder return (%s), input=%s" % (
                 r[0], d), file=sys.stderr)
