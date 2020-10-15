@@ -68,7 +68,7 @@ class BaseUser(object):
         """ Required by `Flask-Login <https://flask-login.readthedocs.org/en/latest/>`_.
 
         :rtype: unicode str"""
-        return unicode(self.id)  # TODO str() instead of unicode()
+        return str(self.id)
 
 
 class AnonymousUser(BaseUser):

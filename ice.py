@@ -33,6 +33,7 @@ import optparse
 import re
 import json
 
+import requests
 import psycopg2 as pgdb
 from flask import Markup
 from flask import render_template
@@ -202,9 +203,9 @@ def index():
         return render_template(
             "index.html",
             user_name=l.current_user.name,
-            my=Markup(my.decode('utf-8')) if my else None,
-            star=Markup(star.decode('utf-8')) if star else None,
-            notify=Markup(notify.decode('utf-8')) if notify else None)
+            my=Markup(my) if my else None,
+            star=Markup(star) if star else None,
+            notify=Markup(notify) if notify else None)
 
     return render_template("index.html", user_name=l.current_user.name)
 
@@ -251,30 +252,27 @@ def login():
         "basic_page.html",
         title="Login page",
         headline="Login",
-        content=Markup(form.decode('utf-8')))
+        content=Markup(form))
 
 
 @app.route("/login/google")
 def login_google():
-    callback = url_for('authorized', _external=True)
-    return google.authorize(callback=callback)
+    redirect_uri = url_for('authorized', _external=True)
+    return google.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI)
-@google.authorized_handler
-def authorized(resp):
-    access_token = resp['access_token']
-    session['access_token'] = access_token, ''
-
-    headers = {'Authorization': 'OAuth '+access_token}
-    req = Request('https://www.googleapis.com/oauth2/v1/userinfo', None, headers)
+#@google.authorized_handler
+def authorized():
+    access_token = google.authorize_access_token()
+    resp = google.get('https://www.googleapis.com/oauth2/v1/userinfo')
     try:
-        res = urlopen(req)
-    except URLError as e:
-        if e.code == 401:  # Unauthorized - bad token
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        if resp.status_code == 401:  # Unauthorized - bad token
             session.pop('access_token', None)
             return 'l'
-    g_user = json.load(res)
+    g_user = resp.json()
 
     g.db = app.dbPool.getScoped()
     user = g.db.getUserByAuth('google', g_user['id'])
@@ -312,7 +310,7 @@ def login_orcid():
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
-@orcid.authorized_handler
+#@orcid.authorized_handler
 def orcid_authorized(resp):
     access_token = resp['access_token']
     session['orcid_access_token'] = access_token, ''
@@ -327,7 +325,7 @@ def orcid_authorized(resp):
     return redirect('/account')
 
 
-@google.tokengetter
+#@google.tokengetter
 def get_access_token():
     return session.get('access_token')
 
@@ -357,9 +355,9 @@ def settings():
             return render_template(
                 "account.html",
                 user_name=l.current_user.name,
-                email=user['email'].decode('utf-8'),
-                last_name_edit=request.form['last_name'].decode('utf-8'),
-                first_name_edit=request.form['first_name'].decode('utf-8'),
+                email=user['email'],
+                last_name_edit=request.form['last_name'],
+                first_name_edit=request.form['first_name'],
                 orcid=user['orcid'],
                 reputation=user['reputation'] + ' *' if user['super_user'] else ' _',
                 enotify='yes' if user['enotify'] else 'no',
@@ -384,9 +382,9 @@ def settings():
     return render_template(
         "account.html",
         user_name=l.current_user.name,
-        email=user['email'].decode('utf-8'),
-        last_name_edit=user['last_name'].decode('utf-8'),
-        first_name_edit=user['first_name'].decode('utf-8'),
+        email=user['email'],
+        last_name_edit=user['last_name'],
+        first_name_edit=user['first_name'],
         reputation=user['reputation'] + ' *' if user['super_user'] else ' _',
         enotify='yes' if user['enotify'] else 'no',
         orcid=user['orcid'],
@@ -420,7 +418,7 @@ def getUser(user_id=None):
                 user_name=l.current_user.name,
                 title="User - %s" % user_id,
                 headline="User",
-                content=Markup(result.decode('utf')))
+                content=Markup(result))
 
     except IndexError:
         pass
@@ -500,7 +498,7 @@ def getTerm(term_concept_id=None, message=""):
         user_name=l.current_user.name,
         title="Term %s" % term['term_string'],
         headline="Term",
-        content=Markup(result.decode('utf-8')))
+        content=Markup(result))
 
 # Look up terms by name and concept id (for order) #
 
@@ -565,7 +563,7 @@ def getTermsOfName(term_concept_id=None, message=""):
         user_name=l.current_user.name,
         title="Term %s" % term_string,
         headline="Terms",
-        content=Markup(content.decode('utf-8')))
+        content=Markup(content))
 
 
 @app.route("/browse")
@@ -643,7 +641,7 @@ def browse(listing=None, page=None):
         user_name=l.current_user.name,
         title="Browse",
         headline="Browse dictionary",
-        content=Markup(result.decode('utf-8')),
+        content=Markup(result),
         pagination_details=pagination_details)
 
 
@@ -709,7 +707,7 @@ def returnQueryPaginated(search_term=None, page=1):
             "search.html",
             user_name=l.current_user.name,
             term_string=search_term,
-            result=Markup(result.decode('utf-8')),
+            result=Markup(result),
             pagination_details=pagination_details)
 
 
@@ -730,7 +728,7 @@ def getTag(tag=None):
             "tag.html",
             user_name=l.current_user.name,
             term_string=tag,
-            result=Markup(result.decode('utf-8')))
+            result=Markup(result))
 
 # Propose, edit, or remove a term #
 
@@ -825,9 +823,9 @@ def editTerm(term_concept_id=None):
                     title="Edit - %s" % term_concept_id,
                     headline="Edit term",
                     edit_id=term_concept_id,
-                    term_string_edit=term['term_string'].decode('utf-8'),
-                    definition_edit=term['definition'].decode('utf-8'),
-                    examples_edit=term['examples'].decode('utf-8'))
+                    term_string_edit=term['term_string'],
+                    definition_edit=term['definition'],
+                    examples_edit=term['examples'])
 
     except ValueError:
         return render_template(
@@ -965,7 +963,7 @@ def editComment(comment_id=None):
                                        user_name=l.current_user.name,
                                        title="Edit comment",
                                        headline="Edit your comment",
-                                       content=Markup(form.decode('utf-8')))
+                                       content=Markup(form))
 
     except ValueError:
         return render_template("basic_page.html",
