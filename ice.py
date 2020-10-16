@@ -163,7 +163,6 @@ def load_user(id):
 
 # Request wrappers (may have use for these later) #
 
-
 @app.before_request
 def before_request():
     pass
@@ -262,13 +261,12 @@ def login_google():
 
 
 @app.route(seaice.auth.REDIRECT_URI)
-#@google.authorized_handler
 def authorized():
     access_token = google.authorize_access_token()
     resp = google.get('https://www.googleapis.com/oauth2/v1/userinfo')
     try:
         resp.raise_for_status()
-    except requests.exceptions.HTTPError as e:
+    except requests.exceptions.HTTPError:
         if resp.status_code == 401:  # Unauthorized - bad token
             session.pop('access_token', None)
             return 'l'
@@ -305,14 +303,13 @@ def authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
-    callback = url_for('orcid_authorized', _external=True)
-    return orcid.authorize(callback=callback)
+    redirect_uri = url_for('orcid_authorized', _external=True)
+    return orcid.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
-#@orcid.authorized_handler
-def orcid_authorized(resp):
-    access_token = resp['access_token']
+def orcid_authorized():
+    access_token = orcid.authorize_access_token()
     session['orcid_access_token'] = access_token, ''
 
     orcid_user = resp
@@ -325,7 +322,6 @@ def orcid_authorized(resp):
     return redirect('/account')
 
 
-#@google.tokengetter
 def get_access_token():
     return session.get('access_token')
 
