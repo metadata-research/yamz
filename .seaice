@@ -6,3 +6,7 @@
   dbname = seaice
   user = contributor
   password = PASS
+[reader]
+  dbname = seaice
+  user = reader
+  password = PASS
