@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 #
 # ice - web frontend for SeaIce, based on the Python-Flask framework.
 #
@@ -63,7 +63,7 @@ parser.add_option("--config", dest="config_file", metavar="FILE",
                   help="User credentials for local PostgreSQL database. " +
                   "If 'heroku' is given, then a connection to a foreign host specified by " +
                   "DATABASE_URL is established.",
-                  default='heroku')
+                  default='.seaice')
 
 parser.add_option('--credentials', dest='credentials_file', metavar='FILE',
                   help='File with OAuth-2.0 credentials. (Defaults to `.seaice_auth`.)',
@@ -71,7 +71,7 @@ parser.add_option('--credentials', dest='credentials_file', metavar='FILE',
 
 parser.add_option('--deploy', dest='deployment_mode',
                   help='Deployment mode, used to choose OAuth parameters in credentials file.',
-                  default='heroku')
+                  default='dev')
 
 parser.add_option("-d", "--debug", action="store_true", dest="debug",
                   default=False,
@@ -123,9 +123,9 @@ try:
         credentials.get(options.deployment_mode, 'google_client_id'),
         credentials.get(options.deployment_mode, 'google_client_secret'))
 
-    orcid = seaice.auth.get_orcid_auth(
-        credentials.get(options.deployment_mode, 'orcid_client_id'),
-        credentials.get(options.deployment_mode, 'orcid_client_secret'))
+    #orcid = seaice.auth.get_orcid_auth(
+    #    credentials.get(options.deployment_mode, 'orcid_client_id'),
+    #    credentials.get(options.deployment_mode, 'orcid_client_secret'))
 
 except OSError:
     print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
@@ -301,10 +301,10 @@ def authorized():
     return redirect(url_for('index'))
 
 
-@app.route("/login/orcid")
-def login_orcid():
-    redirect_uri = url_for('orcid_authorized', _external=True)
-    return orcid.authorize_redirect(redirect_uri)
+#@app.route("/login/orcid")
+#def login_orcid():
+#    redirect_uri = url_for('orcid_authorized', _external=True)
+#    return orcid.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)

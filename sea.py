@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python3.8
 #
 # sea - console frontend to the SeaIce metadictionary
 #
