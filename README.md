@@ -18,14 +18,45 @@ and API use names based on "SeaIce".
 
 
 ## Prerequisites
-
-### 
 PostgreSQL
+### Step 1 - Installing Components from Ubuntu Repositories
+Update Ubuntu package list
 
-1. Update Ubuntu package list `sudo apt update`
-2. Once the packages have been updated install PostgreSQL and the -contrib packackage
-   `sudo apt install postgresql postgresql-contrib`
-3. 
+`sudo apt update`
+
+Once the packages have been updated install PostgreSQL and the -contrib packackage
+
+`sudo apt install postgresql postgresql-contrib`
+
+The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
+
+1. Enter the command: sudo passwd postgres.
+2. You will get a prompt to enter your new password.
+3. Close and reopen your terminal.
+
+
+To run PostgreSQL with psql shell:
+
+1. Start your postgres service:
+
+`sudo service postgresql start`
+
+2. Connect to the postgres service and open the psql shell:
+
+`sudo -u postgres psql template1`
+
+Postgres psql requires an administrative user called 'postgres'.
+
+Once you have successfully entered the psql shell, you will see your command line change to look like this:
+
+`template1=#`
+
+`sudo -u postgres psql template1`
+`template1=# alter user postgres with encrypted password 'PASS';` [use your own password you will need it later for the configuration files.]
+`template1=# \q` 
+
+### Postgress Authentication Configuration
+
 
 Contents
 ========
