@@ -1,19 +1,19 @@
+# YAMZ Metadata Dictionary
+
 This is the README for the YAMZ metadictionary and includes instructions for
-deploying on a local machine for testing and on Heroku (heroku.com) for a
+deploying on a local machine for testing and on a Linux based environment for a
 scalable production version. These assume a Ubuntu GNU/Linux environment, but
 should be easily adaptable to any system; YAMZ is written in Python and uses
-only cross-platform packages.  This file is formatted by hand and does not
-contain markdown.
+only cross-platform packages.  
 
-  Authored by Chris Patton. Last updated 2 November 2017 (Dillon Arevalo).
+Authored by Chris Patton.
+Updated 2 November 2017 (Dillon Arevalo).
+Last updated 21 July 2021 (Chris Rauch)
+
 
 YAMZ is formerly known as SeaIce; for this reason, the database tables
 and API use names based on "SeaIce".
-
-  NOTE: My (Dillon Arevalo's) edits are not meant to be the final edit version.
-        This file will be cleaned up and my notes/comments (wrapped in
-        ================ sections) will be incorporated more readably.
-
+  
 
 Contents
 ========
