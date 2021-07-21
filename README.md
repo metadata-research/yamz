@@ -8,11 +8,24 @@ should be easily adaptable to any system; YAMZ is written in Python and uses
 only cross-platform packages.
 
 Authored by Chris Patton.
+
 Updated 2 November 2017 (Dillon Arevalo).
-Last updated 21 July 2021 @cr625.
+
+Last updated 21 July 2021 Christopher Rauch (cr625)
 
 YAMZ is formerly known as SeaIce; for this reason, the database tables
 and API use names based on "SeaIce".
+
+
+## Prerequisites
+
+### 
+PostgreSQL
+
+1. Update Ubuntu package list `sudo apt update`
+2. Once the packages have been updated install PostgreSQL and the -contrib packackage
+   `sudo apt install postgresql postgresql-contrib`
+3. 
 
 Contents
 ========
