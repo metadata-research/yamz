@@ -96,7 +96,6 @@ Change to the appropriate branch
 
 `git checkout uwsgi_updates`
 
-`cd uwsgi_updates`
 
 | Filename         | Description                                                         |
 | ---------------- | ------------------------------------------------------------------- |
@@ -173,13 +172,13 @@ The credentials minus the port is for when the proxy web server is set up and yo
 In each case, you should obtain a pair of values to put into another configuration file called '.seaice_auth'.  Create or edit this file,
 replacing google_client_id with the returned 'Client ID' and replacing google_client_secret with the returned 'Client secret'. The app secret is for the flask application and just be a unique and random string.
 
-You can use a sepaprate set of credentials for the production instance if you like, just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. The identifier API will not work with local host so to get things set up you might use the merged version as an intermediate setup.
+You can use a sepaprate set of credentials for the production instance if you like (as in the example below), just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. The identifier API will not work with local host so to get things set up you might use the merged version as an intermediate setup.
 
     [dev]
      google_client_id = google_client_id_placeholder
      google_client_secret = google_client_secret_placeholder
      app_secret = SECRET
-    [production] (if making a second set of credentials. Don't forget to pass the name of this section to ice.py when running the front end)
+    [production] 
      google_client_id = google_client_id_placeholder
      google_client_secret = google_client_secret_placeholder
      app_secret = SECRET
@@ -197,8 +196,7 @@ idea to install wheel with pip to ensure packages will install even if they are 
 `pip install -r requirements.txt`
 
 
-N2T persistent identifier resolver credentials
-==================================================
+##N2T persistent identifier resolver credentials
 
 Whenever a new term is created, YAMZ uses an API to n2t.net (maintained by
 the California Digital Library) in order to generate ("mint") a persistent
@@ -265,15 +263,14 @@ Create a `yamz.ini` file in the yamz directory. There is a template in the repos
     die-on-term = true
 
 
-
-Create a unit file `yamz.service` within the `/etc/systemd/system` directory. There is a template in the repository.
+Create a unit file `yamz.service` within the `/etc/systemd/system` directory. There is a template in the repository. _usr1_ is a standin for the username that is associated with the running instance of your webserver.
   
     [Unit]
     Description=uWSGI instance to serve yamz
     After=network.target
     
     [Service]
-    User=usr1 [The unix user associated with the proxy server. See below.]
+    User=usr1 
     Group=www-data
     WorkingDirectory=/home/usr1/yamz
     ExecStart=uwsgi --ini yamz.ini
@@ -307,8 +304,8 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
         location / {
             include uwsgi_params;
             uwsgi_pass unix:/home/cr625/yamz/yamz.sock;
+        }
     }
-}
 
 
 Save and close the file when you’re finished.
@@ -334,134 +331,23 @@ Restart nginx.
 
 `sudo systemctl restart nginx`
 
-# Mailgun
-YAMZ provides an email notification service for users who opt in. A utility
-called 'digest' collects for each user all notifications that haven't
-previously been emailed into a single digest. The code uses a heroku backend
-app called Mailgun for SMTP service. To set this up, simply type (you may be
-asked to verify your heroku account with a credit card, but note your card
-should not be charged for the most basic service level)
+## Secure the application
 
-  $ heroku addons:create mailgun
+You can do this anyway you like, but currently it is with Certbot and its Nginx plugin
 
-This sets a number of instance environment variables (see "heroku config").
-Of them the code uses "MAILGUN_SMTP_LOGIN" and "MAILGUN_SMTP_PASSWORD" to
-connect to Mailgun. Normally that happens when notifications are harvested
-by the scheduler (below), but to send out notifications manually, type:
+The Nginx plugin will take configure Nginx and reload the config when necessary. To use it
 
-  $ heroku run python digest.py
+`sudo certbot --nginx -d yamz.link -d www.yamz.link`
+
+Make sure there is a generic type a record and one for www for your domain.
+
+Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
+
+You no longer need the http entry exception in the firewall
+`sudo ufw delete allow 'Nginx HTTP'`
 
 
-2.3 Heroku-Scheduler
+## Scheduled tasks
+## Mail notification
 
-There are two periodic jobs that need to be scheduled in YAMZ: the term
-classifier and the email digest. To set this up, do:
-
-  $ heroku addons:create scheduler
-  $ heroku addons:open scheduler
-
-The second command will take you to the web interface for the scheduler. Add
-the following two jobs:
-
-  "python sea.py --classify-terms" . . . . . every 10 minutes
-  "python digest.py" . . . . . . . . . . . . once per day
-
-
-2.4 Starting the instance
-
-
-Now that your instance is all prepared, you can get it up and running with
-
-  $ git push heroku deploy_keys:master
-
-This pushes the secret keys found in the local deploy_keys branch so that
-they update the remote master branch on heroku.  (xxx see section 1.4 and
-??? for setting the secrets)
-# xxx app_secret is the (api key?) password from netrc, or "heroku auth:token"?
-
-
-2.5 Making changes
-
-
-Deploying changes to heroku is made easy with Git. Suppose we have changes
-to 'master' that we want to push to heroku.
-
-  $ git checkout deploy_keys
-  $ git merge master          # updates deploy_keys with latest master commits
-  $ git push heroku deploy_keys:master
-
-The first command checks out the already created local 'deploy_keys' branch.
-The second command merges the latest commits from the master branch into it,
-and the final command updates the heroku master branch, which also restarts
-the instance.  This keeps the secrets outside the master branch.
-
-When you next checkout the master branch, however, your keys and secrets in
-the .seaice* files will be overwritten, so you may want to save them in
-separate files that you can copy back in to the branch when you later deploy
-again; just make sure those separate files don't ever become part of any
-branch that will show up in the public github repo.
-
-
-2.6 Exporting the dictionary
-
-The SeaIce API includes queries for importing and exporting database tables
-in JSON formatted objects. This could be used to backup the entire database.
-Note however that imports must be done in the proper order in order to satisfy
-foreign key constraints. To back up the dictionary, do:
-
-  $ heroku config | grep DATABASE_URL
-  DATABASE_URL: <whatever>
-  $ export DATABASE_URL=<whatever>
-  $ ./sea.py --config=heroku --export=Terms >terms.json
-
-
-3. URL forwarding
-
-
-The current stable implementation of YAMZ is redirected from http://yamz.net.
-Setting this up takes a bit of doing. The following instructions are synthsized
-from http://lifesforlearning.com/heroku-with-godaddy/ for redirecting a domain
-name managed by GoDaddy to a Heroku app.
-
-Launch the "Domains" app on GoDaddy. Under "Forward Domain" for the appropriate
-domain (let's call it "fella.org"), add the following settings:
-
- Forward to . . . . . . . . . . . . . . . . . . . . http://www.fella.org
- Redirect type  . . . . . . . . . . . . . . . . . . 301 (Permanent)
- Forward settings . . . . . . . . . . . . . . . . . Forward only
- Update nameservers and DNS settings
-           to support this change . . . . . . . . . yes
-
-Next, under "Manage DNS", remove all entries except for 'A (Host)' and 'NS
-(Nameserver)', and add the following under 'CName (Alias)':
-
- Record type  . . . . . . . . . . . . . . . . . CNAME (Alias)
- Host . . . . . . . . . . . . . . . . . . . . . www
- Points to  . . . . . . . . . . . . . . . . . . http://fella.herokuapp.com
- TTL  . . . . . . . . . . . . . . . . . . . . . 1 Hour
-
-Next, change the IP address for entry '@' under 'A (Host)' to 50.63.202.31
-(the current IP address of yamz.net).
-
-That's it for DNS configuration. The last thing we need to do is modify the
-redirect URLs in the Google OAuth API. Edit the authorized javascript origins
-and redirect URI by replacing "fella.herokuapp.com" with "fella.org" and
-save.
-
-It can take a couple hours to a day for your DNS settings to propogate. Once
-it's done, you can navigate to YAMZ by typing "fella.org" into your browser.
-Try logging in to verify that the OAuth settings are also correct.
-
-
-4. Building the docs
-
-The seaice package (but not this README file) is autodoc'ed using
-python-sphinx. To install on Ubuntu:
-
-  $ sudo apt-get install python-sphinx
-
-The directory doc/sphinx includes a Makefile for exporting the docs to
-various media. For example,
-
-  make html
-  make latex
+## Documentation
