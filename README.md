@@ -96,9 +96,24 @@ Change to the appropriate branch
 
 `git checkout uwsgi_updates`
 
+`cd uwsgi_updates`
 
-create a configuration file called `.seaice` for the database and user account you set up like the following but with the credentials you choose. There is a template in the repository, but the production passwords should obviously not be made public. This file is used by the SeaIce DB connector to grant access to the database.
+| Filename         | Description                                                         |
+| ---------------- | ------------------------------------------------------------------- |
+| sea.py           | Console utility for scoring and classifying terms and other things. |
+| ice.py           | Web server front end.                                               |
+| digest.py        | Console email notification utility.                                 |
+| requirements.txt | Python package dependencies.                                        |
+|                  |                                                                     |
+| seaice/          | The SeaIce Python module.                                           |
+| html/            | HTML templates, static Javascript and CSS, including bootstrap.js.  |
+| doc/             | API documentation and tools for building it.                        |
+| .seaice/         | DB credentials template                                             |
+| .seaice_auth     | API keys, app key template file.                                    |
 
+
+
+Create/edit the configuration file called `.seaice` for the database and user account you set up like the following but with the credentials you choose. There is a template in the repository, but the production passwords should obviously not be made public. This file is used by the SeaIce DB connector to grant access to the database.
 
     [default]
       dbname = seaice
@@ -135,7 +150,6 @@ set up user standard read/write permissions on the table
 `postgres=# \q`
 
 
-
 ## OAuth Credentials and appkey
 
 YAMZ uses Google for third party authentication (OAuth-2.0) management of
@@ -156,140 +170,31 @@ configuration, supply these answers:
 
 The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server.
 
-In each case, you should obtain a pair of values to put into another
-configuration file called '.seaice_auth'.  Create or edit this file,
-replacing google_client_id with the returned 'Client ID' and replacing
-google_client_secret with the returned 'Client secret'.
+In each case, you should obtain a pair of values to put into another configuration file called '.seaice_auth'.  Create or edit this file,
+replacing google_client_id with the returned 'Client ID' and replacing google_client_secret with the returned 'Client secret'. The app secret is for the flask application and just be a unique and random string.
 
-================
+You can use a sepaprate set of credentials for the production instance if you like, just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. The identifier API will not work with local host so to get things set up you might use the merged version as an intermediate setup.
 
-The contents of this directory are as follows:
-
-  sea.py . . . . . . . . . . Console utility for scoring and classifying
-                             terms and other things.
-
-  ice.py . . . . . . . . . . Web server front end.
-
-  digest.py  . . . . . . . . Console email notification utility.
-
-  requirements.txt . . . . . Heroku package dependencies.
-
-  Procfile . . . . . . . . . Heroku configuration.
-
-  seaice/  . . . . . . . . . The SeaIce Python module.
-
-  html/  . . . . . . . . . . HTML templates, static Javascript and CSS,
-                             including bootstrap.js.
-
-  doc/ . . . . . . . . . . . API documentation and tools for building it.
-
-#  .seaice/.seaic_auth  . . . DB credentials, API keys, app key, etc. Note
-  .seaice/.seaice_auth  . . . DB credentials, API keys, app key, etc. Note
-                             that these files are just templates and don't
-                             contain actual keys.
-
-Before you get started, you need to set up a database and some software
-packages.  On Mac OS X, this may suffice:
-
-  $ pip install psycopg2 Flask configparser flask-login flask-OAuth \
-      python-dateutil
-
-On Ubuntu, grab the following:
-
-  python-flask . . . . . . . Simple HTTP server.
-
-  postgresql . . . . . . . . We're using PostgreSQL for database managment.
-
-  python-psycopg2  . . . . . Python API for PostgreSQL.
-
-  python-pip . . . . . . . . Package manager for additional Python
-                             programs.
-
-and then download a package from pip that handles configuration files nicely:
-
-  $ sudo pip install \
-      configparser flask-login flask-OAuth python-dateutil urlparse
+    [dev]
+     google_client_id = google_client_id_placeholder
+     google_client_secret = google_client_secret_placeholder
+     app_secret = SECRET
+    [production] (if making a second set of credentials. Don't forget to pass the name of this section to ice.py when running the front end)
+     google_client_id = google_client_id_placeholder
+     google_client_secret = google_client_secret_placeholder
+     app_secret = SECRET
 
 
+Assign the appropriate permissions to the file
 
+`chmod 600 .seaice_auth`
 
-=====================
-I also needed $ chmod 600 .seaice_auth
-=====================
-  $ ./sea.py --init-db --config=local_deploy/.seaice
+## Python environment
+Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. It is a good
+idea to install wheel with pip to ensure packages will install even if they are missing wheel archives.
 
-
-
-1.4 OAuth credentials and app key
-=================================
-
-YAMZ uses Google for third party authentication (OAuth-2.0) management of
-logins. Visit https://console.developers.google.com to set this service up
-for your instance. Navigate to something like API Manager -> Credentials
-and select whatever lets you create a new OAauth client ID.  For local
-configuration, supply these answers:
-
- Application type . . . . . . . . . . Web application
- Authorized javascript origins  . . . http://localhost:5000
- Authorized redirect URI  . . . . . . http://localhost:5000/authorized
-
-Create another set of credentials for your heroku instance, say yamz-dev:
-
- Application type . . . . . . . . . . Web application
- Authorized javascript origins  . . . http://yamz-dev.herokuapp.com
- Authorized redirect URI  . . . . . . http://yamz-dev.herokuapp.com/authorized
-
-In each case, you should obtain a pair of values to put into another
-configuration file called '.seaice_auth'.  Create or edit this file,
-replacing google_client_id with the returned 'Client ID' and replacing
-google_client_secret with the returned 'Client secret'.
-
-xxx Where does app_secret come in? does it come from the 'API key'?
-    Manoj: app_secret only needed for heroku deployment
-
-(See section 2.) XXX Are the instructions there complete, eg, redirect URL?)
-XXX ?document this in a 0.x section, since it applies to local and heroku?
-
-Next, create a configuration file called '.seaice_auth' with the appropriate
-client IDs and secret keys. For instance, you may have credentials for
-'http://localhost:5000', as well as a deployment on heroku:
-
-XXX the google_client_id identifies your client software/(app?) and is
-    paired with the redirect URL, eg, one for 'http://localhost:5000'
-    and another for http://yamz.net...
-xxx is this correct? each unique post-auth redirection target needs its
-    own unique google_client_id
-XXX to do: allow local dev to take place offline, ie, without contact
-     with google for Auth or with minters and binders and n2t
-xxx to do: let people create test terms that expire in two weeks
-
-  [dev]
-  google_client_id = 000-fella.apps.googleusercontent.com
-  google_client_secret = SECRET1
-  app_secret = SECRET2
-
-  [heroku]
-  google_client_id = 000-guy.apps.googleusercontent.com
-  google_client_secret = SECRET3
-  app_secret = SECRET4
-
-IMPORTANT NOTE: A template of this file is provided in the github
-repository. This file should remain secret and must not be published.
-We provide the template, since heroku requires a commited file.
-
-IMPORTANT WIP NOTE FOR CURRENT DEV VERSION: There are currently orcid
-oauth keys being asked for as well. the dev credentials above will also
-want to have an orcid_client_id and an orcid_client_secret obtainable
-from sandbox. Alternatively (and the recommended option): Comment out
-mentions to orcid oauth in ice.py
-lines to comment: 119-120
-                  281-331
-
-For convenience, this file will also keep the Flask app's secret key. For
-this key, enter a long, random string of characters. Finally, set the correct
-file permissions with:
-
-  $ chmod 600 .seaice_auth
+`pip install wheel`
+`pip install -r requirements.txt`
 
 
 1.5 N2T persistent identifier resolver credentials
