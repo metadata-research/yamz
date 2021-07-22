@@ -13,13 +13,11 @@ Updated 2 November 2017 (Dillon Arevalo).
 
 Last updated 21 July 2021 Christopher Rauch (cr625)
 
-YAMZ is formerly known as SeaIce; for this reason, the database tables
-and API use names based on "SeaIce".
-
+YAMZ was formerly known as SeaIce, so the database tables and API use names based on "SeaIce".
 
 ## Prerequisites
-PostgreSQL
-### Step 1 - Installing Components from Ubuntu Repositories
+* PostgreSQL
+## Installing Components from Ubuntu Repositories
 Update Ubuntu package list
 
 `sudo apt update`
@@ -28,9 +26,11 @@ Once the packages have been updated install PostgreSQL and the -contrib packacka
 
 `sudo apt install postgresql postgresql-contrib`
 
+## Postgress default users
 The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
 
-1. Enter the command: sudo passwd postgres.
+1. Enter the command:
+   `sudo passwd postgres`
 2. You will get a prompt to enter your new password.
 3. Close and reopen your terminal.
 
@@ -45,46 +45,122 @@ To run PostgreSQL with psql shell:
 
 `sudo -u postgres psql template1`
 
-Postgres psql requires an administrative user called 'postgres'.
-
 Once you have successfully entered the psql shell, you will see your command line change to look like this:
 
 `template1=#`
 
 `sudo -u postgres psql template1`
+
+Postgres psql requires an administrative user called 'postgres'.
+
 `template1=# alter user postgres with encrypted password 'PASS';` [use your own password you will need it later for the configuration files.]
+
 `template1=# \q` 
 
-### Postgress Authentication Configuration
+## Postgress authentication configuration
+Configure the authentication method for postgres and all other users connecting locally
+In `/etc/postgresql/12/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
+
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     md5
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            md5
 
 
-Contents
-========
+Next, we want to only be able to connect to the database from the local machine
 
- 0. Prerequisites
-     0.1 Create the deploy_keys branch
+In `/etc/postgresql/12/main/postgresql.conf`
 
- 1. Configuring a local instance
-     1.1 Postgres authentication
-     1.2 Create the database
-     1.3 Create a role for standard queries
-     1.4 OAuth credentials and app key
-     1.5 N2T persistent identifier resolver credentials
-     1.6 Test the instance
+uncomment the line
 
- 2. Deploying to Heroku
-     2.1 Heroku-Postgres
-     2.2 Mailgun
-     2.3 Heroku-Scheduler
-     2.4 Making changes
-     2.5 Exporting the dictionary
+`listen_addresses = 'localhost'`
 
- 3. URL forwarding
+Restart the postgres server
 
- 4. Building the docs
+`sudo service postgresql restart`
+
+Finally, log back in to postgres to create the database,
+
+`sudo -u postgres psql`
+
+`postgres=# create database seaice with owner postgres;`
+
+`postgres=# create user contributor with encrypted password 'PASS';`
+
+clone the repository in the home directory from `https://github.com/cr625/yamz.git`
+
+Change to the appropriate branch
+
+`cd yamz`
+
+`git checkout uwsgi_updates`
 
 
-0. Prerequisites
+create a configuration file called `.seaice` for the database and user account you set up like the following but with the credentials you choose. There is a template in the repository, but the production passwords should obviously not be made public. This file is used by the SeaIce DB connector to grant access to the database.
+
+
+    [default]
+      dbname = seaice
+      user = postgres
+      password = PASS
+    [contributor]
+      dbname = seaice
+      user = contributor
+      password = PASS
+    [reader]
+      dbname = seaice
+      user = reader
+      password = PASS
+
+
+Set permissions with
+
+`chmod 600 .seaice`
+
+Initialize the DB schema and tables
+
+`$ ./sea.py --init-db --config=.seaice`
+
+set up user standard read/write permissions on the table 
+
+`sudo -u postgres psql`
+
+`postgres=# \c seaice;`
+
+`postgres=# grant usage on schema SI, SI_Notify to contributor;`
+
+`postgres=# grant select, insert, update, delete on all tables in schema SI, SI_Notify to contributor;`
+
+`postgres=# \q`
+
+
+
+## OAuth Credentials and appkey
+
+YAMZ uses Google for third party authentication (OAuth-2.0) management of
+logins. Visit https://console.cloud.google.com to set this service up
+for your instance. Navigate to something like APIs and Services -> Credentials
+and select whatever lets you create a new OAauth client ID.  For local
+configuration, supply these answers:
+
+    Application type . . . . . . . . . . Web application
+
+    Authorized javascript origins  . . . http://localhost:5000
+                                         http://localhost
+                                         https://domain.name
+
+    Authorized redirect URI  . . . . . . http://localhost:5000/authorized
+                                         http://localhost/authorized
+                                         https://domain.name/authorized
+
+The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server.
+
+In each case, you should obtain a pair of values to put into another
+configuration file called '.seaice_auth'.  Create or edit this file,
+replacing google_client_id with the returned 'Client ID' and replacing
+google_client_secret with the returned 'Client secret'.
+
 ================
 
 The contents of this directory are as follows:
@@ -135,168 +211,13 @@ and then download a package from pip that handles configuration files nicely:
       configparser flask-login flask-OAuth python-dateutil urlparse
 
 
-0.1 Create the deploy_keys branch
-=================================
-
-The 'master' branch contains all the code to deploy locally or on heroku.
-To deploy to heroku, we first need to create a local branch (one time
-operation) called "deploy_keys" and then check it out,
-
-  $ git branch deploy_keys            # create branch
-  $ git checkout deploy_keys          # update working tree
-
-Then edit .seaice and .seaice_auth with actual API and app keys, and push
-to heroku with
-
-  $ git push heroku deploy_keys:master
-
-See section 2 for more on heroku.
-IMPORTANT: NEVER PUSH THIS BRANCH TO GITHUB.
 
 
-1. Configuring a local instance
-===============================
-
-To start, we'll set up a database in postgres. First, we need to do some
-configuration. Postgres requires an administrative user called 'postgres'.
-It may be a good idea to create a SeaIce user (called "role" in postgres
-jargon) with read/write access granted on the tables.  This work takes
-place in the top-level source directory.  On Linux (assuming postgres was
-installed using sudo), set postgres' password:
-
-  $ sudo -u postgres psql template1
-  template1=# alter user postgres with encrypted password 'PASS';
-  template1=# \q [quit]
-
-On a Mac, assuming homebrew installed the software in your home directory
-(ie, without sudo), you'll need to initialize postgres first, with
-something like these commands:
-
-  $ initdb /usr/local/var/postgres
-  $ cp /usr/local/Cellar/postgresql/9.6.3/homebrew.mxcl.postgresql.plist \
-       ~/Library/LaunchAgents/
-  $ launchctl load -w ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
-
-That makes postgres run automatically after a reboot. Create user 'postgres'
-and set the password to 'PASS':
-
-  $ createuser -d postgres
-  $ createuser -d SeaIce
-  $ psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
-
-
-1.1 Postgres authentication
-===========================
-
-Now configure the authentication method for postgres and all other users
-connecting locally. In /etc/postgresql/9.1/main/pg_hba.conf (on our Mac,
-/usr/local/var/postgres/pg_hba.conf), change "peer" in the line that will
-become (xxx shouldn't the md5 show below?)
-
-  local   all         postgres                          peer
-
-to "md5" for the administrative account and local unix domain socket
-connections. Next, we want to only be able to connect to the database from
-the local machine. In /etc/postgresql/9.1/main/postgresql.conf (on our Mac,
-/usr/local/var/postgres/postgresql.conf), uncomment the line
-
-  listen_addresses = 'localhost'
-
-After you've done this, you need to restart the postgres server. On Linux,
-
-  $ sudo service postgresql restart
-
-or on our homebrew-based Mac,
-
-  $ launchctl stop  ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
-  $ launchctl start ~/Library/LaunchAgents/homebrew.mxcl.postgresql.plist
-
-
-1.2 Create the database
-=======================
-
-Finally, log back in to postgres to create the database,
-
-  $ sudo -u postgres psql
-  postgres=# create database seaice with owner postgres;
-
-or on our Mac,
-
-  $ psql -U postgres -c 'create database seaice with owner postgres'
-
-(Using unique, completely random passwords is a good idea here.) Next,
-create a configuration file for the database and user account you set up.
-Create a file called '.seaice' like:
-
-  [default]
-  dbname = seaice
-  user = postgres
-  password = PASS
-xxx do this in a separate "local_deploy" dir?
-xxx user = reader?
-xxx separate section for [contributor] ? eg
-xxx [contributor]
-xxx dbname = seaice
-xxx user = contributor
-xxx password = PASSWORD3
-
-IMPORTANT NOTE: A template of this file is provided in the github
-repository. Your working version of this file should remain secret
-and must not be published.  Set the correct file permissions with:
-
-  $ chmod 600 .seaice
-
-This file is used by the SeaIce DB connector to grant access to the database.
-To initialize the DB schema and tables, type:
-
-#  $ ./sea.py --init-db --config=.seaice
 =====================
 I also needed $ chmod 600 .seaice_auth
 =====================
   $ ./sea.py --init-db --config=local_deploy/.seaice
 
-
-xxx move this section above preceding, since you may need those roles?
-1.3 Create a role for standard queries
-======================================
-
-At this point, it's suggested that you set up user standard read/write
-permissions on the table (no DROP, CREATE, GRANT, etc.) for most of the
-database queries. Note that this isn't applicable in Heroku; the postgres
-interface there doesn't allow you to control user views.
-
-  postgres=# create user contributor with encrypted password 'PASS';
-  postgres=# \c seaice;
-  postgres=# grant usage on schema SI, SI_Notify to contributor;
-  postgres=# grant select, insert, update, delete on all tables in
-             schema SI, SI_Notify to contributor;
-
-On our Mac, that would be
-
-  $ psql -c "create user contributor with
-      encrypted password 'PASS'" template1
-xxx shouldn't we do the next line too? grant usage on schema ...
-  $ psql -c "grant usage on schema SI, SI_Notify to contributor" seaice
-  $ psql -c "grant select, insert, update, delete on all tables
-      in schema SI, SI_Notify to contributor" seaice
-
-Add the configuration to '.seaice':
-
-  [contributor]
-  dbname = seaice
-  user = contributor
-  password = PASS
-
-XXXX move this last few lines after [dev] and [heroku] are set up
-xxx  and/or add --deploy=dev so that local instance can come up
-     without having to configure heroku section
-The web user interface creates a database connection pool with the
-same role. You can specify this on the command line:
-
-#  $ ./ice.py --role=contributor --config=.seaice
-  $ ./ice.py --role=contributor --config=local_deploy/.seaice
-
-'--role' defaults to 'default'.
 
 
 1.4 OAuth credentials and app key
