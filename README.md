@@ -248,12 +248,12 @@ terms. To classify a term, do:
   $ ./sea.py --config=.seaice --classify-terms
 
 
-2. Deploying to Production
+## Deploying to Production
 
-create a yamz.ini file in the yamz directory
+Create a `yamz.ini` file in the yamz directory. There is a template in the repository
 
     [uwsgi]
-    module = wsgi:app
+    module = ice:app
 
     master = true
     processes = 5
@@ -264,81 +264,77 @@ create a yamz.ini file in the yamz directory
     
     die-on-term = true
 
+
+
+Create a unit file `yamz.service` within the `/etc/systemd/system` directory. There is a template in the repository.
+  
+    [Unit]
+    Description=uWSGI instance to serve yamz
+    After=network.target
+    
+    [Service]
+    User=usr1 [The unix user associated with the proxy server. See below.]
+    Group=www-data
+    WorkingDirectory=/home/usr1/yamz
+    ExecStart=uwsgi --ini yamz.ini
+
+    [Install]
+    WantedBy=multi-user.target
+
+Start the service.
+
+`sudo systemctl start yamz`
+
+Enable it so it starts at boot.
+
+`sudo systemctl enable yamz`
+
+Check the status.
+
+`sudo systemctl status yamz`
+
+
+Yamz (ice) is now running, waiting for requests on the socket file
+
+# Configuring Nginx to Proxy Requests
+Create a new server block configuration file in Nginx's sites-available directory.
+
+For example ` sudo nano /etc/nginx/sites-available/yamz`
+
+    server {
+        listen 80;
+        server_name yamz.link www.yamz.link;
+        location / {
+            include uwsgi_params;
+            uwsgi_pass unix:/home/cr625/yamz/yamz.sock;
+    }
+}
+
+
+Save and close the file when you’re finished.
+
+To enable the Nginx server block configuration, link the file to the sites-enabled directory:
+
+`sudo ln -s /etc/nginx/sites-available/yamz /etc/nginx/sites-enabled`
+
+
+Remove the default site or it will block the proxying.
+
+`sudo unlink /etc/nginx/sites-enabled/default`
+
+test for syntax errors
+
+`sudo nginx -t`
+
 The YAMZ prototype is currently hosted at http://yamz.link
 
+make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
 
-Heroku is a cloud-computing service which allows users to host web-based
-software projects. Heroku is scalable for a price; however, we can
-still achieve quite a bit without spending money. We have access to a
-small Postgres database, can schedule jobs, use a variety of packages
-(all we need are available), and deploy easily with Git. Some limitations
-of Heroku are that it is impossible to set up DB roles and any local files
-cannot be assumed to persist after a reboot.
+Restart nginx.
 
-To begin, you need to setup an account with Heroku and download their software.
-(It's nothing major, just some tools for running commands, interacting with
-the database, etc.) Visit http://www.heroku.com.
+`sudo systemctl restart nginx`
 
-Heroku requires a couple additional configuration files and some small
-code changes. The additional files (already set up in the repo) are:
-
-  Procfile . . . . . . . specifies the commands that start web server, as
-                         well as periodic jobs.
-
-  requirements.txt . . . a list of packages required by our software that
-                         Heroku needs to make available. These are
-                         available via pip.
-
-I used the following tutorial: https://devcenter.heroku.com/articles/python
-to set these up.  Once you've set up your heroku account, you're ready to
-deploy.
-
-The recommended best practice for managing your heroku instance is to set up
-a local branch called 'deploy_keys' based on 'master'. In this branch, edit
-.seaice and .seaice_auth to contain actual passwords and API and app keys.
-NOTE: IT IS CRITICAL THAT YOU DON'T PUSH THIS BRANCH TO GITHUB.
-Publishing these secrets compromises the security of the entire app.
-
-Login via the heroku website and create a new app. Let's say we've named it
-"fella". Navigate to the directory containing the cloned repository. Create
-and checkout the branch 'deploy_keys'.
-
-  $ git checkout -b deploy_keys
-  $ heroku login
-  $ heroku git:remote -a fella
-
-This creates a "slug" containing our code and its dependencies. To get the web
-app running, we'll now need to set up a database and a couple of heroku backend
-services.
-
-
-2.1 Heroku-Postgres
-
-
-Heroku-Postgres is a scalable DB interface for heroku apps. (See the
-python section of devcenter.heroku.com/articles/heroku-postgresql .)
-To create a free addon,
-
-  $ heroku addons:create heroku-postgresql:hobby-dev
-
-The 'master' branch is set up to use either a local postgres database server
-or Heroku-Postgres.  The location of the DB in the "cloud" is specified
-when you create the heroku addon, and heroku automatically sets the
-instance's environment variable DATABASE_URL, which you can query with
-
-  $ heroku config
-
-Using 'sea' or 'ice' with '--config=heroku' will force SeaIce to use the
-web address found in this variable to connect to the DB. (Note this is the
-default.) Heroku-Postgres doesn't allow you to create roles, so '--role'
-will be ignored and the default will be used.  To create the database schema:
-
-  $ heroku run python sea.py --init-db
-
-
-2.2 Mailgun
-
-
+# Mailgun
 YAMZ provides an email notification service for users who opt in. A utility
 called 'digest' collects for each user all notifications that haven't
 previously been emailed into a single digest. The code uses a heroku backend
