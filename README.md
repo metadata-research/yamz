@@ -197,7 +197,7 @@ idea to install wheel with pip to ensure packages will install even if they are 
 `pip install -r requirements.txt`
 
 
-1.5 N2T persistent identifier resolver credentials
+N2T persistent identifier resolver credentials
 ==================================================
 
 Whenever a new term is created, YAMZ uses an API to n2t.net (maintained by
@@ -223,38 +223,50 @@ real production instance of YAMZ, when you're done testing term creation
 and update, should it be set to "enable" (the default is don't enable).
 
 
-1.6 Test the instance
-=====================
 
-First, create the database schema:
+##Testing
+Set the environment variable for flask
+export FLASK_APP=ice.py
 
-   $ ./sea --config=.seaice --init-db
-  ===========
-    needs to be $ ./sea.py --config=.seaice --init-db
-  ===========
+test whether uWSGI can serve the application
 
-Start the local server with:
+`uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
 
-  $ ./ice.py --config=.seaice --deploy=dev
-  ==========
-    Adding terms won't work without a minter password, even on local dev version.
-    Note also that minter password can't be set on local (doesn't do anything) and
-    will currently only read from the heroku chunk in .seaice_auth
-  ==========
+http://your_server_ip:5000
+
+    
+Adding terms won't work without a minter password, even on local dev version. Note also that minter password can't be set on local (doesn't do anything) and will currently only read from the heroku chunk in .seaice_auth
+  
 
 If all goes well, you should be able to navigate to your server by typing
 'http://localhost:5000' in the address bar. To verify that you've set up
 Google OAuth-2.0 correctly, try logging in. This will create an account.
+
 Try adding a new term, modifying and deleting a term, and commenting on
 terms. To classify a term, do:
 
   $ ./sea.py --config=.seaice --classify-terms
 
 
-2. Deploying to Heroku
-======================
+2. Deploying to Production
 
-The YAMZ prototype is currently hosted at http://yamz.herokuapp.com.
+create a yamz.ini file in the yamz directory
+
+    [uwsgi]
+    module = wsgi:app
+
+    master = true
+    processes = 5
+
+    socket = yamz.sock
+    chmod-socket = 660
+    vacuum = true
+    
+    die-on-term = true
+
+The YAMZ prototype is currently hosted at http://yamz.link
+
+
 Heroku is a cloud-computing service which allows users to host web-based
 software projects. Heroku is scalable for a price; however, we can
 still achieve quite a bit without spending money. We have access to a
@@ -301,7 +313,7 @@ services.
 
 
 2.1 Heroku-Postgres
-===================
+
 
 Heroku-Postgres is a scalable DB interface for heroku apps. (See the
 python section of devcenter.heroku.com/articles/heroku-postgresql .)
@@ -325,7 +337,7 @@ will be ignored and the default will be used.  To create the database schema:
 
 
 2.2 Mailgun
-===========
+
 
 YAMZ provides an email notification service for users who opt in. A utility
 called 'digest' collects for each user all notifications that haven't
@@ -345,7 +357,6 @@ by the scheduler (below), but to send out notifications manually, type:
 
 
 2.3 Heroku-Scheduler
-====================
 
 There are two periodic jobs that need to be scheduled in YAMZ: the term
 classifier and the email digest. To set this up, do:
@@ -361,7 +372,7 @@ the following two jobs:
 
 
 2.4 Starting the instance
-=========================
+
 
 Now that your instance is all prepared, you can get it up and running with
 
@@ -374,7 +385,7 @@ they update the remote master branch on heroku.  (xxx see section 1.4 and
 
 
 2.5 Making changes
-==================
+
 
 Deploying changes to heroku is made easy with Git. Suppose we have changes
 to 'master' that we want to push to heroku.
@@ -396,7 +407,6 @@ branch that will show up in the public github repo.
 
 
 2.6 Exporting the dictionary
-============================
 
 The SeaIce API includes queries for importing and exporting database tables
 in JSON formatted objects. This could be used to backup the entire database.
@@ -410,7 +420,7 @@ foreign key constraints. To back up the dictionary, do:
 
 
 3. URL forwarding
-=================
+
 
 The current stable implementation of YAMZ is redirected from http://yamz.net.
 Setting this up takes a bit of doing. The following instructions are synthsized
@@ -448,7 +458,6 @@ Try logging in to verify that the OAuth settings are also correct.
 
 
 4. Building the docs
-====================
 
 The seaice package (but not this README file) is autodoc'ed using
 python-sphinx. To install on Ubuntu:
