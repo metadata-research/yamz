@@ -103,7 +103,6 @@ Change to the appropriate branch
 | ice.py           | Web server front end.                                               |
 | digest.py        | Console email notification utility.                                 |
 | requirements.txt | Python package dependencies.                                        |
-|                  |                                                                     |
 | seaice/          | The SeaIce Python module.                                           |
 | html/            | HTML templates, static Javascript and CSS, including bootstrap.js.  |
 | doc/             | API documentation and tools for building it.                        |
@@ -170,7 +169,9 @@ configuration, supply these answers:
 The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server.
 
 In each case, you should obtain a pair of values to put into another configuration file called '.seaice_auth'.  Create or edit this file,
-replacing google_client_id with the returned 'Client ID' and replacing google_client_secret with the returned 'Client secret'. The app secret is for the flask application and just be a unique and random string.
+replacing google_client_id with the returned 'Client ID' and replacing google_client_secret with the returned 'Client secret'. The app secret is for the flask application and just be a unique and random string. Here's one way to do it
+
+ `python -c 'import os; print(os.urandom(16))'`
 
 You can use a sepaprate set of credentials for the production instance if you like (as in the example below), just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. The identifier API will not work with local host so to get things set up you might use the merged version as an intermediate setup.
 
@@ -196,7 +197,7 @@ idea to install wheel with pip to ensure packages will install even if they are 
 `pip install -r requirements.txt`
 
 
-##N2T persistent identifier resolver credentials
+## N2T persistent identifier resolver credentials
 
 Whenever a new term is created, YAMZ uses an API to n2t.net (maintained by
 the California Digital Library) in order to generate ("mint") a persistent
@@ -222,13 +223,15 @@ and update, should it be set to "enable" (the default is don't enable).
 
 
 
-##Testing
+## Testing
 Set the environment variable for flask
 export FLASK_APP=ice.py
 
 test whether uWSGI can serve the application
 
 `uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
+
+localhost:5000
 
 http://your_server_ip:5000
 
@@ -293,7 +296,7 @@ Check the status.
 
 Yamz (ice) is now running, waiting for requests on the socket file
 
-# Configuring Nginx to Proxy Requests
+## Configuring Nginx to Proxy Requests
 Create a new server block configuration file in Nginx's sites-available directory.
 
 For example ` sudo nano /etc/nginx/sites-available/yamz`
