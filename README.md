@@ -224,9 +224,6 @@ and update, should it be set to "enable" (the default is don't enable).
 
 
 ## Testing
-Set the environment variable for flask
-export FLASK_APP=ice.py
-
 test whether uWSGI can serve the application
 
 `uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
