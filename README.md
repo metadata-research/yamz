@@ -86,16 +86,23 @@ Finally, log back in to postgres to create the database,
 
 `postgres=# create database seaice with owner postgres;`
 
-`postgres=# create user contributor with encrypted password 'PASS';`
+`postgres-# \q`
 
-clone the repository in the home directory from `https://github.com/cr625/yamz.git`
+clone the repository in the home directory
 
-Change to the appropriate branch
+`git clone https://github.com/cr625/yamz.git`
 
 `cd yamz`
 
+Check that you are in the uwsgi_updates branch
+
+`git branch`
+
+if not
+
 `git checkout uwsgi_updates`
 
+The contents of the directory are:
 
 | Filename         | Description                                                         |
 | ---------------- | ------------------------------------------------------------------- |
@@ -131,6 +138,15 @@ Set permissions with
 
 `chmod 600 .seaice`
 
+## Python environment
+Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. It is a good
+idea to install wheel with pip to ensure packages will install even if they are missing wheel archives.
+
+`pip install wheel`
+`pip install -r requirements.txt`
+
+If you have trouble with psycopg2, sudo pip install psycopg2-binary
+
 Initialize the DB schema and tables
 
 `$ ./sea.py --init-db --config=.seaice`
@@ -141,11 +157,13 @@ set up user standard read/write permissions on the table
 
 `postgres=# \c seaice;`
 
-`postgres=# grant usage on schema SI, SI_Notify to contributor;`
+`seaice=# create user contributor with encrypted password 'PASS';`
 
-`postgres=# grant select, insert, update, delete on all tables in schema SI, SI_Notify to contributor;`
+`seaice=# grant usage on schema SI, SI_Notify to contributor;`
 
-`postgres=# \q`
+`seaice=# grant select, insert, update, delete on all tables in schema SI, SI_Notify to contributor;`
+
+`seaice=# \q`
 
 
 ## OAuth Credentials and appkey
@@ -189,14 +207,6 @@ Assign the appropriate permissions to the file
 
 `chmod 600 .seaice_auth`
 
-## Python environment
-Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. It is a good
-idea to install wheel with pip to ensure packages will install even if they are missing wheel archives.
-
-`pip install wheel`
-`pip install -r requirements.txt`
-
-
 ## N2T persistent identifier resolver credentials
 
 Whenever a new term is created, YAMZ uses an API to n2t.net (maintained by
@@ -206,7 +216,7 @@ facing URLs that persistently identify YAMZ terms.  It is necessary to
 provide a minter password for API access to this web service.  To do so
 include a line in ".seaice_auth" for every view:
 
-   minter_password = PASS
+   minter_password = PASS (not the real password)
 
 A password found in the MINTER_PASSWORD environment variable, however, will
 be preferred over the file setting.  This password is used again in the
