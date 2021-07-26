@@ -49,8 +49,6 @@ Once you have successfully entered the psql shell, you will see your command lin
 
 `template1=#`
 
-`sudo -u postgres psql template1`
-
 Postgres psql requires an administrative user called 'postgres'.
 
 `template1=# alter user postgres with encrypted password 'PASS';` [use your own password you will need it later for the configuration files.]
@@ -142,8 +140,10 @@ Set permissions with
 Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. It is a good
 idea to install wheel with pip to ensure packages will install even if they are missing wheel archives.
 
-`pip install wheel`
 `pip install -r requirements.txt`
+
+`pip install wheel`
+`pip install -r requirements.txt` note: still working on final requirments list. If something is missing you will be prompted.
 
 If you have trouble with psycopg2, sudo pip install psycopg2-binary
 
