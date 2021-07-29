@@ -170,7 +170,6 @@ set up user standard read/write permissions on the table
 
 `seaice=# \q`
 
-
 ## OAuth Credentials and appkey
 
 YAMZ uses Google for third party authentication (OAuth-2.0) management of
@@ -236,21 +235,14 @@ should just be for identifiers meant to be thrown away.  Only on the
 real production instance of YAMZ, when you're done testing term creation
 and update, should it be set to "enable" (the default is don't enable).
 
-
-
 ## Testing
-test whether uWSGI can serve the application
 
-`uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
+`export FLASK_APP=ice.py`
 
-localhost:5000
+`flask run`
 
-http://your_server_ip:5000
-
-    
 Adding terms won't work without a minter password, even on local dev version. Note also that minter password can't be set on local (doesn't do anything) and will currently only read from the heroku chunk in .seaice_auth
   
-
 If all goes well, you should be able to navigate to your server by typing
 'http://localhost:5000' in the address bar. To verify that you've set up
 Google OAuth-2.0 correctly, try logging in. This will create an account.
@@ -260,6 +252,12 @@ terms. To classify a term, do:
 
   $ ./sea.py --config=.seaice --classify-terms
 
+If you want test whether uWSGI can serve the application
+
+`uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
+
+
+http://your_server_ip:5000
 
 ## Deploying to Production
 
@@ -276,7 +274,6 @@ Create a `yamz.ini` file in the yamz directory. There is a template in the repos
     vacuum = true
     
     die-on-term = true
-
 
 Create a unit file `yamz.service` within the `/etc/systemd/system` directory. There is a template in the repository. _usr1_ is a standin for the username that is associated with the running instance of your webserver.
   

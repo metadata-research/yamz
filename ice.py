@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#! /usr/bin/env python
 #
 # ice - web frontend for SeaIce, based on the Python-Flask framework.
 #
@@ -35,6 +35,7 @@ import json
 
 import requests
 import psycopg2 as pgdb
+
 from flask import Markup
 from flask import render_template
 from flask import url_for, redirect, flash
