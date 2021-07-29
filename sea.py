@@ -1,5 +1,5 @@
-#! /usr/bin/python3.8
-#
+#! /usr/bin/env python
+# 
 # sea - console frontend to the SeaIce metadictionary
 #
 # Copyright (c) 2013, Christopher Patton, all rights reserved.
@@ -63,7 +63,7 @@ parser.add_option("--config", dest="config_file", metavar="FILE",
                   help="User credentials for local PostgreSQL database (defaults to '$HOME/.seaice'). " +
                   "If 'heroku' is given, then a connection to a foreign host specified by " +
                   "DATABASE_URL is established.",
-                  default='heroku')
+                  default='.seaice')
 
 parser.add_option("--truncate", dest="truncate_table",
                   help="Delete all rows in dictionary table; if used with --import, this option should precede it.")
