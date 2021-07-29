@@ -16,8 +16,11 @@ Last updated 21 July 2021 Christopher Rauch (cr625)
 YAMZ was formerly known as SeaIce, so the database tables and API use names based on "SeaIce".
 
 ## Prerequisites
+
 * PostgreSQL
+
 ## Installing Components from Ubuntu Repositories
+
 Update Ubuntu package list
 
 `sudo apt update`
@@ -27,6 +30,7 @@ Once the packages have been updated install PostgreSQL and the -contrib packacka
 `sudo apt install postgresql postgresql-contrib`
 
 ## Postgress default users
+
 The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
 
 1. Enter the command:
@@ -56,6 +60,7 @@ Postgres psql requires an administrative user called 'postgres'.
 `template1=# \q` 
 
 ## Postgress authentication configuration
+
 Configure the authentication method for postgres and all other users connecting locally
 In `/etc/postgresql/12/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
 
@@ -64,7 +69,6 @@ In `/etc/postgresql/12/main/pg_hba.conf` change "peer" to md5 for the administra
     local   all             all                                     md5
     # IPv4 local connections:
     host    all             all             127.0.0.1/32            md5
-
 
 Next, we want to only be able to connect to the database from the local machine
 
@@ -111,6 +115,8 @@ The contents of the directory are:
 | seaice/          | The SeaIce Python module.                                           |
 | html/            | HTML templates, static Javascript and CSS, including bootstrap.js.  |
 | doc/             | API documentation and tools for building it.                        |
+| data/            | Data exported from live site.
+|
 | .seaice/         | DB credentials template                                             |
 | .seaice_auth     | API keys, app key template file.                                    |
 
