@@ -143,19 +143,18 @@ Set permissions with
 `chmod 600 .seaice`
 
 ## Python environment
-Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. It is a good
-idea to install wheel with pip to ensure packages will install even if they are missing wheel archives.
+
+Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. 
 
 `pip install -r requirements.txt`
 
-`pip install wheel`
 `pip install -r requirements.txt` note: still working on final requirments list. If something is missing you will be prompted.
 
-If you have trouble with psycopg2, sudo pip install psycopg2-binary
+If you have trouble with psycopg2, pip install psycopg2-binary
 
 Initialize the DB schema and tables
 
-`$ ./sea.py --init-db --config=.seaice`
+`$ ./sea.py --init-db`
 
 set up user standard read/write permissions on the table 
 
