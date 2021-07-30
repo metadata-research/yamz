@@ -115,12 +115,9 @@ The contents of the directory are:
 | seaice/          | The SeaIce Python module.                                           |
 | html/            | HTML templates, static Javascript and CSS, including bootstrap.js.  |
 | doc/             | API documentation and tools for building it.                        |
-| data/            | Data exported from live site.
-|
+| data/            | Data exported from live site.                                       |
 | .seaice/         | DB credentials template                                             |
 | .seaice_auth     | API keys, app key template file.                                    |
-
-
 
 Create/edit the configuration file called `.seaice` for the database and user account you set up like the following but with the credentials you choose. There is a template in the repository, but the production passwords should obviously not be made public. This file is used by the SeaIce DB connector to grant access to the database.
 
@@ -137,7 +134,6 @@ Create/edit the configuration file called `.seaice` for the database and user ac
       user = reader
       password = PASS
 
-
 Set permissions with
 
 `chmod 600 .seaice`
@@ -148,15 +144,11 @@ Install the packagages listed in `requirements.txt`. You can use a Python virtua
 
 `pip install -r requirements.txt`
 
-`pip install -r requirements.txt` note: still working on final requirments list. If something is missing you will be prompted.
-
-If you have trouble with psycopg2, pip install psycopg2-binary
-
 Initialize the DB schema and tables
 
 `$ ./sea.py --init-db`
 
-set up user standard read/write permissions on the table 
+set up user standard read/write permissions on the table.
 
 `sudo -u postgres psql`
 
@@ -206,7 +198,6 @@ You can use a sepaprate set of credentials for the production instance if you li
      google_client_secret = google_client_secret_placeholder
      app_secret = SECRET
 
-
 Assign the appropriate permissions to the file
 
 `chmod 600 .seaice_auth`
@@ -222,7 +213,7 @@ include a line in ".seaice_auth" for every view:
 
    minter_password = PASS (not the real password)
 
-A password found in the MINTER_PASSWORD environment variable, however, will
+A password found in the MINTER_PASSWORD environment variable will
 be preferred over the file setting.  This password is used again in the
 API call to store metadata in a YAMZ binder on n2t.net.  The main bit of
 metadata stored is the redirection target URL that supports resolution of
@@ -237,7 +228,13 @@ and update, should it be set to "enable" (the default is don't enable).
 
 ## Testing
 
+./ice.py
+
+or
+
 `export FLASK_APP=ice.py`
+
+`export FLASK_ENV=development`
 
 `flask run`
 
@@ -255,7 +252,6 @@ terms. To classify a term, do:
 If you want test whether uWSGI can serve the application
 
 `uwsgi --socket 0.0.0.0:5000 --protocol=http -w ice:app`
-
 
 http://your_server_ip:5000
 
@@ -302,10 +298,10 @@ Check the status.
 
 `sudo systemctl status yamz`
 
-
 Yamz (ice) is now running, waiting for requests on the socket file
 
 ## Configuring Nginx to Proxy Requests
+
 Create a new server block configuration file in Nginx's sites-available directory.
 
 For example ` sudo nano /etc/nginx/sites-available/yamz`
