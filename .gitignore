@@ -1,6 +1,5 @@
 *.pyc
 *.swp
-venv
 *~
 *.toc
 *.log
@@ -8,3 +7,6 @@ venv
 *.out
 _build
 .seaice_auth
+env
+venv
+settings.json
