@@ -363,7 +363,7 @@ You no longer need the http entry exception in the firewall
 
 ## Exporting the dictionary
 
-The SeaIce API includes queries for importing and exporAsting database tables
+The SeaIce API includes queries for importing and exporting database tables
 in JSON formatted objects. This could be used to backup the entire database.
 Note however that imports must be done in the proper order in order to satisfy
 foreign key constraints.
@@ -374,6 +374,7 @@ to do it again, First install the heroku cli https://devcenter.heroku.com/articl
 
 `heroku config -a yamz | grep DATABASE_URL`
   
+It is not necessary to enter a heroku shell to do this. If you have yamz set up in your test enviromenent, just
     
 `export DATABASE_URL=<result>`
  
@@ -391,11 +392,11 @@ To reset the database, drop the table
 
 and import the json data in the following order:
 
-`./sea.py --import=Users <users.json`
+`./sea.py --import=Users <json/users.json`
 
-`./sea.py --import=Terms <terms.json`
+`./sea.py --import=Terms <json/terms.json`
 
-`./sea.py --import=Comments <comments.json`
+`./sea.py --import=Comments <json/comments.json`
 
-`./sea.py --import=Tracking <tracking.json`
+`./sea.py --import=Tracking <json/tracking.json`
 
