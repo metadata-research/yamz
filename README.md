@@ -359,3 +359,22 @@ You no longer need the http entry exception in the firewall
 ## Mail notification
 
 ## Documentation
+
+## Exporting the dictionary
+
+The SeaIce API includes queries for importing and exporting database tables
+in JSON formatted objects. This could be used to backup the entire database.
+Note however that imports must be done in the proper order in order to satisfy
+foreign key constraints.
+
+For the heroku config, install the heroku cli https://devcenter.heroku.com/articles/heroku-cli.
+
+ To back up the dictionary, do:
+
+  `heroku config | grep DATABASE_URL`
+  
+  DATABASE_URL: <whatever>
+  
+  `export DATABASE_URL=<whatever>`
+  `./sea.py --config=heroku --export=Users >Users.json`
+  `./sea.py --config=heroku --export=Users >Users.json`
