@@ -92,34 +92,42 @@ js_copyToClipboard = """
 """
 
 # Background color to display with term class.
-colorOf = {'vernacular': '#FFFF66',
-           'canonical': '#3CEB10',
-           'deprecated': '#E8E8E8'}
+colorOf = {"vernacular": "#FFFF66", "canonical": "#3CEB10", "deprecated": "#E8E8E8"}
 
 # Name of months. See :func:`seaice.pretty.printPrettyDate`.
-monthOf = ['January', 'February', 'March',
-           'April', 'May', 'June',
-           'July', 'August', 'September',
-           'October', 'November', 'December']
+monthOf = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+]
 
 # A nice color: A5C6D6
-tag_style = '''
+tag_style = """
 style="font-size: 95%;
         font-family: 'Sans-Serif', Arial, serif;
         color:white; background-color:#0082C3;
         border-radius:4px; text-decoration:none"
-'''
+"""
 
-gtag_style = '''
+gtag_style = """
 style="font-size: 85%;
         font-family: 'Sans-Serif', Arial, serif;
         color:blue; background-color:#cceeff;
         border-radius:4px; text-decoration:none"
-'''
+"""
 
 ref_string = '<a href=/term={0} title="{2}">{1}</a>'
-tag_string = '<a href=/tag/{0} ' + tag_style + '>&nbsp;<b>#</b>&nbsp;{1}&nbsp;</a>'
-gtag_string = '<a href=/tag/{0} title="{2}" ' + gtag_style + '>&nbsp;{1}&nbsp;</a>'
+tag_string = "<a href=/tag/{0} " + tag_style + ">&nbsp;<b>#</b>&nbsp;{1}&nbsp;</a>"
+gtag_string = '<a href=/tag/{0} title="{2}" ' + gtag_style + ">&nbsp;{1}&nbsp;</a>"
 term_tag_string = '<a href=/term={0} title="{1}">{2}</a>'
 
 # Regular expressions for string matches.
@@ -144,13 +152,13 @@ permalink_regex = re.compile("^http://(.*)$")
 # string is prepended to a user-defined tag during storage normalization
 # and stripped out during display normalization.
 
-ixuniq = 'xq'
+ixuniq = "xq"
 ixqlen = len(ixuniq)
-tagstart = '#{g: '      # note: final space is important
+tagstart = "#{g: "  # note: final space is important
 
 
 def token_ref_norm(m):
-    """ Promote "&ref" to "#{t: ref} and promote "#ref" to "#{g: ref}".
+    """Promote "&ref" to "#{t: ref} and promote "#ref" to "#{g: ref}".
 
     :param string: The input string.
     :returns: Modified plain text string.
@@ -161,13 +169,14 @@ def token_ref_norm(m):
     #     return '#{g: ' + token + '}'
     sigil = m.group(1)
     token = m.group(2)
-    if sigil == '#':
-        return tagstart + ixuniq + token + '}'
+    if sigil == "#":
+        return tagstart + ixuniq + token + "}"
         # return '#{g: ' + ixuniq + token + '}'
-    elif sigil == '&':
-        return '#{t: ' + token + '}'
+    elif sigil == "&":
+        return "#{t: " + token + "}"
     else:
-        return sigil + token    # return untouched if doubled
+        return sigil + token  # return untouched if doubled
+
 
 #  def _xterm_tag_norm(db_con, m):
 #  """ Promote old style "#{hNNNN : relate[ds] to}" into new style
@@ -184,7 +193,7 @@ def token_ref_norm(m):
 
 
 def refs_norm(db_con, string, force=False):
-    """ Resolve references in text entries before storing in DB.
+    """Resolve references in text entries before storing in DB.
     First promote each simple "#ref" into "#{g: ixuniq+ref | concept_id}
     and each simple "&ref" into #{t: ref | concept_id}
 
@@ -202,7 +211,7 @@ def refs_norm(db_con, string, force=False):
 
 # looks a lot like printRefAsHTML, but is about how we _store_ things
 def ref_norm(db_con, m, force=False):
-    """ Input a regular expression match and output a normalized reference.
+    """Input a regular expression match and output a normalized reference.
 
     A DB connector is required to resolve the tag string by ID.
     A reference has the form #{reftype: humstring [ | IDstring ]}
@@ -225,21 +234,21 @@ def ref_norm(db_con, m, force=False):
     :type m: boolean
     """
 
-    (rp) = m.groups()   # rp = ref parts, the part between #{ and }
+    (rp) = m.groups()  # rp = ref parts, the part between #{ and }
 
     # we want subexpressions 1, 2, and 4
     reftype, humstring, IDstring = rp[1], rp[2], rp[4]
     if not reftype:
-        reftype = 't'       # apply default reftype
+        reftype = "t"  # apply default reftype
     if not humstring and not IDstring:  # when both are empty
-        return '#{}'        # this is all we do for now
+        return "#{}"  # this is all we do for now
     # If we get here, one of them is non-empty.
-    if reftype == 'k':      # an external link (URL)
+    if reftype == "k":  # an external link (URL)
         if humstring and not IDstring:  # assume the caller
-            IDstring = humstring        # mixed up the order
+            IDstring = humstring  # mixed up the order
         if IDstring and not humstring:  # if no humanstring
-            humstring = IDstring    # use link text instead
-        return '#{k: %s | %s }' % (humstring, IDstring)
+            humstring = IDstring  # use link text instead
+        return "#{k: %s | %s }" % (humstring, IDstring)
 
     # If we get here, reftype is not k, and humstring is expected to
     # reference a term_string in the dictionary.  If IDstring is empty or
@@ -248,30 +257,32 @@ def ref_norm(db_con, m, force=False):
     # correct it).
     #
     if IDstring and not force:
-        return '#{%s: %s | %s}' % (reftype, humstring, IDstring)
-    if humstring.startswith('---'):     # reserved magic string
-        return '#{%s: %s}' % (reftype, humstring)
+        return "#{%s: %s | %s}" % (reftype, humstring, IDstring)
+    if humstring.startswith("---"):  # reserved magic string
+        return "#{%s: %s}" % (reftype, humstring)
 
     # If we get here, we're going to do the lookup.
-    prefix = tagstart if reftype == 'g' else ''
+    prefix = tagstart if reftype == "g" else ""
     n, term = db_con.getTermByInitialTermString(prefix + humstring)
     if n == 1:
-        term_string, concept_id = term['term_string'], term['concept_id']
-        if reftype == 'g':
+        term_string, concept_id = term["term_string"], term["concept_id"]
+        if reftype == "g":
             return term_string  # if found, it's already in returnable form
     if n == 0:
-        term_string, concept_id = (humstring + '(undefined)'), '-'
+        term_string, concept_id = (humstring + "(undefined)"), "-"
     elif n == 2:
-        term_string, concept_id = (humstring + '(ambiguous)'), '-'
+        term_string, concept_id = (humstring + "(ambiguous)"), "-"
     # print >>sys.stderr, "n=%s, humstring=%s, term_string" % (n, humstring, term_string)
-    return '#{%s: %s | %s}' % (reftype, term_string, concept_id)
+    return "#{%s: %s | %s}" % (reftype, term_string, concept_id)
     # this space ^ is relied on by a (fixed width) lookbehind regex
 
     # Processing tags in text areas. #
 
 
-def innerAnchor(db_con, term_string, concept_id, definition, tagAsTerm, contentAsTerm=False):
-    """ Input ...
+def innerAnchor(
+    db_con, term_string, concept_id, definition, tagAsTerm, contentAsTerm=False
+):
+    """Input ...
 
     A DB connector is required to resolve the concept_id to a definition.
     A term_string is either a literal string or of the form
@@ -289,31 +300,33 @@ def innerAnchor(db_con, term_string, concept_id, definition, tagAsTerm, contentA
     if definition is not None:
         attribs = 'href="/term=%s" title="%s"' % (
             concept_id,
-            processRefsAsText(definition,
-                              tagAsTerm=True).replace('"', '&quot;'))
+            processRefsAsText(definition, tagAsTerm=True).replace('"', "&quot;"),
+        )
     else:
         attribs = 'href="#" title="Click to get a reference link to this term."'
         attribs += ' id="copyLink"'
 
-    if not term_string.startswith('#{g:'):
+    if not term_string.startswith("#{g:"):
         if definition is None:
             attribs += ''' onclick="CopyToClipboard('#{t: %s | %s}');"''' % (
-                term_string, concept_id)
+                term_string,
+                concept_id,
+            )
         if contentAsTerm:
-            return attribs + '>Term:'
+            return attribs + ">Term:"
         else:
-            return attribs + '>' + term_string
+            return attribs + ">" + term_string
 
     # yyy compile these regex's? -- maybe not since execution is rare
-    t = re.sub('^#{g:\s*(%s)?' % ixuniq, '', term_string)
-    t = '#' + re.sub('\s*\|.*', '', t)
+    t = re.sub("^#{g:\s*(%s)?" % ixuniq, "", term_string)
+    t = "#" + re.sub("\s*\|.*", "", t)
     if definition is None:
         attribs += ''' onclick="CopyToClipboard('%s');"''' % term_string
-    return attribs + '>' + t
+    return attribs + ">" + t
 
 
 def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
-    """ Input reftype, human readable string, machine readable string,
+    """Input reftype, human readable string, machine readable string,
             and output the reference as HTML.
 
     A DB connector is required to resolve the tag string by ID.
@@ -332,48 +345,48 @@ def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
     """
 
     if not reftype:
-        reftype = 't'       # apply default reftype
-    if not humstring and not IDstring:      # when empty
-        return '#{}'        # this is all we do for now
-    if reftype == 'k':      # an external link (URL)
+        reftype = "t"  # apply default reftype
+    if not humstring and not IDstring:  # when empty
+        return "#{}"  # this is all we do for now
+    if reftype == "k":  # an external link (URL)
         if humstring and not IDstring:  # assume the caller
-            IDstring = humstring        # mixed up the order
-        if not humstring:       # if no humanstring
-            humstring = IDstring    # use link text instead
-        if not IDstring.startswith('http:'):
-            IDstring = 'http://' + IDstring
+            IDstring = humstring  # mixed up the order
+        if not humstring:  # if no humanstring
+            humstring = IDstring  # use link text instead
+        if not IDstring.startswith("http:"):
+            IDstring = "http://" + IDstring
         return '<a href="%s">%s</a>' % (IDstring, humstring)
 
-    if humstring.startswith('---'):  # EndRefs
-        if humstring.startswith('---e'):
-            return '<br>Elements: '
-        if humstring.startswith('---v'):
-            return '<br>Values: '
-        if humstring.startswith('---t'):
-            return '<br> '
+    if humstring.startswith("---"):  # EndRefs
+        if humstring.startswith("---e"):
+            return "<br>Elements: "
+        if humstring.startswith("---v"):
+            return "<br>Values: "
+        if humstring.startswith("---t"):
+            return "<br> "
 
     # If we get here, reftype is not k, and IDstring (concept_id)
     # is expected to reference a term in the dictionary.
     #
     term = db_con.getTermByConceptId(IDstring)
-    term_def = "Def: " + (term['definition'] if term else "(undefined)")
+    term_def = "Def: " + (term["definition"] if term else "(undefined)")
     # yyy can we improve poor search for '#tag' query?
-    if reftype == 'g':
+    if reftype == "g":
         # yyy in theory don't need to check before removing uniquerifier string
         #     as all normalized tag ids will start with it
-        if humstring.startswith(ixuniq):    # stored index "uniquerifier" string
+        if humstring.startswith(ixuniq):  # stored index "uniquerifier" string
             humstring = humstring[ixqlen:]  # but remove "uniquerifier" on display
         if not tagAsTerm:
-            return gtag_string.format(
-                string.lower(humstring), humstring, term_def)
-        else:               # if tagAsTerm, format tag like a term
-            humstring = '#' + humstring  # pointing to definition, not search
+            humstring_lower = humstring.lower()
+            return gtag_string.format(humstring_lower, humstring, term_def)
+        else:  # if tagAsTerm, format tag like a term
+            humstring = "#" + humstring  # pointing to definition, not search
     return ref_string.format(IDstring, humstring, term_def)
 
 
 # xxx not using tagAsTerm -- remove?
 def printRefAsText(m, tagAsTerm):
-    """ Input a regular expression match and return the reference as Text.
+    """Input a regular expression match and return the reference as Text.
 
     A reference has the form #{ reftype: humstring [ | IDstring ] }
     - reftype is one of
@@ -389,45 +402,45 @@ def printRefAsText(m, tagAsTerm):
     :type m: re.MatchObject
     """
 
-    (rp) = m.groups()   # rp = ref parts, the part between #{ and }
+    (rp) = m.groups()  # rp = ref parts, the part between #{ and }
 
     # we want subexpressions 1, 2, and 4
     reftype, humstring, IDstring = rp[1], rp[2], rp[4]
     if not reftype:
-        reftype = 't'       # apply default reftype
-    if not humstring and not IDstring:      # when empty
-        return ''
-    if reftype == 'k':      # an external link (URL)
+        reftype = "t"  # apply default reftype
+    if not humstring and not IDstring:  # when empty
+        return ""
+    if reftype == "k":  # an external link (URL)
         if humstring and not IDstring:  # assume the caller
-            IDstring = humstring        # mixed up the order
-        if not humstring:       # if no humanstring
-            humstring = IDstring    # use link text instead
-        if not IDstring.startswith('http:'):
-            IDstring = 'http://' + IDstring
-        return '%s (%s)' % (humstring, IDstring)
+            IDstring = humstring  # mixed up the order
+        if not humstring:  # if no humanstring
+            humstring = IDstring  # use link text instead
+        if not IDstring.startswith("http:"):
+            IDstring = "http://" + IDstring
+        return "%s (%s)" % (humstring, IDstring)
 
-    if humstring.startswith('---'):  # EndRefs
-        if humstring.startswith('---e'):
-            return '\nElements: '
-        if humstring.startswith('---v'):
-            return '\nValues: '
-        if humstring.startswith('---t'):
-            return '\n '
+    if humstring.startswith("---"):  # EndRefs
+        if humstring.startswith("---e"):
+            return "\nElements: "
+        if humstring.startswith("---v"):
+            return "\nValues: "
+        if humstring.startswith("---t"):
+            return "\n "
 
     # If we get here, reftype is not k, and IDstring (concept_id)
     # is expected to reference a term in the dictionary.
     #
-    if reftype == 'g':
+    if reftype == "g":
         # yyy in theory don't need to check before removing uniquerifier string
         #     as all normalized tag ids will start with it
-        if humstring.startswith(ixuniq):    # stored index "uniquerifier" string
+        if humstring.startswith(ixuniq):  # stored index "uniquerifier" string
             humstring = humstring[ixqlen:]  # but remove "uniquerifier" on display
-        return '#' + humstring
+        return "#" + humstring
     return humstring
 
 
 def processTagsAsHTML(db_con, string, tagAsTerm=False):
-    """  Process tags in DB text entries into HTML.
+    """Process tags in DB text entries into HTML.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
@@ -445,7 +458,7 @@ def processTagsAsHTML(db_con, string, tagAsTerm=False):
 
 
 def printRefReAsHTML(db_con, m, tagAsTerm):
-    (rp) = m.groups()   # rp = ref parts, the part between #{ and }
+    (rp) = m.groups()  # rp = ref parts, the part between #{ and }
 
     # we want subexpressions 1, 2, and 4
     reftype, humstring, IDstring = rp[1], rp[2], rp[4]
@@ -453,7 +466,7 @@ def printRefReAsHTML(db_con, m, tagAsTerm):
 
 
 def processRefsAsText(string, tagAsTerm=False):
-    """  Render references in DB text entries into plain text.
+    """Render references in DB text entries into plain text.
 
     :param string: The input string.
     :returns: tag-neutralized string.
@@ -468,7 +481,7 @@ def processRefsAsText(string, tagAsTerm=False):
 
 
 def printPrettyDate(T, brief=False):
-    """ Format output of a timestamp.
+    """Format output of a timestamp.
 
         If a small amount of time has elapsed between *T_now*
         and *T*, then return the interval. **TODO:** This should
@@ -480,27 +493,33 @@ def printPrettyDate(T, brief=False):
     """
 
     T = T.astimezone(tz.tzlocal())
-    T_elapsed = (datetime.datetime.now(tz=tz.tzlocal()) - T)
+    T_elapsed = datetime.datetime.now(tz=tz.tzlocal()) - T
 
     if T_elapsed < datetime.timedelta(seconds=30):
         return "just now"
     elif T_elapsed < datetime.timedelta(minutes=1):
         return "%s seconds ago" % (T_elapsed.seconds)
     elif T_elapsed < datetime.timedelta(hours=1):
-        return "%s minute%s ago" % (T_elapsed.seconds / 60, '' if T_elapsed.seconds / 60 == 1 else 's')
+        return "%s minute%s ago" % (
+            T_elapsed.seconds / 60,
+            "" if T_elapsed.seconds / 60 == 1 else "s",
+        )
     elif T_elapsed < datetime.timedelta(hours=24):
-        return "%s hour%s ago" % (T_elapsed.seconds / 3600, '' if T_elapsed.seconds / 3600 == 1 else 's')
+        return "%s hour%s ago" % (
+            T_elapsed.seconds / 3600,
+            "" if T_elapsed.seconds / 3600 == 1 else "s",
+        )
     elif T_elapsed < datetime.timedelta(days=7):
-        return "%s day%s ago" % (T_elapsed.days, '' if T_elapsed.days == 1 else 's')
+        return "%s day%s ago" % (T_elapsed.days, "" if T_elapsed.days == 1 else "s")
     else:
-        mth = monthOf[T.month-1]
+        mth = monthOf[T.month - 1]
         if brief:
             mth = mth[0:3]
         return "%s %s %s" % (T.day, mth, T.year)
 
 
 def printAsJSObject(rows, fd=sys.stdout):
-    """ Print table rows as JSON-formatted object.
+    """Print table rows as JSON-formatted object.
 
     :param rows: Table rows.
     :type rows: dict iterator
@@ -511,11 +530,11 @@ def printAsJSObject(rows, fd=sys.stdout):
         for (col, value) in row.items():
             if type(value) == datetime.datetime:
                 row[col] = str(value)
-    print(json.dumps(rows, sort_keys=True, indent=2, separators=(',', ': ')), file=fd)
+    print(json.dumps(rows, sort_keys=True, indent=2, separators=(",", ": ")), file=fd)
 
 
 def getPrettyParagraph(db_con, text, leftMargin=8, width=60):
-    """ Format some text into a nice paragraph for displaying in the terminal.
+    """Format some text into a nice paragraph for displaying in the terminal.
             Output the result directly to sys.stdout.
 
     :param db_con: DB connection.
@@ -528,55 +547,60 @@ def getPrettyParagraph(db_con, text, leftMargin=8, width=60):
     :type wdith: int
     """
     lineLength = 0
-    fella = " " * (leftMargin-1)
+    fella = " " * (leftMargin - 1)
     for word in text.split(" "):
         if lineLength < width:
             fella += word + " "
             lineLength += len(word) + 1
         else:
-            fella += word + "\n" + (" " * (leftMargin-1))
+            fella += word + "\n" + (" " * (leftMargin - 1))
             lineLength = 0
     return fella
 
 
 def getPrettyTerm(db_con, row, leftMargin=5):
-    """ Return a term string.
+    """Return a term string.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
     :param row: Table row
     :type row: dict
     """
-    text = ' ' * leftMargin + "TERM: %-26s ID: %-7d created: %s\n" % (
-        "%s (%d)" % (row['term_string'], row["up"] - row["down"]), row['id'],
-        row['created'].strftime('%Y-%m-%d %H:%M:%S'))
+    text = " " * leftMargin + "TERM: %-26s ID: %-7d created: %s\n" % (
+        "%s (%d)" % (row["term_string"], row["up"] - row["down"]),
+        row["id"],
+        row["created"].strftime("%Y-%m-%d %H:%M:%S"),
+    )
 
-    text += ' ' * leftMargin + 'URI: %-40s' % row['persistent_id'] + "Last modified: %s" % (
-        row['modified'].strftime('%Y-%m-%d %H:%M:%S'))
+    text += (
+        " " * leftMargin
+        + "URI: %-40s" % row["persistent_id"]
+        + "Last modified: %s" % (row["modified"].strftime("%Y-%m-%d %H:%M:%S"))
+    )
 
     text += "\n\n"
-    text += getPrettyParagraph(db_con, "DEFINITION: " + row['definition'])
+    text += getPrettyParagraph(db_con, "DEFINITION: " + row["definition"])
 
     text += "\n\n"
-    text += getPrettyParagraph(db_con, "EXAMPLES: " + row['examples'])
+    text += getPrettyParagraph(db_con, "EXAMPLES: " + row["examples"])
 
     # text += "\n    Ownership: %s" % db_con.getUserNameById(row['owner_id'])
     return text
 
 
 def getPrettyComment(db_con, row, leftMargin=5):
-    """ Return a comment string.
+    """Return a comment string.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
     :param rows: Table rows.
     :type rows: dict iterator
     """
-    return 'yeah'
+    return "yeah"
 
 
 def printTermsPretty(db_con, rows):
-    """ Print term rows to terminal.
+    """Print term rows to terminal.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
@@ -588,7 +612,7 @@ def printTermsPretty(db_con, rows):
 
 
 def printTermsAsLinks(db_con, rows):
-    """ Print terms as a link list (pun intended).
+    """Print terms as a link list (pun intended).
 
     :param rows: Table rows.
     :type rows: dict iterator
@@ -597,14 +621,18 @@ def printTermsAsLinks(db_con, rows):
     string = ""
     for row in rows:
         # string += '<li><a href="/term=%s">%s</a></li>' % (row['concept_id'], row['term_string'])
-        string += '<li><a %s</a></li>' % innerAnchor(
-            db_con, row['term_string'], row['concept_id'],
-            row['definition'], tagAsTerm=True)
+        string += "<li><a %s</a></li>" % innerAnchor(
+            db_con,
+            row["term_string"],
+            row["concept_id"],
+            row["definition"],
+            tagAsTerm=True,
+        )
     return string
 
 
 def printTermAsHTML(db_con, row, user_id=0):
-    """ Format a term for the term page, e.g. `this <http://seaice.herokuapp.com/term=1001>`_.
+    """Format a term for the term page, e.g. `this <http://seaice.herokuapp.com/term=1001>`_.
 
         This is the main page where you can look at a term. It includes a term definition,
         examples, a voting form, ownership, and other stuff.
@@ -619,74 +647,118 @@ def printTermAsHTML(db_con, row, user_id=0):
     :returns: HTML-formatted string.
     """
 
-    vote = db_con.getVote(0 if not user_id else user_id, row['id'])
-    string = '<script>' + js_confirmRemoveTerm + js_termAction + js_copyToClipboard + '</script>'
+    vote = db_con.getVote(0 if not user_id else user_id, row["id"])
+    string = (
+        "<script>"
+        + js_confirmRemoveTerm
+        + js_termAction
+        + js_copyToClipboard
+        + "</script>"
+    )
 
     # Voting
-    string += '<table>'
+    string += "<table>"
     string += "  <tr><td width=150px rowspan=4 align=center valign=top>"
-    string += '    <a id="voteUp" title="+1" href="#up" onclick="return TermAction(%s, \'up\');">' % row['id']
-    string += '     <img src="/static/img/%s.png"></a><br>' % ('up_set' if vote == 1 else 'up')
+    string += (
+        '    <a id="voteUp" title="+1" href="#up" onclick="return TermAction(%s, \'up\');">'
+        % row["id"]
+    )
+    string += '     <img src="/static/img/%s.png"></a><br>' % (
+        "up_set" if vote == 1 else "up"
+    )
 
-    string += '    <h4>'
-    if row['up'] > 0:
-        string += '    <font color="#004d73">+%s</font> &nbsp;' % row['up']
-    if row['down'] > 0:
-        string += '    <font color="#797979">-%s</font>' % row['down']
-    if row['up'] == 0 and row['down'] == 0:
-        string += '0'
-    string += '    </h4>'
+    string += "    <h4>"
+    if row["up"] > 0:
+        string += '    <font color="#004d73">+%s</font> &nbsp;' % row["up"]
+    if row["down"] > 0:
+        string += '    <font color="#797979">-%s</font>' % row["down"]
+    if row["up"] == 0 and row["down"] == 0:
+        string += "0"
+    string += "    </h4>"
 
-    string += '    <a id="voteDown" title="-1" href="#down" onclick="return TermAction(%s, \'down\');">' % row['id']
-    string += '     <img src="/static/img/%s.png"></a><br>' % ('down_set' if vote == -1 else 'down')
+    string += (
+        '    <a id="voteDown" title="-1" href="#down" onclick="return TermAction(%s, \'down\');">'
+        % row["id"]
+    )
+    string += '     <img src="/static/img/%s.png"></a><br>' % (
+        "down_set" if vote == -1 else "down"
+    )
 
-    good = db_con.checkTracking(0 if not user_id else user_id, row['id'])
-    string += '    <br><a id="star" title="Track this term" href="#star"' + \
-        '     onclick="return TermAction({1}, \'{0}\');">[{2}]</a><br> '.format(
-            ("unstar" if good else "star"),
-            row['id'], 'unwatch' if good else 'watch')
+    good = db_con.checkTracking(0 if not user_id else user_id, row["id"])
+    string += (
+        '    <br><a id="star" title="Track this term" href="#star"'
+        + "     onclick=\"return TermAction({1}, '{0}');\">[{2}]</a><br> ".format(
+            ("unstar" if good else "star"), row["id"], "unwatch" if good else "watch"
+        )
+    )
     string += "  </td></tr>\n"
 
-    iAnchor = innerAnchor(db_con, row['term_string'],
-                          row['concept_id'], None,
-                          tagAsTerm=True, contentAsTerm=True)
+    iAnchor = innerAnchor(
+        db_con,
+        row["term_string"],
+        row["concept_id"],
+        None,
+        tagAsTerm=True,
+        contentAsTerm=True,
+    )
     # Name/Class
     string += "  <tr>"
-    string += "    <td valign=top width=8%><i><a {0}</a></i></td>".format(
-        iAnchor)
-    string += "    <td valign=top width=25%><font size=\"3\"><strong><a href='/term=" + row['concept_id'] + "'>" + row['term_string'] + "</a></strong></font><td>"
+    string += "    <td valign=top width=8%><i><a {0}</a></i></td>".format(iAnchor)
+    string += (
+        '    <td valign=top width=25%><font size="3"><strong><a href=\'/term='
+        + row["concept_id"]
+        + "'>"
+        + row["term_string"]
+        + "</a></strong></font><td>"
+    )
     string += "    <td valign=top width=5% rowspan=2>"
     string += "      <nobr><i>Class:&nbsp;&nbsp;</i></nobr><br>"
     string += "    </td>\n"
     string += "    <td valign=top width=16% rowspan=2>"
     string += '      <nobr><font style="background-color:{2};border-radius:4px;">&nbsp;{0}&nbsp;</font> <i>&nbsp;({1}%)</i></nobr><br>'.format(
-        row['class'], int(100 * row['consensus']), colorOf[row['class']])
+        row["class"], int(100 * row["consensus"]), colorOf[row["class"]]
+    )
     string += "    </td>\n"
 
     # Retrieve persistent_id
-    term_persistent_id = row['persistent_id']
+    term_persistent_id = row["persistent_id"]
     if term_persistent_id is None:
-        persistent_id = ''
-        permalink = ''
+        persistent_id = ""
+        permalink = ""
     else:
         persistent_id = term_persistent_id
         permalink = permalink_regex.search(persistent_id).groups(0)[0]
 
     # Created/modified/Owner
     string += "    <td valign=top width=20% rowspan=3>"
-    string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
-    string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
-    string += "      <nobr><i>Contributed by</i> %s</nobr><br>" % db_con.getUserNameById(row['owner_id'], full=True)
-    orcid = db_con.getOrcidById(row['owner_id'])
+    string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(
+        row["created"]
+    )
+    string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(
+        row["modified"]
+    )
+    string += (
+        "      <nobr><i>Contributed by</i> %s</nobr><br>"
+        % db_con.getUserNameById(row["owner_id"], full=True)
+    )
+    orcid = db_con.getOrcidById(row["owner_id"])
     if orcid:
-        string += "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>" % (orcid, orcid)
-    if persistent_id != '':
+        string += (
+            "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"
+            % (orcid, orcid)
+        )
+    if persistent_id != "":
         string += "      <br>"
-        string += '      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;' + permalink + '</nobr><br>'
-    if user_id == row['owner_id']:
-        string += "    <br><a href=\"/term=%s/edit\">[edit]</a>" % row['concept_id']
+        string += (
+            "      <nobr><i>Permalink:</i><br>&nbsp;&nbsp;" + permalink + "</nobr><br>"
+        )
+    if user_id == row["owner_id"]:
+        string += '    <br><a href="/term=%s/edit">[edit]</a>' % row["concept_id"]
         string += """  <a id="removeTerm" title="Click to delete term" href="#"
-                                     onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a><br>\n""" % (row['id'], row['concept_id'])
+                                     onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a><br>\n""" % (
+            row["id"],
+            row["concept_id"],
+        )
 
     # Copy reference tag
     # string += '''    <hr><a id="copyLink" title="Click to get a reference link to this term." href="#"
@@ -698,11 +770,17 @@ def printTermAsHTML(db_con, row, user_id=0):
     # Definition/Examples
     string += "  <tr>"
     string += "    <td valign=top><i>Definition:</i></td>"
-    string += "    <td colspan=4 valign=top style='padding-right:36px'><font size=\"3\"> %s</font></td>" % processTagsAsHTML(db_con, row['definition'])
+    string += (
+        "    <td colspan=4 valign=top style='padding-right:36px'><font size=\"3\"> %s</font></td>"
+        % processTagsAsHTML(db_con, row["definition"])
+    )
     string += "  </tr>"
     string += "  <tr>"
     string += "    <td valign=top><i>Examples:</i></td>"
-    string += "    <td colspan=4 valign=top style='padding-right:36px'><font size=\"3\"> %s</font></td>" % processTagsAsHTML(db_con, row['examples'])
+    string += (
+        "    <td colspan=4 valign=top style='padding-right:36px'><font size=\"3\"> %s</font></td>"
+        % processTagsAsHTML(db_con, row["examples"])
+    )
     string += "  </tr>"
     string += "</table>"
     return string
@@ -710,7 +788,7 @@ def printTermAsHTML(db_con, row, user_id=0):
 
 # xxx not called right now -- needed?
 def printTermsAsHTML(db_con, rows, user_id=0):
-    """ Format search results for display on the web page.
+    """Format search results for display on the web page.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
@@ -722,32 +800,54 @@ def printTermsAsHTML(db_con, rows, user_id=0):
     :returns: HTML-formatted string.
     """
 
-    string = '<script>' + js_confirmRemoveTerm + '</script><table>'
+    string = "<script>" + js_confirmRemoveTerm + "</script><table>"
     for row in rows:
         string += "  <tr>"
         string += "    <td valign=top width=75%><i>Term:</i>"
-        string += "     <font size=\"3\"><strong>{0}</strong></font>".format(row['term_string'])
-        string += "      <a href=\"/term=%s\">[view]</a>" % row['concept_id']
-        if user_id == row['owner_id']:
-            string += "    <a href=\"/term=%s/edit\">[edit]</a>" % row['concept_id']
+        string += '     <font size="3"><strong>{0}</strong></font>'.format(
+            row["term_string"]
+        )
+        string += '      <a href="/term=%s">[view]</a>' % row["concept_id"]
+        if user_id == row["owner_id"]:
+            string += '    <a href="/term=%s/edit">[edit]</a>' % row["concept_id"]
             string += """  <a id="removeTerm" title="Click to delete term" href="#"
-                onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a>""" % (row['id'], row['concept_id'])
+                onclick="return ConfirmRemoveTerm(%s, '%s');">[remove]</a>""" % (
+                row["id"],
+                row["concept_id"],
+            )
         string += '      &nbsp;<i>Class:</i>&nbsp;<font style="background-color:{2}">&nbsp;{0}&nbsp;</font> <i>&nbsp;({1}%)</i>'.format(
-            row['class'], int(100 * row['consensus']), colorOf[row['class']])
+            row["class"], int(100 * row["consensus"]), colorOf[row["class"]]
+        )
         string += "    </td>"
         string += "    <td valign=top rowspan=2>"
-        string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(row['created'])
-        string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(row['modified'])
-        string += "      <nobr><i>Contributed by</i> %s</nobr><br>" % db_con.getUserNameById(row['owner_id'], full=True)
-        orcid = db_con.getOrcidById(row['owner_id'])
+        string += "      <nobr><i>Created %s</i></nobr><br>" % printPrettyDate(
+            row["created"]
+        )
+        string += "      <nobr><i>Last modified %s</i></nobr><br>" % printPrettyDate(
+            row["modified"]
+        )
+        string += (
+            "      <nobr><i>Contributed by</i> %s</nobr><br>"
+            % db_con.getUserNameById(row["owner_id"], full=True)
+        )
+        orcid = db_con.getOrcidById(row["owner_id"])
         if orcid:
-            string += "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>" % (orcid, orcid)
+            string += (
+                "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"
+                % (orcid, orcid)
+            )
         string += "    </td>"
         string += "  </tr>"
         string += "  <tr>"
         string += "    <td valign=top>"
-        string += "     <i>Definition:</i>&nbsp;<font size=\"3\"> %s</font>&nbsp;" % processTagsAsHTML(db_con, row['definition'])
-        string += "     <i>Examples:</i>&nbsp;<font size=\"3\"> %s</font></td>" % processTagsAsHTML(db_con, row['examples'])
+        string += (
+            '     <i>Definition:</i>&nbsp;<font size="3"> %s</font>&nbsp;'
+            % processTagsAsHTML(db_con, row["definition"])
+        )
+        string += (
+            '     <i>Examples:</i>&nbsp;<font size="3"> %s</font></td>'
+            % processTagsAsHTML(db_con, row["examples"])
+        )
         string += "  </tr>"
         string += "  <tr height=16><td></td></tr>"
     string += "</table>"
@@ -760,15 +860,15 @@ def summarizeConsensus(consensus):
     """
     cons = int(100 * consensus)
     if cons >= 70:
-        return 'high'
+        return "high"
     elif cons >= 30:
-        return 'medium'
+        return "medium"
     else:
-        return 'low'
+        return "low"
 
 
 def printTermsAsBriefHTML(db_con, rows, user_id=0):
-    """ Format table rows as abbreviated HTML table, e.g.
+    """Format table rows as abbreviated HTML table, e.g.
             `this <http://seaice.herokuapp.com/browse/volatile>`_.
 
     :param db_con: DB connection.
@@ -781,38 +881,47 @@ def printTermsAsBriefHTML(db_con, rows, user_id=0):
     :returns: HTML-formatted string.
     """
 
-    string = '<table width=100%>'
-    string += '''<tr style="background-color:#E8E8E8"><td class='col-lg-5'>Term</td>
+    string = "<table width=100%>"
+    string += """<tr style="background-color:#E8E8E8"><td class='col-lg-5'>Term</td>
             <td class='col-lg-1' style="text-align: center">Score</td>
             <td class='col-lg-1'>Consensus</td><td class='col-lg-1'>Class</td>
             <td class='col-lg-2'>Contributed by</td>
-            <td class='col-lg-2'>Last modified</td></tr>'''
+            <td class='col-lg-2'>Last modified</td></tr>"""
     for row in rows:
-        iAnchor = innerAnchor(db_con, row['term_string'], row['concept_id'],
-                              row['definition'], tagAsTerm=True)
+        iAnchor = innerAnchor(
+            db_con,
+            row["term_string"],
+            row["concept_id"],
+            row["definition"],
+            tagAsTerm=True,
+        )
         # string += '''<tr><td><a title="Def: {8}" href=/term={5}>{0}</a></td><td>{1}</td><td>{2}</td>
         string += "<tr><td class='col-lg-5'><a %s</a></td>" % iAnchor
-        orcid = db_con.getOrcidById(row['owner_id'])
-        name = db_con.getUserNameById(row['owner_id'], full=True)
-        string += '''<td class='col-lg-1' style="text-align: center">{0}</td>
+        orcid = db_con.getOrcidById(row["owner_id"])
+        name = db_con.getUserNameById(row["owner_id"], full=True)
+        string += """<td class='col-lg-1' style="text-align: center">{0}</td>
              <td class='col-lg-1' style="text-align: center">{1}</td>
              <td class='col-lg-1'><font style="background-color:{4}">&nbsp;{2}&nbsp;</font></td>
              <td class='col-lg-2'>{3}</td>
-             <td class='col-lg-2'>{5}</tr>'''.format(
-                 # processTagsAsHTML(db_con, row['term_string'], tagAsTerm=True),
-                 row['up'] - row['down'],
-                 summarizeConsensus(row['consensus']),
-                 row['class'],
-                 "<a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a>" % (orcid, name) if orcid else name,
-                 # row['concept_id'],
-                 colorOf[row['class']],
-                 printPrettyDate(row['modified']))
+             <td class='col-lg-2'>{5}</tr>""".format(
+            # processTagsAsHTML(db_con, row['term_string'], tagAsTerm=True),
+            row["up"] - row["down"],
+            summarizeConsensus(row["consensus"]),
+            row["class"],
+            "<a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a>"
+            % (orcid, name)
+            if orcid
+            else name,
+            # row['concept_id'],
+            colorOf[row["class"]],
+            printPrettyDate(row["modified"]),
+        )
     string += "</table>"
     return string
 
 
 def printCommentsAsHTML(db_con, rows, user_id=0):
-    """ Format comments for display on the term page.
+    """Format comments for display on the term page.
 
     :param db_con: DB connection.
     :type db_con: seaice.SeaIceConnector.SeaIceConnector
@@ -824,23 +933,35 @@ def printCommentsAsHTML(db_con, rows, user_id=0):
     :returns: HTML-formatted string.
     """
 
-    string = '<script>' + js_confirmRemoveComment + '</script><table style="margin-left: 50px"><tr><td><hr></td></tr>'
+    string = (
+        "<script>"
+        + js_confirmRemoveComment
+        + '</script><table style="margin-left: 50px"><tr><td><hr></td></tr>'
+    )
     for row in rows:
         string += "<tr>"
-        string += "  <td align=left valign=top width=70%>{0}".format(processTagsAsHTML(db_con, row['comment_string']))
-        if user_id == row['owner_id']:
-            string += " <nobr><a href=\"/comment=%d/edit\">[edit]</a>" % row['id']
-            string += """ <a id="removeComment" title="Click to remove this comment" href="#"
-                                        onclick="return ConfirmRemoveComment(%s);">[remove]</a></nobr>""" % row['id']
-        orcid = db_con.getOrcidById(row['owner_id'])
-        name = db_con.getUserNameById(row['owner_id'], True)
+        string += "  <td align=left valign=top width=70%>{0}".format(
+            processTagsAsHTML(db_con, row["comment_string"])
+        )
+        if user_id == row["owner_id"]:
+            string += ' <nobr><a href="/comment=%d/edit">[edit]</a>' % row["id"]
+            string += (
+                """ <a id="removeComment" title="Click to remove this comment" href="#"
+                                        onclick="return ConfirmRemoveComment(%s);">[remove]</a></nobr>"""
+                % row["id"]
+            )
+        orcid = db_con.getOrcidById(row["owner_id"])
+        name = db_con.getUserNameById(row["owner_id"], True)
         string += " - "
         if orcid:
-            string += "<a target='_blank' href='https://sandbox.orcid.org/{0}'>{1}</a>".format(orcid, name)
+            string += "<a target='_blank' href='https://sandbox.orcid.org/{0}'>{1}</a>".format(
+                orcid, name
+            )
         else:
             string += name
-        string += " <font color=\"#B8B8B8\"> <i>{0}</i></font>".format(
-            printPrettyDate(row['created']))
+        string += ' <font color="#B8B8B8"> <i>{0}</i></font>'.format(
+            printPrettyDate(row["created"])
+        )
         string += "<hr></td></tr>"
     string += "</table>"
     return string

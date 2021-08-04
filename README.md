@@ -352,6 +352,7 @@ Make sure there is a generic type a record and one for www for your domain.
 Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
 
 You no longer need the http entry exception in the firewall
+
 `sudo ufw delete allow 'Nginx HTTP'`
 
 
@@ -362,19 +363,39 @@ You no longer need the http entry exception in the firewall
 
 ## Exporting the dictionary
 
-The SeaIce API includes queries for importing and exporting database tables
+The SeaIce API includes queries for importing and exporAsting database tables
 in JSON formatted objects. This could be used to backup the entire database.
 Note however that imports must be done in the proper order in order to satisfy
 foreign key constraints.
 
-For the heroku config, install the heroku cli https://devcenter.heroku.com/articles/heroku-cli.
+For the time being, the most up to date version resides in heroku. This is already exported in the /json directory but if you need
+to do it again, First install the heroku cli https://devcenter.heroku.com/articles/heroku-cli and login
 
- To back up the dictionary, do:
 
-  `heroku config | grep DATABASE_URL`
+`heroku config -a yamz | grep DATABASE_URL`
   
-  DATABASE_URL: <whatever>
+    
+`export DATABASE_URL=<result>`
+ 
+`./sea.py --config=heroku --export=Users >users.json`
+
+`./sea.py --config=heroku --export=Terms >terms.json`
+
+`./sea.py --config=heroku --export=Comments >comments.json`
+
+`./sea.py --config=heroku --export=Tracking >tracking.json`
+
+To reset the database, drop the table
   
-  `export DATABASE_URL=<whatever>`
-  `./sea.py --config=heroku --export=Users >Users.json`
-  `./sea.py --config=heroku --export=Users >Users.json`
+`./sea.py --drop-db --init-db -q`
+
+and import the json data in the following order:
+
+`./sea.py --import=Users <users.json`
+
+`./sea.py --import=Terms <terms.json`
+
+`./sea.py --import=Comments <comments.json`
+
+`./sea.py --import=Tracking <tracking.json`
+
