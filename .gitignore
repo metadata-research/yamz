@@ -10,3 +10,5 @@ _build
 env
 venv
 settings.json
+.vscode/
+.vscode/launch.json
