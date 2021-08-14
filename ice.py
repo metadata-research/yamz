@@ -60,38 +60,58 @@ license with this program; otherwise, visit
 http://opensource.org/licenses/BSD-3-Clause.
 """
 
-parser.add_option("--config", dest="config_file", metavar="FILE",
-                  help="User credentials for local PostgreSQL database. " +
-                  "If 'heroku' is given, then a connection to a foreign host specified by " +
-                  "DATABASE_URL is established.",
-                  default='.seaice')
+parser.add_option(
+    "--config",
+    dest="config_file",
+    metavar="FILE",
+    help="User credentials for local PostgreSQL database. "
+    + "If 'heroku' is given, then a connection to a foreign host specified by "
+    + "DATABASE_URL is established.",
+    default=".seaice",
+)
 
-parser.add_option('--credentials', dest='credentials_file', metavar='FILE',
-                  help='File with OAuth-2.0 credentials. (Defaults to `.seaice_auth`.)',
-                  default='.seaice_auth')
+parser.add_option(
+    "--credentials",
+    dest="credentials_file",
+    metavar="FILE",
+    help="File with OAuth-2.0 credentials. (Defaults to `.seaice_auth`.)",
+    default=".seaice_auth",
+)
 
-parser.add_option('--deploy', dest='deployment_mode',
-                  help='Deployment mode, used to choose OAuth parameters in credentials file.',
-                  default='dev')
+parser.add_option(
+    "--deploy",
+    dest="deployment_mode",
+    help="Deployment mode, used to choose OAuth parameters in credentials file.",
+    default="dev",
+)
 
-parser.add_option("-d", "--debug", action="store_true", dest="debug",
-                  default=False,
-                  help="Start flask in debug mode.")
+parser.add_option(
+    "-d",
+    "--debug",
+    action="store_true",
+    dest="debug",
+    default=False,
+    help="Start flask in debug mode.",
+)
 
-parser.add_option("--role", dest="db_role", metavar="USER",
-                  help="Specify the database role to use for the DB connector pool. These roles " +
-                  "are specified in the configuration file (see --config).",
-                  default="default")
+parser.add_option(
+    "--role",
+    dest="db_role",
+    metavar="USER",
+    help="Specify the database role to use for the DB connector pool. These roles "
+    + "are specified in the configuration file (see --config).",
+    default="default",
+)
 
 (options, args) = parser.parse_args()
 
 # Figure out if we're in production mode.  Look in 'heroku' section only.
 config = configparser.ConfigParser()
-config.read('.seaice_auth')
-if config.has_option('heroku', 'prod_mode'):
-    prod_mode = config.getboolean('heroku', 'prod_mode')
+config.read(".seaice_auth")
+if config.has_option("heroku", "prod_mode"):
+    prod_mode = config.getboolean("heroku", "prod_mode")
 else:
-    prod_mode = False       # default
+    prod_mode = False  # default
 
 # Setup flask application #
 print("ice: starting ...")
@@ -107,10 +127,10 @@ try:
         db_config = seaice.auth.get_config(options.config_file)
         app = seaice.SeaIceFlask(
             __name__,
-            db_user=db_config.get(options.db_role, 'user'),
-            db_password=db_config.get(options.db_role, 'password'),
-            db_name=db_config.get(options.db_role, 'dbname')
-            )
+            db_user=db_config.get(options.db_role, "user"),
+            db_password=db_config.get(options.db_role, "password"),
+            db_name=db_config.get(options.db_role, "dbname"),
+        )
 
 except pgdb.DatabaseError as e:
     print("error: %s" % e, file=sys.stderr)
@@ -121,10 +141,11 @@ try:
     credentials = seaice.auth.get_config(options.credentials_file)
 
     google = seaice.auth.get_google_auth(
-        credentials.get(options.deployment_mode, 'google_client_id'),
-        credentials.get(options.deployment_mode, 'google_client_secret'))
+        credentials.get(options.deployment_mode, "google_client_id"),
+        credentials.get(options.deployment_mode, "google_client_secret"),
+    )
 
-    #orcid = seaice.auth.get_orcid_auth(
+    # orcid = seaice.auth.get_orcid_auth(
     #    credentials.get(options.deployment_mode, 'orcid_client_id'),
     #    credentials.get(options.deployment_mode, 'orcid_client_secret'))
 
@@ -135,7 +156,7 @@ except OSError:
 
 app.debug = True
 app.use_reloader = True
-app.secret_key = credentials.get(options.deployment_mode, 'app_secret')
+app.secret_key = credentials.get(options.deployment_mode, "app_secret")
 
 # Session logins #
 
@@ -162,7 +183,9 @@ print("ice: setup complete.")
 def load_user(id):
     return app.SeaIceUsers.get(int(id))
 
+
 # Request wrappers (may have use for these later) #
+
 
 @app.before_request
 def before_request():
@@ -176,14 +199,19 @@ def teardown_request(exception):
 
 # HTTP request handlers #
 
+
 @app.errorhandler(404)
 def pageNotFound(e):
-    return render_template(
-        'basic_page.html',
-        user_name=l.current_user.name,
-        title="Oops! - 404",
-        headline="404",
-        content="The page you requested doesn't exist."), 404
+    return (
+        render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Oops! - 404",
+            headline="404",
+            content="The page you requested doesn't exist.",
+        ),
+        404,
+    )
 
 
 # home page
@@ -194,18 +222,19 @@ def index():
         # TODO Store these values in class User in order to prevent
         # these queries every time the homepage is accessed.
         my = seaice.pretty.printTermsAsLinks(
-            g.db,
-            g.db.getTermsByUser(l.current_user.id))
+            g.db, g.db.getTermsByUser(l.current_user.id)
+        )
         star = seaice.pretty.printTermsAsLinks(
-            g.db,
-            g.db.getTermsByTracking(l.current_user.id))
+            g.db, g.db.getTermsByTracking(l.current_user.id)
+        )
         notify = l.current_user.getNotificationsAsHTML(g.db)
         return render_template(
             "index.html",
             user_name=l.current_user.name,
             my=Markup(my) if my else None,
             star=Markup(star) if star else None,
-            notify=Markup(notify) if notify else None)
+            notify=Markup(notify) if notify else None,
+        )
 
     return render_template("index.html", user_name=l.current_user.name)
 
@@ -222,7 +251,7 @@ def guidelines():
 
 @app.route("/api")
 def api():
-    return redirect(url_for('static', filename='api/index.html'))
+    return redirect(url_for("static", filename="api/index.html"))
 
 
 @app.route("/contact")
@@ -232,6 +261,7 @@ def contact():
 
 # Login and logout #
 
+
 @app.route("/login")
 def login():
     if l.current_user.id:
@@ -239,71 +269,71 @@ def login():
             "basic_page.html",
             user_name=l.current_user.name,
             title="Oops!",
-            content="You are already logged in!")
+            content="You are already logged in!",
+        )
 
-    form = '''
+    form = """
         <p>
             In order to propose new terms or comment on others, you must first
             sign in.
              <li>Sign in with <a href="/login/google">Google</a>.</li>
         </p>
-        '''
+        """
     return render_template(
-        "basic_page.html",
-        title="Login page",
-        headline="Login",
-        content=Markup(form))
+        "basic_page.html", title="Login page", headline="Login", content=Markup(form)
+    )
 
 
 @app.route("/login/google")
 def login_google():
-    redirect_uri = url_for('authorized', _external=True)
+    redirect_uri = url_for("authorized", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI)
 def authorized():
     access_token = google.authorize_access_token()
-    resp = google.get('https://www.googleapis.com/oauth2/v1/userinfo')
+    resp = google.get("https://www.googleapis.com/oauth2/v1/userinfo")
     try:
         resp.raise_for_status()
     except requests.exceptions.HTTPError:
         if resp.status_code == 401:  # Unauthorized - bad token
-            session.pop('access_token', None)
-            return 'l'
+            session.pop("access_token", None)
+            return "l"
     g_user = resp.json()
 
     g.db = app.dbPool.getScoped()
-    user = g.db.getUserByAuth('google', g_user['id'])
-    if not user:    # not seen this person before, so create user
-        g_user['authority'] = 'google'
-        g_user['auth_id'] = g_user['id']
-        g_user['id'] = app.userIdPool.ConsumeId()
-        g_user['last_name'] = "Name"
-        g_user['first_name'] = "Placeholder"
-        g_user['reputation'] = "30"
+    user = g.db.getUserByAuth("google", g_user["id"])
+    if not user:  # not seen this person before, so create user
+        g_user["authority"] = "google"
+        g_user["auth_id"] = g_user["id"]
+        g_user["id"] = app.userIdPool.ConsumeId()
+        g_user["last_name"] = "Name"
+        g_user["first_name"] = "Placeholder"
+        g_user["reputation"] = "30"
         g.db.insertUser(g_user)
         g.db.commit()
-        user = g.db.getUserByAuth('google', g_user['auth_id'])
-        app.SeaIceUsers[user['id']] = seaice.user.User(user['id'], user['first_name'])
-        l.login_user(app.SeaIceUsers.get(user['id']))
+        user = g.db.getUserByAuth("google", g_user["auth_id"])
+        app.SeaIceUsers[user["id"]] = seaice.user.User(user["id"], user["first_name"])
+        l.login_user(app.SeaIceUsers.get(user["id"]))
         return render_template(
             "account.html",
             user_name=l.current_user.name,
-            email=g_user['email'],
+            email=g_user["email"],
             orcid=None,
             message="""
                 According to our records, this is the first time you've logged onto
                 SeaIce with this account. Please provide your first and last name as
-                you would like it to appear with your contributions. Thank you!""")
+                you would like it to appear with your contributions. Thank you!""",
+        )
 
-    l.login_user(app.SeaIceUsers.get(user['id']))
+    l.login_user(app.SeaIceUsers.get(user["id"]))
     flash("Logged in successfully")
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
-#@app.route("/login/orcid")
-#def login_orcid():
+# @app.route("/login/orcid")
+# def login_orcid():
 #    redirect_uri = url_for('orcid_authorized', _external=True)
 #    return orcid.authorize_redirect(redirect_uri)
 
@@ -311,83 +341,89 @@ def authorized():
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
 def orcid_authorized():
     access_token = orcid.authorize_access_token()
-    session['orcid_access_token'] = access_token, ''
+    session["orcid_access_token"] = access_token, ""
 
     orcid_user = resp
 
     g.db = app.dbPool.getScoped()
-    g.db.setOrcid(l.current_user.id, orcid_user['orcid'])
+    g.db.setOrcid(l.current_user.id, orcid_user["orcid"])
     g.db.commit()
 
     flash("Logged in successfully")
-    return redirect('/account')
+    return redirect("/account")
 
 
 def get_access_token():
-    return session.get('access_token')
+    return session.get("access_token")
 
 
-@app.route('/logout')
+@app.route("/logout")
 @l.login_required
 def logout():
     l.logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    return redirect(url_for('login'))
+    return redirect(url_for("login"))
 
 
 # Users #
 
-@app.route("/account", methods=['POST', 'GET'])
+
+@app.route("/account", methods=["POST", "GET"])
 @l.login_required
 def settings():
     g.db = app.dbPool.dequeue()
     if request.method == "POST":
         # error handling:
-        if request.form['first_name'] == "" or request.form['last_name'] == "":
-            user = g.db.getUser(l.current_user.id)  # fetch user for reputation and email
+        if request.form["first_name"] == "" or request.form["last_name"] == "":
+            user = g.db.getUser(
+                l.current_user.id
+            )  # fetch user for reputation and email
             return render_template(
                 "account.html",
                 user_name=l.current_user.name,
-                email=user['email'],
-                last_name_edit=request.form['last_name'],
-                first_name_edit=request.form['first_name'],
-                orcid=user['orcid'],
-                reputation=user['reputation'] + ' *' if user['super_user'] else ' _',
-                enotify='yes' if user['enotify'] else 'no',
-                message="Please don't leave any fields blank!")
+                email=user["email"],
+                last_name_edit=request.form["last_name"],
+                first_name_edit=request.form["first_name"],
+                orcid=user["orcid"],
+                reputation=user["reputation"] + " *" if user["super_user"] else " _",
+                enotify="yes" if user["enotify"] else "no",
+                message="Please don't leave any fields blank!",
+            )
         # if their data is fine:
         else:
             g.db.updateUser(
                 l.current_user.id,
-                request.form['first_name'],
-                request.form['last_name'],
-                True if request.form.get('enotify') else False)
+                request.form["first_name"],
+                request.form["last_name"],
+                True if request.form.get("enotify") else False,
+            )
 
             g.db.commit()
             app.dbPool.enqueue(g.db)
-            l.current_user.name = request.form['first_name']
+            l.current_user.name = request.form["first_name"]
             return getUser(str(l.current_user.id))
 
     # method was GET
     user = g.db.getUser(l.current_user.id)
     app.dbPool.enqueue(g.db)
-    print(user['orcid'])
+    print(user["orcid"])
     return render_template(
         "account.html",
         user_name=l.current_user.name,
-        email=user['email'],
-        last_name_edit=user['last_name'],
-        first_name_edit=user['first_name'],
-        reputation=user['reputation'] + ' *' if user['super_user'] else ' _',
-        enotify='yes' if user['enotify'] else 'no',
-        orcid=user['orcid'],
+        email=user["email"],
+        last_name_edit=user["last_name"],
+        first_name_edit=user["first_name"],
+        reputation=user["reputation"] + " *" if user["super_user"] else " _",
+        enotify="yes" if user["enotify"] else "no",
+        orcid=user["orcid"],
         message="""
                  Here you can change how your name will appear to other users.
-                 Navigating away from this page will safely discard any changes.""")
+                 Navigating away from this page will safely discard any changes.""",
+    )
 
 
 @app.route("/user=<int:user_id>")
@@ -404,18 +440,20 @@ def getUser(user_id=None):
                     <tr><td valign=top>Reputation:</td><td>{3}</td></td>
                     <tr><td valign=top>Receive email notifications:</td><td>{4}</td>
                 </table> """.format(
-                    user['first_name'],
-                    user['last_name'],
-                    user['email'],
-                    user['reputation'] + ' *' if user['super_user'] else '',
-                    user['enotify'])
+                user["first_name"],
+                user["last_name"],
+                user["email"],
+                user["reputation"] + " *" if user["super_user"] else "",
+                user["enotify"],
+            )
 
             return render_template(
                 "basic_page.html",
                 user_name=l.current_user.name,
                 title="User - %s" % user_id,
                 headline="User",
-                content=Markup(result))
+                content=Markup(result),
+            )
 
     except IndexError:
         pass
@@ -425,10 +463,11 @@ def getUser(user_id=None):
         user_name=l.current_user.name,
         title="User not found",
         headline="User",
-        content=Markup("User <strong>#%s</strong> not found!" % user_id))
+        content=Markup("User <strong>#%s</strong> not found!" % user_id),
+    )
 
 
-@app.route("/user=<int:user_id>/notif=<int:notif_index>/remove", methods=['GET'])
+@app.route("/user=<int:user_id>/notif=<int:notif_index>/remove", methods=["GET"])
 @l.login_required
 def remNotification(user_id, notif_index):
     try:
@@ -441,14 +480,17 @@ def remNotification(user_id, notif_index):
             "basic_page.html",
             user_name=l.current_user.name,
             title="Oops!",
-            content='You may only delete your own notifications.')
+            content="You may only delete your own notifications.",
+        )
 
     except IndexError:
         return render_template(
             "basic_page.html",
             user_name=l.current_user.name,
             title="Oops!",
-            content='Index out of range.')
+            content="Index out of range.",
+        )
+
 
 # Look up terms #
 
@@ -466,15 +508,18 @@ def getTerm(term_concept_id=None, message=""):
             user_name=l.current_user.name,
             title="Term not found",
             headline="Term",
-            content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id))
+            content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id),
+        )
 
-    result = '<p><a href="/term/all_of_name/concept=%s">view all terms with the natural language string %s</a></p>' % (term_concept_id, term['term_string'])
+    result = (
+        '<p><a href="/term/all_of_name/concept=%s">view all terms with the natural language string %s</a></p>'
+        % (term_concept_id, term["term_string"])
+    )
     result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
     result = message + "<hr>" + result + "<hr>"
     result += seaice.pretty.printCommentsAsHTML(
-        g.db,
-        g.db.getCommentHistory(term['id']),
-        l.current_user.id)
+        g.db, g.db.getCommentHistory(term["id"]), l.current_user.id
+    )
 
     if l.current_user.id:
         result += """
@@ -486,16 +531,20 @@ def getTerm(term_concept_id=None, message=""):
                 <tr><td align=right><input type="submit" value="Comment"><td>
                 </td>
             </table>
-        </form>""".format(term['id'])
+        </form>""".format(
+            term["id"]
+        )
     else:
         result += "<a href='/login'> Log in to comment </a>"
 
     return render_template(
         "basic_page.html",
         user_name=l.current_user.name,
-        title="Term %s" % term['term_string'],
+        title="Term %s" % term["term_string"],
         headline="Term",
-        content=Markup(result))
+        content=Markup(result),
+    )
+
 
 # Look up terms by name and concept id (for order) #
 
@@ -518,7 +567,8 @@ def getTermsOfName(term_concept_id=None, message=""):
             user_name=l.current_user.name,
             title="Term not found",
             headline="Terms",
-            content=Markup("Term <strong>#%s</strong> not found!" % term_string))
+            content=Markup("Term <strong>#%s</strong> not found!" % term_string),
+        )
 
     terms = chain([first], terms)
 
@@ -528,13 +578,12 @@ def getTermsOfName(term_concept_id=None, message=""):
         result = seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
         result = message + "<hr style='border-top:1px solid gray;'>" + result + "<hr>"
         result += "<a class='expandComments' style='cursor: pointer' data-direction='down' data-id='"
-        result += term['concept_id']
+        result += term["concept_id"]
         result += "'>Comments &#x25BC;</a> <div style='display: none' class='comments-"
-        result += term['concept_id'] + "'>"
+        result += term["concept_id"] + "'>"
         result += seaice.pretty.printCommentsAsHTML(
-            g.db,
-            g.db.getCommentHistory(term['id']),
-            l.current_user.id)
+            g.db, g.db.getCommentHistory(term["id"]), l.current_user.id
+        )
         if l.current_user.id:
             result += """
             <form action="/term={0}/comment" method="post">
@@ -545,12 +594,14 @@ def getTermsOfName(term_concept_id=None, message=""):
                     <tr><td align=right><input type="submit" value="Comment"><td>
                     </td>
                 </table>
-            </form>""".format(term['id'])
+            </form>""".format(
+                term["id"]
+            )
         else:
             result += "<a href='/login'> Log in to comment </a>"
 
         result += "</div>"
-        if term['concept_id'] == term_concept_id:
+        if term["concept_id"] == term_concept_id:
             content = result + content
         else:
             content += result
@@ -560,7 +611,8 @@ def getTermsOfName(term_concept_id=None, message=""):
         user_name=l.current_user.name,
         title="Term %s" % term_string,
         headline="Terms",
-        content=Markup(content))
+        content=Markup(content),
+    )
 
 
 @app.route("/browse")
@@ -570,65 +622,88 @@ def browse(listing=None, page=None):
     if listing is None:
         return redirect("/browse/recent")
     if page is None:
-        return redirect("/browse/" + listing + '/1')
+        return redirect("/browse/" + listing + "/1")
 
     g.db = app.dbPool.getScoped()
-    pagination_details = getPaginationDetails(dbConnector=g.db, page=page, listing=listing)
-    terms = pagination_details['terms']
-    letter = '~'
+    pagination_details = getPaginationDetails(
+        dbConnector=g.db, page=page, listing=listing
+    )
+    terms = pagination_details["terms"]
+    letter = "~"
     result = "<h5>{0} | {1} | {2} | {3} | {4}</h5><hr>".format(
-        '<a href="/browse/score">high score</a>' if listing != "score" else 'high score',
-        '<a href="/browse/recent">recent</a>' if listing != "recent" else 'recent',
-        '<a href="/browse/volatile">volatile</a>' if listing != "volatile" else 'volatile',
-        '<a href="/browse/stable">stable</a>' if listing != "stable" else 'stable',
-        '<a href="/browse/alphabetical">alphabetical</a>' if listing != "alphabetical" else 'alphabetical'
-        )
+        '<a href="/browse/score">high score</a>'
+        if listing != "score"
+        else "high score",
+        '<a href="/browse/recent">recent</a>' if listing != "recent" else "recent",
+        '<a href="/browse/volatile">volatile</a>'
+        if listing != "volatile"
+        else "volatile",
+        '<a href="/browse/stable">stable</a>' if listing != "stable" else "stable",
+        '<a href="/browse/alphabetical">alphabetical</a>'
+        if listing != "alphabetical"
+        else "alphabetical",
+    )
     # xxx alpha ordering of tags is wrong (because they start '#{g: ')
 
     if listing == "recent":  # Most recently added listing
         result += seaice.pretty.printTermsAsBriefHTML(
             g.db,
-            sorted(terms, key=lambda term: term['modified'], reverse=True),
-            l.current_user.id)
+            sorted(terms, key=lambda term: term["modified"], reverse=True),
+            l.current_user.id,
+        )
 
     elif listing == "score":  # Highest consensus
-        terms = sorted(terms, key=lambda term: term['consensus'], reverse=True)
+        terms = sorted(terms, key=lambda term: term["consensus"], reverse=True)
         result += seaice.pretty.printTermsAsBriefHTML(
             g.db,
-            sorted(terms, key=lambda term: term['up'] - term['down'], reverse=True),
-            l.current_user.id)
+            sorted(terms, key=lambda term: term["up"] - term["down"], reverse=True),
+            l.current_user.id,
+        )
 
-    elif listing == "volatile":  # Least stable (Frequent updates, commenting, and voting)
-        terms = sorted(terms, key=lambda term: term['t_stable'] or term['t_last'], reverse=True)
+    elif (
+        listing == "volatile"
+    ):  # Least stable (Frequent updates, commenting, and voting)
+        terms = sorted(
+            terms, key=lambda term: term["t_stable"] or term["t_last"], reverse=True
+        )
         result += seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
 
     elif listing == "stable":  # Most stable, highest consensus
-        terms = sorted(terms, key=lambda term: term['t_stable'] or term['t_last'])
+        terms = sorted(terms, key=lambda term: term["t_stable"] or term["t_last"])
         result += seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
 
     elif listing == "alphabetical":  # Alphabetical listing
         result += "<table>"
         for term in terms:
             # skip if term is empty
-            if not term['term_string']:
+            if not term["term_string"]:
                 print("error: empty term string in alpha listing", file=sys.stderr)
                 continue
             # firstc = term['term_string'][0].upper()
-            firstc = term['term_string'][0].upper() if term['term_string'] else ' '
-            if firstc != '#' and firstc != letter:
+            firstc = term["term_string"][0].upper() if term["term_string"] else " "
+            if firstc != "#" and firstc != letter:
                 # letter = term['term_string'][0].upper()
                 letter = firstc
-                result += "</td></tr><tr><td width=20% align=center valign=top><h4>{0}</h4></td><td width=80%>".format(letter)
+                result += "</td></tr><tr><td width=20% align=center valign=top><h4>{0}</h4></td><td width=80%>".format(
+                    letter
+                )
             result += "<p><a %s</a>" % seaice.pretty.innerAnchor(
-                g.db, term['term_string'], term['concept_id'], term['definition'],
-                tagAsTerm=True)
-            orcid = g.db.getOrcidById(term['owner_id'])
+                g.db,
+                term["term_string"],
+                term["concept_id"],
+                term["definition"],
+                tagAsTerm=True,
+            )
+            orcid = g.db.getOrcidById(term["owner_id"])
             if orcid:
-                result += " <i>contributed by <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></i></p>" % (
-                    orcid,
-                    g.db.getUserNameById(term['owner_id'], full=True))
+                result += (
+                    " <i>contributed by <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></i></p>"
+                    % (orcid, g.db.getUserNameById(term["owner_id"], full=True))
+                )
             else:
-                result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(term['owner_id'], full=True)
+                result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(
+                    term["owner_id"], full=True
+                )
         result += "</table>"
         # yyy temporary proof that this code is running
         print("note: end alpha listing", file=sys.stderr)
@@ -639,15 +714,16 @@ def browse(listing=None, page=None):
         title="Browse",
         headline="Browse dictionary",
         content=Markup(result),
-        pagination_details=pagination_details)
+        pagination_details=pagination_details,
+    )
 
 
-hash2uniquerifier_regex = re.compile('(?<!#)#(\w[\w.-]+)')
+hash2uniquerifier_regex = re.compile("(?<!#)#(\w[\w.-]+)")
 # xxx is " the problem (use ' below)?
 # token_ref_regex = re.compile("(?<!#\{g: )([#&]+)([\w.-]+)")
 
 
-@app.route("/search", methods=['POST', 'GET'])
+@app.route("/search", methods=["POST", "GET"])
 def returnQuery():
     g.db = app.dbPool.getScoped()
     if request.method == "POST":
@@ -666,19 +742,19 @@ def returnQuery():
         #   return render_template("search.html", user_name = l.current_user.name,
         #     term_string = request.form['term_string'],
         #     result = Markup(result.decode('utf-8')))
-        if request.form['term_string'] == '':
+        if request.form["term_string"] == "":
             return render_template(
                 "search.html",
                 user_name=l.current_user.name,
-                term_string='',
-                pagination_details={})
+                term_string="",
+                pagination_details={},
+            )
         else:
-            return redirect("/search/" + request.form['term_string'] + '/1')
+            return redirect("/search/" + request.form["term_string"] + "/1")
     else:  # GET
         return render_template(
-            "search.html",
-            user_name=l.current_user.name,
-            pagination_details={})
+            "search.html", user_name=l.current_user.name, pagination_details={}
+        )
 
 
 @app.route("/search/<search_term>/<int:page>")
@@ -687,17 +763,20 @@ def returnQueryPaginated(search_term=None, page=1):
     # XXX whoa -- this use of term_string variable name (in all html forms)
     #     is totally different from term_string as used in the database!
     search_words = hash2uniquerifier_regex.sub(
-        seaice.pretty.ixuniq + '\\1',
-        search_term)
-    pagination_details = getPaginationDetails(dbConnector=g.db, page=page, browse=False, search_words=search_words)
-    terms = pagination_details['terms']
+        seaice.pretty.ixuniq + "\\1", search_term
+    )
+    pagination_details = getPaginationDetails(
+        dbConnector=g.db, page=page, browse=False, search_words=search_words
+    )
+    terms = pagination_details["terms"]
     # terms = g.db.search(request.form['term_string'])
     if len(terms) == 0:
         return render_template(
             "search.html",
             user_name=l.current_user.name,
             term_string=search_term,
-            pagination_details=pagination_details)
+            pagination_details=pagination_details,
+        )
     else:
         result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
         return render_template(
@@ -705,7 +784,8 @@ def returnQueryPaginated(search_term=None, page=1):
             user_name=l.current_user.name,
             term_string=search_term,
             result=Markup(result),
-            pagination_details=pagination_details)
+            pagination_details=pagination_details,
+        )
 
 
 # yyy to do: display tag definition at top of search results
@@ -716,21 +796,22 @@ def getTag(tag=None):
     terms = g.db.search(seaice.pretty.ixuniq + tag)
     if len(terms) == 0:
         return render_template(
-            "tag.html",
-            user_name=l.current_user.name,
-            term_string=tag)
+            "tag.html", user_name=l.current_user.name, term_string=tag
+        )
     else:
         result = seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
         return render_template(
             "tag.html",
             user_name=l.current_user.name,
             term_string=tag,
-            result=Markup(result))
+            result=Markup(result),
+        )
+
 
 # Propose, edit, or remove a term #
 
 
-@app.route("/contribute", methods=['POST', 'GET'])
+@app.route("/contribute", methods=["POST", "GET"])
 @l.login_required
 def addTerm():
 
@@ -741,40 +822,43 @@ def addTerm():
         #     a test 'id'
         term = {
             # 'term_string' : request.form['term_string'],
-            'term_string': seaice.pretty.refs_norm(g.db, request.form['term_string']),
-            'definition': seaice.pretty.refs_norm(g.db, request.form['definition']),
-            'examples': seaice.pretty.refs_norm(g.db, request.form['examples']),
-            'owner_id': l.current_user.id,
-            'id': app.termIdPool.ConsumeId()}
+            "term_string": seaice.pretty.refs_norm(g.db, request.form["term_string"]),
+            "definition": seaice.pretty.refs_norm(g.db, request.form["definition"]),
+            "examples": seaice.pretty.refs_norm(g.db, request.form["examples"]),
+            "owner_id": l.current_user.id,
+            "id": app.termIdPool.ConsumeId(),
+        }
 
         (id, concept_id) = g.db.insertTerm(term, prod_mode)
 
         # Special handling is needed for brand new tags, which always return
         # "(undefined/ambiguous)" qualifiers at the moment of definition.
         #
-        if term['term_string'].startswith('#{g:'):   # if defining a tag
+        if term["term_string"].startswith("#{g:"):  # if defining a tag
             # term['term_string'] = '#{g: %s | %s}' % (      # correct our initial
-            term['term_string'] = '%s%s | %s}' % (  # correct our initial
+            term["term_string"] = "%s%s | %s}" % (  # correct our initial
                 seaice.pretty.tagstart,
-                seaice.pretty.ixuniq + request.form['term_string'][1:],
-                concept_id)                 # guesses and update
-            g.db.updateTerm(term['id'], term, None, prod_mode)
+                seaice.pretty.ixuniq + request.form["term_string"][1:],
+                concept_id,
+            )  # guesses and update
+            g.db.updateTerm(term["id"], term, None, prod_mode)
 
         g.db.commit()
         app.dbPool.enqueue(g.db)
         return getTerm(
-            concept_id,
-            message="Your term has been added to the metadictionary!")
+            concept_id, message="Your term has been added to the metadictionary!"
+        )
 
-    else:           # GET
+    else:  # GET
         return render_template(
             "contribute.html",
             user_name=l.current_user.name,
             title="Contribute",
-            headline="Add a dictionary term")
+            headline="Add a dictionary term",
+        )
 
 
-@app.route("/term=<term_concept_id>/edit", methods=['POST', 'GET'])
+@app.route("/term=<term_concept_id>/edit", methods=["POST", "GET"])
 @l.login_required
 def editTerm(term_concept_id=None):
 
@@ -783,25 +867,29 @@ def editTerm(term_concept_id=None):
         term = g.db.getTermByConceptId(term_concept_id)
         # user = g.db.getUser(l.current_user.id)
         # yyy not checking if term was found?
-        assert l.current_user.id and term['owner_id'] == l.current_user.id
+        assert l.current_user.id and term["owner_id"] == l.current_user.id
 
         if request.method == "POST":
 
-            assert request.form.get('examples') is not None
+            assert request.form.get("examples") is not None
             updatedTerm = {
                 # 'term_string' : request.form['term_string'],
-                'term_string': seaice.pretty.refs_norm(g.db, request.form['term_string']),
-                'definition': seaice.pretty.refs_norm(g.db, request.form['definition']),
-                'examples': seaice.pretty.refs_norm(g.db, request.form['examples']),
-                'owner_id': l.current_user.id}
+                "term_string": seaice.pretty.refs_norm(
+                    g.db, request.form["term_string"]
+                ),
+                "definition": seaice.pretty.refs_norm(g.db, request.form["definition"]),
+                "examples": seaice.pretty.refs_norm(g.db, request.form["examples"]),
+                "owner_id": l.current_user.id,
+            }
 
-            g.db.updateTerm(term['id'], updatedTerm, term['persistent_id'], prod_mode)
+            g.db.updateTerm(term["id"], updatedTerm, term["persistent_id"], prod_mode)
 
             # Notify tracking users
             notify_update = seaice.notify.TermUpdate(
-                term['id'], l.current_user.id, term['modified'])
+                term["id"], l.current_user.id, term["modified"]
+            )
 
-            for user_id in g.db.getTrackingByTerm(term['id']):
+            for user_id in g.db.getTrackingByTerm(term["id"]):
                 app.SeaIceUsers[user_id].notify(notify_update, g.db)
 
             g.db.commit()
@@ -809,9 +897,10 @@ def editTerm(term_concept_id=None):
 
             return getTerm(
                 term_concept_id,
-                message="Your term has been updated in the metadictionary.")
+                message="Your term has been updated in the metadictionary.",
+            )
 
-        else:       # GET
+        else:  # GET
             app.dbPool.enqueue(g.db)
             if term:
                 return render_template(
@@ -820,9 +909,10 @@ def editTerm(term_concept_id=None):
                     title="Edit - %s" % term_concept_id,
                     headline="Edit term",
                     edit_id=term_concept_id,
-                    term_string_edit=term['term_string'],
-                    definition_edit=term['definition'],
-                    examples_edit=term['examples'])
+                    term_string_edit=term["term_string"],
+                    definition_edit=term["definition"],
+                    examples_edit=term["examples"],
+                )
 
     except ValueError:
         return render_template(
@@ -830,15 +920,19 @@ def editTerm(term_concept_id=None):
             user_name=l.current_user.name,
             title="Term not found",
             headline="Term",
-            content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id))
+            content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id),
+        )
 
     except AssertionError:
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Term - %s" % term_concept_id,
-                               content="""Error! You may only edit or remove terms and definitions that
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Term - %s" % term_concept_id,
+            content="""Error! You may only edit or remove terms and definitions that
                  you've contributed. However, you may comment or vote on this term.
-     assert term['owner_id'] (%s) == l.current_user.id (%s)""" % (term['owner_id'], l.current_user.id))
+     assert term['owner_id'] (%s) == l.current_user.id (%s)"""
+            % (term["owner_id"], l.current_user.id),
+        )
 
 
 @app.route("/term=<int:term_id>/remove", methods=["POST"])
@@ -847,46 +941,49 @@ def remTerm(term_id):
 
     try:
         g.db = app.dbPool.getScoped()
-        term = g.db.getTerm(int(request.form['id']))
-        assert term and term['owner_id'] == l.current_user.id
-        assert term['class'] == 'vernacular'
+        term = g.db.getTerm(int(request.form["id"]))
+        assert term and term["owner_id"] == l.current_user.id
+        assert term["class"] == "vernacular"
 
         tracking_users = g.db.getTrackingByTerm(term_id)
 
-        id = g.db.removeTerm(int(request.form['id']),
-                             term['persistent_id'],
-                             prod_mode)
+        id = g.db.removeTerm(int(request.form["id"]), term["persistent_id"], prod_mode)
         app.termIdPool.ReleaseId(id)
 
         # Notify tracking users
         notify_removed = seaice.notify.TermRemoved(
-            l.current_user.id,
-            term['term_string'],
-            g.db.getTime())
+            l.current_user.id, term["term_string"], g.db.getTime()
+        )
 
         for user_id in tracking_users:
             app.SeaIceUsers[user_id].notify(notify_removed, g.db)
 
         g.db.commit()
 
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Remove term",
-                               content=Markup("Successfully removed term <b>%s (%s)</b> from the metadictionary." % (
-                                   term['term_string'], term['concept_id'])))
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Remove term",
+            content=Markup(
+                "Successfully removed term <b>%s (%s)</b> from the metadictionary."
+                % (term["term_string"], term["concept_id"])
+            ),
+        )
 
     except AssertionError:
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Term - %s" % term_id,
-                               content="""Error! You may only remove terms that are in the vernacular class and
-                                 that you've contributed. However, you may comment or vote on this term. """)
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Term - %s" % term_id,
+            content="""Error! You may only remove terms that are in the vernacular class and
+                                 that you've contributed. However, you may comment or vote on this term. """,
+        )
 
 
 # Comments #
 
 
-@app.route("/term=<int:term_id>/comment", methods=['POST'])
+@app.route("/term=<int:term_id>/comment", methods=["POST"])
 @l.login_required
 def addComment(term_id):
 
@@ -895,11 +992,14 @@ def addComment(term_id):
 
         term_id = int(term_id)
         g.db = app.dbPool.getScoped()
-        comment = {'comment_string': seaice.pretty.refs_norm(
-            g.db, request.form['comment_string']),
-                   'term_id': term_id,
-                   'owner_id': l.current_user.id,
-                   'id': app.commentIdPool.ConsumeId()}
+        comment = {
+            "comment_string": seaice.pretty.refs_norm(
+                g.db, request.form["comment_string"]
+            ),
+            "term_id": term_id,
+            "owner_id": l.current_user.id,
+            "id": app.commentIdPool.ConsumeId(),
+        }
 
         comment_id = g.db.insertComment(comment)
 
@@ -907,11 +1007,12 @@ def addComment(term_id):
         notify_comment = seaice.notify.Comment(
             term_id,
             l.current_user.id,
-            comment['comment_string'],
-            g.db.getComment(comment_id)['created'])
+            comment["comment_string"],
+            g.db.getComment(comment_id)["created"],
+        )
 
         tracking_users = [user_id for user_id in g.db.getTrackingByTerm(term_id)]
-        tracking_users.append(g.db.getTerm(term_id)['owner_id'])
+        tracking_users.append(g.db.getTerm(term_id)["owner_id"])
         for user_id in tracking_users:
             if user_id != l.current_user.id:
                 app.SeaIceUsers[user_id].notify(notify_comment, g.db)
@@ -921,28 +1022,33 @@ def addComment(term_id):
         return redirect("/term=%s" % g.db.getTermConceptId(term_id))
 
     except AssertionError:
-        return redirect(url_for('login'))
+        return redirect(url_for("login"))
 
 
-@app.route("/comment=<int:comment_id>/edit", methods=['POST', 'GET'])
+@app.route("/comment=<int:comment_id>/edit", methods=["POST", "GET"])
 @l.login_required
 def editComment(comment_id=None):
 
     try:
         g.db = app.dbPool.dequeue()
         comment = g.db.getComment(int(comment_id))
-        assert l.current_user.id and comment['owner_id'] == l.current_user.id
+        assert l.current_user.id and comment["owner_id"] == l.current_user.id
 
         if request.method == "POST":
-            updatedComment = {'comment_string': seaice.pretty.refs_norm(
-                g.db, request.form['comment_string']),
-                              'owner_id': l.current_user.id}
+            updatedComment = {
+                "comment_string": seaice.pretty.refs_norm(
+                    g.db, request.form["comment_string"]
+                ),
+                "owner_id": l.current_user.id,
+            }
 
             g.db.updateComment(int(comment_id), updatedComment)
             g.db.commit()
             app.dbPool.enqueue(g.db)
-            return getTerm(g.db.getTermConceptId(comment['term_id']),
-                           message="Your comment has been updated.")
+            return getTerm(
+                g.db.getTermConceptId(comment["term_id"]),
+                message="Your comment has been updated.",
+            )
         else:  # GET
             app.dbPool.enqueue(g.db)
             if comment:
@@ -955,60 +1061,70 @@ def editComment(comment_id=None):
                         <tr><td align=right><input type="submit" value="Comment"><td>
                         </td>
                     </table>
-                 </form>""".format(comment_id, comment['comment_string'])
-                return render_template("basic_page.html",
-                                       user_name=l.current_user.name,
-                                       title="Edit comment",
-                                       headline="Edit your comment",
-                                       content=Markup(form))
+                 </form>""".format(
+                    comment_id, comment["comment_string"]
+                )
+                return render_template(
+                    "basic_page.html",
+                    user_name=l.current_user.name,
+                    title="Edit comment",
+                    headline="Edit your comment",
+                    content=Markup(form),
+                )
 
     except ValueError:
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Comment not found",
-                               content=Markup("Comment <strong>#%s</strong> not found!" % comment_id))
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Comment not found",
+            content=Markup("Comment <strong>#%s</strong> not found!" % comment_id),
+        )
 
     except AssertionError:
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Term - %s" % term_id,
-                               content="""Error! You may only edit or remove terms and definitions that
-                                 you've contributed. However, you may comment or vote on this term. """)
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Term - %s" % term_id,
+            content="""Error! You may only edit or remove terms and definitions that
+                                 you've contributed. However, you may comment or vote on this term. """,
+        )
 
 
-@app.route("/comment=<int:comment_id>/remove", methods=['POST'])
+@app.route("/comment=<int:comment_id>/remove", methods=["POST"])
 def remComment(comment_id):
 
     try:
         g.db = app.dbPool.getScoped()
-        comment = g.db.getComment(int(request.form['id']))
-        assert comment and comment['owner_id'] == l.current_user.id
+        comment = g.db.getComment(int(request.form["id"]))
+        assert comment and comment["owner_id"] == l.current_user.id
 
-        g.db.removeComment(int(request.form['id']))
+        g.db.removeComment(int(request.form["id"]))
         g.db.commit()
 
-        return redirect("/term=%s" % g.db.getTermConceptId(comment['term_id']))
+        return redirect("/term=%s" % g.db.getTermConceptId(comment["term_id"]))
 
     except AssertionError:
-        return render_template("basic_page.html",
-                               user_name=l.current_user.name,
-                               title="Oops!",
-                               content="""Error! You may only edit or remove your own comments.""")
+        return render_template(
+            "basic_page.html",
+            user_name=l.current_user.name,
+            title="Oops!",
+            content="""Error! You may only edit or remove your own comments.""",
+        )
 
     # Voting! #
 
 
-@app.route("/term=<int:term_id>/vote", methods=['POST'])
+@app.route("/term=<int:term_id>/vote", methods=["POST"])
 @l.login_required
 def voteOnTerm(term_id):
     g.db = app.dbPool.getScoped()
     p_vote = g.db.getVote(l.current_user.id, term_id)
-    if request.form['action'] == 'up':
+    if request.form["action"] == "up":
         if p_vote == 1:
             g.db.castVote(l.current_user.id, term_id, 0)
         else:
             g.db.castVote(l.current_user.id, term_id, 1)
-    elif request.form['action'] == 'down':
+    elif request.form["action"] == "down":
         if p_vote == -1:
             g.db.castVote(l.current_user.id, term_id, 0)
         else:
@@ -1016,24 +1132,29 @@ def voteOnTerm(term_id):
     else:
         g.db.castVote(l.current_user.id, term_id, 0)
     g.db.commit()
-    print("User #%d voted %s term #%d" % (l.current_user.id, request.form['action'], term_id))
+    print(
+        "User #%d voted %s term #%d"
+        % (l.current_user.id, request.form["action"], term_id)
+    )
     return redirect("/term=%s" % g.db.getTermConceptId(term_id))
 
 
-@app.route("/term=<int:term_id>/track", methods=['POST'])
+@app.route("/term=<int:term_id>/track", methods=["POST"])
 @l.login_required
 def trackTerm(term_id):
     g.db = app.dbPool.getScoped()
-    if request.form['action'] == "star":
+    if request.form["action"] == "star":
         g.db.trackTerm(l.current_user.id, term_id)
     else:
         g.db.untrackTerm(l.current_user.id, term_id)
     g.db.commit()
-    print("User #%d %sed term #%d" % (l.current_user.id, request.form['action'], term_id))
+    print(
+        "User #%d %sed term #%d" % (l.current_user.id, request.form["action"], term_id)
+    )
     return redirect("/term=%s" % g.db.getTermConceptId(term_id))
 
 
 # Start HTTP server. (Not relevant on Heroku.) ##
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.debug = True
-    app.run('0.0.0.0', 5000, use_reloader=False)
+    app.run("0.0.0.0", 5000, use_reloader=False)
