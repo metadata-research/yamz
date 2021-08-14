@@ -23,11 +23,11 @@ TEST_MINTER_URL = "https://n2t.net/a/yamz/m/ark/99152/fk2"
 TEST_BINDER_URL = "https://n2t.net/a/yamz_test/b"
 
 # FIXME Location for minter_password is needlessly hardcoded.
-deploy = 'xsede'
-CONFIG = auth.get_config('.seaice_auth')
-PASSWORD = os.environ.get('MINTER_PASSWORD')
-if not PASSWORD and CONFIG.has_option(deploy, 'minter_password'):
-    PASSWORD = CONFIG.get(deploy, 'minter_password')
+deploy = "xsede"
+CONFIG = auth.get_config(".seaice_auth")
+PASSWORD = os.environ.get("MINTER_PASSWORD")
+if not PASSWORD and CONFIG.has_option(deploy, "minter_password"):
+    PASSWORD = CONFIG.get(deploy, "minter_password")
 
 TARGET_URL_TEMPLATE = "http://yamz.net/term/concept=%s"
 
@@ -58,7 +58,8 @@ def minderOpener(prod_mode):
         m.add_password(REALM, _binder, USERNAME, PASSWORD)
         _opener = urllib.request.build_opener(
             urllib.request.HTTPSHandler(debuglevel=0, context=ctxt),
-            urllib.request.HTTPBasicAuthHandler(m))
+            urllib.request.HTTPBasicAuthHandler(m),
+        )
 
         _opener.addheaders = [("Content-Type", "text/plain")]
         return _opener
@@ -73,7 +74,7 @@ def mintArkIdentifier(prod_mode):
     try:
         c = _opener.open(_minter + "?mint%201")
         r = c.readlines()
-        r = [l.decode('utf-8') for l in r] # convert from bytes to str
+        r = [l.decode("utf-8") for l in r]  # convert from bytes to str
         # xxx catch assert exceptions
         assert len(r) == 3 and r[0].startswith("s:") and r[1] == "nog-status: 0\n"
         arkId = r[0][3:].strip()
@@ -89,9 +90,9 @@ def mintArkIdentifier(prod_mode):
 enc_pat = re.compile("""[%'"]|[^!-~]""")
 
 
-def _encode(s):        # ^HH encodes chars (for egg :hx)
+def _encode(s):  # ^HH encodes chars (for egg :hx)
     if len(s) == 0:
-        return '""'         # empty string must be explicit
+        return '""'  # empty string must be explicit
     return enc_pat.sub(lambda c: "^%02X" % ord(c.group(0)), s)
     # s.encode('UTF-8', 'ignore'))
 
@@ -106,21 +107,22 @@ def bindArkIdentifier(arkId, prod_mode, who, what, peek):
     when = time.strftime("%Y.%m.%d_%H:%M:%S", time.gmtime())  # TEMPER-style
     c = None
     try:
-        concept_id = arkId.split('/')[-1]       # xxx why concept_id here?
-        op = ':hx ' + arkId + '.set'  # all our bind operations start this way
+        concept_id = arkId.split("/")[-1]  # xxx why concept_id here?
+        op = ":hx " + arkId + ".set"  # all our bind operations start this way
         d = ("%s _t " + TARGET_URL_TEMPLATE + "\n") % (op, concept_id)
-        d += "%s how %s\n" % (op, "term")       # metadata/resource type
+        d += "%s how %s\n" % (op, "term")  # metadata/resource type
         d += "%s who %s\n" % (op, _encode(who))  # term label/string
-        d += "%s what %s\n" % (op, _encode(what))   # definition
-        d += "%s when %s\n" % (op, _encode(when))   # created
-        d += "%s peek %s\n" % (op, _encode(peek))   # examples
+        d += "%s what %s\n" % (op, _encode(what))  # definition
+        d += "%s when %s\n" % (op, _encode(when))  # created
+        d += "%s peek %s\n" % (op, _encode(peek))  # examples
 
-        c = _opener.open(_binder + "?-", d.encode('utf-8'))
+        c = _opener.open(_binder + "?-", d.encode("utf-8"))
         r = c.readlines()
-        r = [l.decode('utf-8') for l in r] # convert from bytes to str
+        r = [l.decode("utf-8") for l in r]  # convert from bytes to str
         if len(r) != 2 or r[0] != "egg-status: 0\n":
-            print("error: bad binder return (%s), input=%s" % (
-                r[0], d), file=sys.stderr)
+            print(
+                "error: bad binder return (%s), input=%s" % (r[0], d), file=sys.stderr
+            )
 
     finally:
         if c:
@@ -135,12 +137,14 @@ def removeArkIdentifier(arkId, prod_mode):
         _opener = minderOpener(prod_mode)
     c = None
     try:
-        d = ':hx ' + arkId + ".purge\n"
-        c = _opener.open(_binder + "?-", d)
+        d = ":hx " + arkId + ".purge\n"
+        c = _opener.open(_binder + "?-", d.encode("utf-8"))
         r = c.readlines()
         if len(r) != 2 or r[0] != "egg-status: 0\n":
-            print("error: purge: bad binder return (%s), input=%s" % (
-                r[0], d), file=sys.stderr)
+            print(
+                "error: purge: bad binder return (%s), input=%s" % (r[0], d),
+                file=sys.stderr,
+            )
 
     finally:
         if c:
@@ -148,12 +152,12 @@ def removeArkIdentifier(arkId, prod_mode):
     return arkId
 
 
-_resolver_base = 'http://n2t.net/'
+_resolver_base = "http://n2t.net/"
 _resolver_base_len = len(_resolver_base)
 
 
 def ark2pid(ark):
-    return _resolver_base + ark     # add URL base
+    return _resolver_base + ark  # add URL base
 
 
 def pid2ark(pid):
@@ -173,4 +177,4 @@ def bind_persistent_id(prod_mode, arkId, who, what, peek):
 # yyy recyle id after suitable waiting period?
 def remove_persistent_id(prod_mode, arkId):
     arkId = removeArkIdentifier(arkId, prod_mode)
-    return ark2pid(arkId)           # yyy better return value?
+    return ark2pid(arkId)  # yyy better return value?
