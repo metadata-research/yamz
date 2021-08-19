@@ -29,6 +29,7 @@ from itertools import chain
 import sys
 import optparse
 import re
+from urllib.parse import urlencode
 import requests
 import psycopg2 as pgdb
 from flask import Markup, render_template, url_for, redirect, flash, request, session, g
@@ -481,9 +482,10 @@ def remNotification(user_id, notif_index):
 
 @app.route("/term/concept=<term_concept_id>")
 @app.route("/term=<term_concept_id>")
-@app.route("/ark:/99152/<term_concept_id>")
+@app.route("/ark:/99152/<term_concept_id>")  # concept id is the same as ark for now
 def getTerm(term_concept_id=None, message=""):
     # NOTE: this getTerm is called with concept_id, the other getTerm with id
+    # get_info = request.args.get("info", False)
 
     g.db = app.dbPool.getScoped()
     term = g.db.getTermByConceptId(term_concept_id)
@@ -496,31 +498,36 @@ def getTerm(term_concept_id=None, message=""):
             content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id),
         )
 
-    result = (
-        '<p><a href="/term/all_of_name/concept=%s">view all terms with the natural language string %s</a></p>'
-        % (term_concept_id, term["term_string"])
-    )
-    result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
-    result = message + "<hr>" + result + "<hr>"
-    result += seaice.pretty.printCommentsAsHTML(
-        g.db, g.db.getCommentHistory(term["id"]), l.current_user.id
-    )
+    if "info" in request.args:
+        user = g.db.getUser(term["owner_id"])
+        return render_template("info.html", term=term, user=user)
 
-    if l.current_user.id:
-        result += """
-        <form action="/term={0}/comment" method="post">
-            <table cellpadding=16 width=60%>
-                <tr><td><textarea type="text" name="comment_string" rows=3
-                    style="width:100%; height:100%"
-                    placeholder="Add comment"></textarea></td></tr>
-                <tr><td align=right><input type="submit" value="Comment"><td>
-                </td>
-            </table>
-        </form>""".format(
-            term["id"]
-        )
     else:
-        result += "<a href='/login'> Log in to comment </a>"
+        result = (
+            '<p><a href="/term/all_of_name/concept=%s">view all terms with the natural language string %s</a></p>'
+            % (term_concept_id, term["term_string"])
+        )
+        result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
+        result = message + "<hr>" + result + "<hr>"
+        result += seaice.pretty.printCommentsAsHTML(
+            g.db, g.db.getCommentHistory(term["id"]), l.current_user.id
+        )
+
+        if l.current_user.id:
+            result += """
+            <form action="/term={0}/comment" method="post">
+                <table cellpadding=16 width=60%>
+                    <tr><td><textarea type="text" name="comment_string" rows=3
+                        style="width:100%; height:100%"
+                        placeholder="Add comment"></textarea></td></tr>
+                    <tr><td align=right><input type="submit" value="Comment"><td>
+                    </td>
+                </table>
+            </form>""".format(
+                term["id"]
+            )
+        else:
+            result += "<a href='/login'> Log in to comment </a>"
 
     return render_template(
         "basic_page.html",
@@ -806,7 +813,8 @@ def addTerm():
         # xxx add check for temporary, test term_string and then only consume
         #     a test 'id'
         temp_id = app.termIdPool.ConsumeId()
-        concept_id = "j" + str(temp_id)
+        # FIXME: concept_id should probably get its own pool
+        concept_id = "h" + str(temp_id)
         term = {
             # 'term_string' : request.form['term_string'],
             "term_string": seaice.pretty.refs_norm(g.db, request.form["term_string"]),
