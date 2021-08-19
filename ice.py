@@ -481,6 +481,7 @@ def remNotification(user_id, notif_index):
 
 @app.route("/term/concept=<term_concept_id>")
 @app.route("/term=<term_concept_id>")
+@app.route("/ark:/99152/<term_concept_id>")
 def getTerm(term_concept_id=None, message=""):
     # NOTE: this getTerm is called with concept_id, the other getTerm with id
 

@@ -1,2 +1,2 @@
-def mint(naan=None):
+def mintArk(naan="99152"):
     pass
