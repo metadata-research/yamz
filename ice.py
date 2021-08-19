@@ -26,19 +26,13 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import configparser
 from itertools import chain
-from urllib.request import Request, urlopen
-from urllib.error import URLError
 import sys
 import optparse
 import re
-import json
-
 import requests
 import psycopg2 as pgdb
-
 from flask import Markup, render_template, url_for, redirect, flash, request, session, g
 import flask_login as l
-
 import seaice
 from pagination import getPaginationDetails
 
@@ -61,9 +55,7 @@ parser.add_option(
     "--config",
     dest="config_file",
     metavar="FILE",
-    help="User credentials for local PostgreSQL database. "
-    + "If 'heroku' is given, then a connection to a foreign host specified by "
-    + "DATABASE_URL is established.",
+    help="User credentials for local PostgreSQL database. ",
     default=".seaice",
 )
 
@@ -102,11 +94,11 @@ parser.add_option(
 
 (options, args) = parser.parse_args()
 
-# Figure out if we're in production mode.  Look in 'heroku' section only.
+# Figure out if we're in production mode.
 config = configparser.ConfigParser()
 config.read(".seaice_auth")
-if config.has_option("heroku", "prod_mode"):
-    prod_mode = config.getboolean("heroku", "prod_mode")
+if config.has_option("production", "prod_mode"):
+    prod_mode = config.getboolean("production", "prod_mode")
 else:
     prod_mode = False  # default
 
@@ -116,18 +108,13 @@ print("ice: starting ...")
 db_config = None
 
 try:
-
-    if options.config_file == "heroku":
-        app = seaice.SeaIceFlask(__name__)
-
-    else:
-        db_config = seaice.auth.get_config(options.config_file)
-        app = seaice.SeaIceFlask(
-            __name__,
-            db_user=db_config.get(options.db_role, "user"),
-            db_password=db_config.get(options.db_role, "password"),
-            db_name=db_config.get(options.db_role, "dbname"),
-        )
+    db_config = seaice.auth.get_config(options.config_file)
+    app = seaice.SeaIceFlask(
+        __name__,
+        db_user=db_config.get(options.db_role, "user"),
+        db_password=db_config.get(options.db_role, "password"),
+        db_name=db_config.get(options.db_role, "dbname"),
+    )
 
 except pgdb.DatabaseError as e:
     print("error: %s" % e, file=sys.stderr)

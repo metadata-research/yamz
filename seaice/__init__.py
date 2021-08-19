@@ -32,8 +32,3 @@ from .SeaIceFlask import *
 from .SeaIceConnector import *
 from .ConnectorPool import *
 from .IdPool import *
-from . import notify
-from . import user
-from . import auth
-from . import pretty
-from . import eggnog

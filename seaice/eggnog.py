@@ -23,7 +23,7 @@ TEST_MINTER_URL = "https://n2t.net/a/yamz/m/ark/99152/fk2"
 TEST_BINDER_URL = "https://n2t.net/a/yamz_test/b"
 
 # FIXME Location for minter_password is needlessly hardcoded.
-deploy = "xsede"
+deploy = "production"
 CONFIG = auth.get_config(".seaice_auth")
 PASSWORD = os.environ.get("MINTER_PASSWORD")
 if not PASSWORD and CONFIG.has_option(deploy, "minter_password"):
@@ -46,12 +46,12 @@ def minderOpener(prod_mode):
     # Note that exceptions are not handled here but passed to the caller.
     global _opener, _minter, _binder
     if not _minter:
-        if prod_mode:
-            _minter = REAL_MINTER_URL
-            _binder = REAL_BINDER_URL
-        else:
-            _minter = TEST_MINTER_URL
-            _binder = TEST_BINDER_URL
+        # if prod_mode:
+        #    _minter = REAL_MINTER_URL
+        #    _binder = REAL_BINDER_URL
+        # else:
+        _minter = TEST_MINTER_URL
+        _binder = TEST_BINDER_URL
     if not _opener:
         m = urllib.request.HTTPPasswordMgr()
         m.add_password(REALM, _minter, USERNAME, PASSWORD)

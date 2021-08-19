@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# 
+#
 # sea - console frontend to the SeaIce metadictionary
 #
 # Copyright (c) 2013, Christopher Patton, all rights reserved.
@@ -32,13 +32,13 @@ import configparser
 import psycopg2 as pqdb
 import seaice
 
-# Figure out if we're in production mode.  Look in 'heroku' section only.
+# Figure out if we're in production mode.
 config = configparser.ConfigParser()
-config.read('.seaice_auth')
-if config.has_option('heroku', 'prod_mode'):
-    prod_mode = config.getboolean('heroku', 'prod_mode')
+config.read(".seaice_auth")
+if config.has_option("production", "prod_mode"):
+    prod_mode = config.getboolean("production", "prod_mode")
 else:
-    prod_mode = False             # default
+    prod_mode = False  # default
 
 # Parse command line options. #
 
@@ -55,80 +55,161 @@ this program; otherwise, visit http://opensource.org/licenses/BSD-3-Clause.
 
 parser.description = description
 
-parser.add_option("-d", "--dump", action="store_true", dest="dump",
-                  default=False,
-                  help="Display dictionary contents on the terminal.")
+parser.add_option(
+    "-d",
+    "--dump",
+    action="store_true",
+    dest="dump",
+    default=False,
+    help="Display dictionary contents on the terminal.",
+)
 
-parser.add_option("--config", dest="config_file", metavar="FILE",
-                  help="User credentials for local PostgreSQL database (defaults to '$HOME/.seaice'). " +
-                  "If 'heroku' is given, then a connection to a foreign host specified by " +
-                  "DATABASE_URL is established.",
-                  default='.seaice')
+parser.add_option(
+    "--config",
+    dest="config_file",
+    metavar="FILE",
+    help="User credentials for local PostgreSQL database (defaults to '$HOME/.seaice'). "
+    + "If 'heroku' is given, then a connection to a foreign host specified by "
+    + "DATABASE_URL is established.",
+    default=".seaice",
+)
 
-parser.add_option("--truncate", dest="truncate_table",
-                  help="Delete all rows in dictionary table; if used with --import, this option should precede it.")
+parser.add_option(
+    "--truncate",
+    dest="truncate_table",
+    help="Delete all rows in dictionary table; if used with --import, this option should precede it.",
+)
 
-parser.add_option("--import", dest="import_table",
-                  help="Import JSON-formatted FILE into the dictionary.",
-                  metavar="TABLE")
+parser.add_option(
+    "--import",
+    dest="import_table",
+    help="Import JSON-formatted FILE into the dictionary.",
+    metavar="TABLE",
+)
 
-parser.add_option("--rebind", action="store_true", dest="rebind",
-                  default=False, help="On import, also bind persistent identifier metadata.")
+parser.add_option(
+    "--rebind",
+    action="store_true",
+    dest="rebind",
+    default=False,
+    help="On import, also bind persistent identifier metadata.",
+)
 
-parser.add_option("--remint", action="store_true", dest="remint",
-                  default=False,
-                  help="On import, mint a new persistent identifier " +
-                  "(implies --rebind). Normally a new identifier is " +
-                  "minted only when a term has none.")
+parser.add_option(
+    "--remint",
+    action="store_true",
+    dest="remint",
+    default=False,
+    help="On import, mint a new persistent identifier "
+    + "(implies --rebind). Normally a new identifier is "
+    + "minted only when a term has none.",
+)
 
-parser.add_option("--export", dest="export_table",
-                  help="Export dictionary as JSON-formatted FILE.",
-                  metavar="TABLE")
+parser.add_option(
+    "--export",
+    dest="export_table",
+    help="Export dictionary as JSON-formatted FILE.",
+    metavar="TABLE",
+)
 
-parser.add_option("-f", "--file", dest="file_name",
-                  help="File from which to import, or file to which to export.",
-                  metavar="FILE")
+parser.add_option(
+    "-f",
+    "--file",
+    dest="file_name",
+    help="File from which to import, or file to which to export.",
+    metavar="FILE",
+)
 
-parser.add_option("-s", "--search", dest="search_term",
-                  help="Search the metadictionary for TERM and return a list of matches.",
-                  metavar="TERM")
+parser.add_option(
+    "-s",
+    "--search",
+    dest="search_term",
+    help="Search the metadictionary for TERM and return a list of matches.",
+    metavar="TERM",
+)
 
-parser.add_option("-r", "--remove", dest="remove_id",
-                  help="Remove the metadictionary entry corresponding to ID.",
-                  metavar="ID")
+parser.add_option(
+    "-r",
+    "--remove",
+    dest="remove_id",
+    help="Remove the metadictionary entry corresponding to ID.",
+    metavar="ID",
+)
 
-parser.add_option("--score-terms", action="store_true", dest="score",
-                  default=False,
-                  help="Compute and print scores of terms. This will modify the term.")
+parser.add_option(
+    "--score-terms",
+    action="store_true",
+    dest="score",
+    default=False,
+    help="Compute and print scores of terms. This will modify the term.",
+)
 
-parser.add_option("--classify-terms", action="store_true", dest="classify", default=False,
-                  help="Classify stable terms in the dictionary. This will modify the term's class.")
+parser.add_option(
+    "--classify-terms",
+    action="store_true",
+    dest="classify",
+    default=False,
+    help="Classify stable terms in the dictionary. This will modify the term's class.",
+)
 
-parser.add_option("--set-reputation", dest="reputation",
-                  help="Set user's reputation (to a positive integer).",
-                  metavar="INT")
+parser.add_option(
+    "--set-reputation",
+    dest="reputation",
+    help="Set user's reputation (to a positive integer).",
+    metavar="INT",
+)
 
-parser.add_option("-u", "--user", dest="user_id",
-                  help="ID of user whose reputation is to be set.",
-                  metavar="ID", default=None)
+parser.add_option(
+    "-u",
+    "--user",
+    dest="user_id",
+    help="ID of user whose reputation is to be set.",
+    metavar="ID",
+    default=None,
+)
 
-parser.add_option("--drop-db", action="store_true", dest="drop_tables",
-                  default=False,
-                  help="Drop all metadictionary tables from the database.")
+parser.add_option(
+    "--drop-db",
+    action="store_true",
+    dest="drop_tables",
+    default=False,
+    help="Drop all metadictionary tables from the database.",
+)
 
-parser.add_option("--init-db", action="store_true", dest="create_tables",
-                  default=False, help="Create new tables if they don't exist.")
+parser.add_option(
+    "--init-db",
+    action="store_true",
+    dest="create_tables",
+    default=False,
+    help="Create new tables if they don't exist.",
+)
 
-parser.add_option("-j", "--json", action="store_true", dest="json",
-                  default=False, help="Format terminal output as a JSON structure.")
+parser.add_option(
+    "-j",
+    "--json",
+    action="store_true",
+    dest="json",
+    default=False,
+    help="Format terminal output as a JSON structure.",
+)
 
-parser.add_option("-q", "--quiet", action="store_true", dest="quiet",
-                  default=False, help="Don't prompt for confirmation when dropping tables.")
+parser.add_option(
+    "-q",
+    "--quiet",
+    action="store_true",
+    dest="quiet",
+    default=False,
+    help="Don't prompt for confirmation when dropping tables.",
+)
 
-parser.add_option("--role", dest="db_role", metavar="USER",
-                  help="Specify the database role to use for the DB connector pool. These roles " +
-                  "are specified in the configuration file (see --config).",
-                  default="default")
+parser.add_option(
+    "--role",
+    dest="db_role",
+    metavar="USER",
+    help="Specify the database role to use for the DB connector pool. These roles "
+    + "are specified in the configuration file (see --config).",
+    default="default",
+)
 
 if len(sys.argv) < 2:
     parser.print_help()
@@ -154,40 +235,60 @@ try:
         try:
             config = seaice.auth.get_config(options.config_file)
         except OSError:
-            print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
+            print(
+                "error: config file '%s' not found" % options.config_file,
+                file=sys.stderr,
+            )
             sys.exit(1)
 
         sea = seaice.SeaIceConnector(
-            config.get(options.db_role, 'user'),
-            config.get(options.db_role, 'password'),
-            config.get(options.db_role, 'dbname'))
+            config.get(options.db_role, "user"),
+            config.get(options.db_role, "password"),
+            config.get(options.db_role, "dbname"),
+        )
 
     # Run specified queries. #
 
     if options.remove_id:
         if not sea.removeTerm(int(options.remove_id)):
-            print("sea: no such term (Id=%s not found)" % options.remove_id, file=sys.stderr)
+            print(
+                "sea: no such term (Id=%s not found)" % options.remove_id,
+                file=sys.stderr,
+            )
 
     if options.reputation:
         if not options.user_id:
             print("sea: must specify user Id", file=sys.stderr)
-        elif not sea.updateUserReputation(int(options.user_id), int(options.reputation)):
-            print("sea: no such user (Id=%s not found)" % options.user_id, file=sys.stderr)
+        elif not sea.updateUserReputation(
+            int(options.user_id), int(options.reputation)
+        ):
+            print(
+                "sea: no such user (Id=%s not found)" % options.user_id, file=sys.stderr
+            )
 
     if options.truncate_table:
         sea.Truncate(options.truncate_table)
 
     if options.import_table:
-        sea.Import(options.import_table, prod_mode, options.file_name,
-                   rebind=options.rebind, remint=options.remint)
+        sea.Import(
+            options.import_table,
+            prod_mode,
+            options.file_name,
+            rebind=options.rebind,
+            remint=options.remint,
+        )
 
     if options.export_table:
         sea.Export(options.export_table, options.file_name)
 
     if options.drop_tables:
         if not options.quiet:
-            print("warning: this will erase all terms. Are you sure? [y/n] ", end=' ', file=sys.stderr)
-            if input() in ['y', 'yes', 'Y']:
+            print(
+                "warning: this will erase all terms. Are you sure? [y/n] ",
+                end=" ",
+                file=sys.stderr,
+            )
+            if input() in ["y", "yes", "Y"]:
                 sea.dropSchema()
         else:
             sea.dropSchema()
@@ -197,30 +298,30 @@ try:
 
     if options.dump:
         if options.json:
-            sea.Export('Terms')
+            sea.Export("Terms")
         else:
             seaice.pretty.printTermsPretty(sea, sea.getAllTerms(sortBy="term_string"))
 
     header = True
     if options.score:
         for term in sea.getAllTerms():
-            (U, V) = sea.preScore(term['id'])
-            s = sea.postScore(term['id'], U, V)
+            (U, V) = sea.preScore(term["id"])
+            s = sea.postScore(term["id"], U, V)
             if header:
-                print("%-8s%-20s%-8s%-8s%-8s" % ('Id', 'Term', 'Up', 'Down', 'Score'))
+                print("%-8s%-20s%-8s%-8s%-8s" % ("Id", "Term", "Up", "Down", "Score"))
                 header = False
-            print("%-8d%-20s%-8d%-8d%-8.2f" % (
-                term['id'],
-                term['term_string'],
-                term['up'],
-                term['down'],
-                (100 * s)))
+            print(
+                "%-8d%-20s%-8d%-8d%-8.2f"
+                % (term["id"], term["term_string"], term["up"], term["down"], (100 * s))
+            )
 
     header = True
     if options.classify:
-        for (term, id) in [(term['term_string'], term['id']) for term in sea.getAllTerms()]:
+        for (term, id) in [
+            (term["term_string"], term["id"]) for term in sea.getAllTerms()
+        ]:
             if header:
-                print("%-8s%-20s%-8s" % ('Id', 'Term', 'Class'))
+                print("%-8s%-20s%-8s" % ("Id", "Term", "Class"))
                 header = False
             print("%-8s%-20s%-8s" % (id, term, sea.classifyTerm(id)))
             sea.commit()
@@ -238,7 +339,7 @@ try:
     sea.commit()
 
 except pqdb.DatabaseError as e:
-    print('error: %s' % e)
+    print("error: %s" % e)
     sys.exit(1)
 
 # xxx commenting these out makes for better diagnostics?
