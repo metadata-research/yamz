@@ -36,10 +36,7 @@ import json
 import requests
 import psycopg2 as pgdb
 
-from flask import Markup
-from flask import render_template
-from flask import url_for, redirect, flash
-from flask import request, session, g
+from flask import Markup, render_template, url_for, redirect, flash, request, session, g
 import flask_login as l
 
 import seaice
@@ -338,19 +335,19 @@ def authorized():
 #    return orcid.authorize_redirect(redirect_uri)
 
 
-@app.route(seaice.auth.REDIRECT_URI_ORCID)
-def orcid_authorized():
-    access_token = orcid.authorize_access_token()
-    session["orcid_access_token"] = access_token, ""
-
-    orcid_user = resp
-
-    g.db = app.dbPool.getScoped()
-    g.db.setOrcid(l.current_user.id, orcid_user["orcid"])
-    g.db.commit()
-
-    flash("Logged in successfully")
-    return redirect("/account")
+# @app.route(seaice.auth.REDIRECT_URI_ORCID)
+# def orcid_authorized():
+#    access_token = orcid.authorize_access_token()
+#    session["orcid_access_token"] = access_token, ""
+#
+#    orcid_user = resp
+#
+#    g.db = app.dbPool.getScoped()
+#    g.db.setOrcid(l.current_user.id, orcid_user["orcid"])
+#    g.db.commit()
+#
+#    flash("Logged in successfully")
+#    return redirect("/account")
 
 
 def get_access_token():

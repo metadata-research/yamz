@@ -7,6 +7,7 @@
 *.out
 _build
 .seaice_auth
+.seaice
 env
 venv
 settings.json
