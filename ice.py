@@ -2,96 +2,23 @@
 #
 # ice - web frontend for SeaIce, based on the Python-Flask framework.
 #
-# Copyright (c) 2013, Christopher Patton, all rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#   * Redistributions of source code must retain the above copyright
-#     notice, this list of conditions and the following disclaimer.
-#   * Redistributions in binary form must reproduce the above copyright
-#     notice, this list of conditions and the following disclaimer in the
-#     documentation and/or other materials provided with the distribution.
-#   * The names of contributors may be used to endorse or promote products
-#     derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# MIT License
+
 import configparser
-from itertools import chain
-import sys
-import optparse
 import re
-from urllib.parse import urlencode
-import requests
-import psycopg2 as pgdb
-from flask import Markup, render_template, url_for, redirect, flash, request, session, g
+import sys
+from itertools import chain
+
 import flask_login as l
+import psycopg2 as pgdb
+import requests
+from flask import Markup, flash, g, redirect, render_template, request, session, url_for
+
 import seaice
 from pagination import getPaginationDetails
 
 # Parse command line options. #
-
-parser = optparse.OptionParser()
-
-parser.description = """\
-This program is a Python/Flask-based web frontend for the SeaIce metadictionary.
-SeaIce is a database comprised of a set of user-defined, crowd-sourced terms and
-relations. The goal of SeaIce is to develop a succinct and complete set of
-metadata terms to register just about any type of file or data set. 'ice' is
-distributed under the terms of the BSD license with the hope that it will be
-# useful, but without warranty. You should have received a copy of the BSD
-license with this program; otherwise, visit
-http://opensource.org/licenses/BSD-3-Clause.
-"""
-
-parser.add_option(
-    "--config",
-    dest="config_file",
-    metavar="FILE",
-    help="User credentials for local PostgreSQL database. ",
-    default=".seaice",
-)
-
-parser.add_option(
-    "--credentials",
-    dest="credentials_file",
-    metavar="FILE",
-    help="File with OAuth-2.0 credentials. (Defaults to `.seaice_auth`.)",
-    default=".seaice_auth",
-)
-
-parser.add_option(
-    "--deploy",
-    dest="deployment_mode",
-    help="Deployment mode, used to choose OAuth parameters in credentials file.",
-    default="dev",
-)
-
-parser.add_option(
-    "-d",
-    "--debug",
-    action="store_true",
-    dest="debug",
-    default=False,
-    help="Start flask in debug mode.",
-)
-
-parser.add_option(
-    "--role",
-    dest="db_role",
-    metavar="USER",
-    help="Specify the database role to use for the DB connector pool. These roles "
-    + "are specified in the configuration file (see --config).",
-    default="default",
-)
+from seaice.parser import parser
 
 (options, args) = parser.parse_args()
 
@@ -502,7 +429,7 @@ def getTerm(term_concept_id=None, message=""):
         user = g.db.getUser(term["owner_id"])
         return render_template(
             "info.html", term=term, user=user
-        )  # could create a pretty.printAsErc() function for consistency
+        )  # TODO: create a pretty.printAsErc() function for consistency
 
     else:
         result = (
