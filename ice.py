@@ -498,9 +498,11 @@ def getTerm(term_concept_id=None, message=""):
             content=Markup("Term <strong>#%s</strong> not found!" % term_concept_id),
         )
 
-    if "info" in request.args:
+    if "info" in request.args or request.full_path.endswith("??"):
         user = g.db.getUser(term["owner_id"])
-        return render_template("info.html", term=term, user=user)
+        return render_template(
+            "info.html", term=term, user=user
+        )  # could create a pretty.printAsErc() function for consistency
 
     else:
         result = (
