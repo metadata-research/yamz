@@ -25,12 +25,14 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from math import fabs
 import os
 import sys
 import re
 import urllib.parse
 import json
 from functools import reduce
+from itsdangerous import exc
 
 import psycopg2 as pgdb
 import psycopg2.extras
@@ -229,7 +231,7 @@ class SeaIceConnector(object):
             CREATE TABLE IF NOT EXISTS SI.Terms
                 (
                     id          SERIAL PRIMARY KEY NOT NULL,
-                    ark_id      INTEGER DEFAULT 0 NOT NULL,
+                    ark_id      INTEGER DEFAULT NULL,
                     owner_id    INTEGER DEFAULT 0 NOT NULL,
                     created     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
                     modified    TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -385,6 +387,7 @@ class SeaIceConnector(object):
         #: Default values for database table column entries.
         defTerm = {
             "id": None,
+            "ark_id": None,
             "term_string": "nil",
             "definition": "nil",
             "examples": "nil",
@@ -407,6 +410,7 @@ class SeaIceConnector(object):
             cur.execute(
                 """INSERT INTO SI.Terms(
                     id,
+                    ark_id,
                     term_string,
                     definition,
                     examples,
@@ -417,55 +421,52 @@ class SeaIceConnector(object):
                     owner_id,
                     persistent_id,
                     concept_id )
-                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                         RETURNING id
                 """, (
-                    defTerm['id'], defTerm['term_string'],
-                    defTerm['definition'], defTerm['examples'],
-                    defTerm['up'], defTerm['down'],
-                    defTerm['created'], defTerm['modified'],
-                    defTerm['owner_id'], defTerm['persistent_id'],
+                    defTerm['id'],
+                    defTerm['ark_id'],
+                    defTerm['term_string'],
+                    defTerm['definition'],
+                    defTerm['examples'],
+                    defTerm['up'],
+                    defTerm['down'],
+                    defTerm['created'],
+                    defTerm['modified'],
+                    defTerm['owner_id'],
+                    defTerm['persistent_id'],
                     defTerm['concept_id']))
 
             res = cur.fetchone()
             id = None if res is None else res[0]
 
-            persistent_id = defTerm['persistent_id']
+            bind = False
+
+            # persistent_id = defTerm['persistent_id']
             concept_id = defTerm['concept_id']
+            persistent_id = defTerm['persistent_id']
+            ark_id = defTerm['ark_id']
+            
+            if ark_id is None:
+                cur.execute("SELECT MAX(ark_id) FROM SI.terms")
+                res = cur.fetchone()
+                ark_id = res[0] + 1
+                bind = True
 
-            if not persistent_id:
-                remint = True       # if no pid, make one
-            if remint:
-                rebind = True       # (re)mint implies (re)bind
+            if concept_id is None:
+                concept_id = "h" + str(ark_id)
+                bind = True
 
-            # create persistent ID for term if need be
-            if not persistent_id or remint:
-                persistent_id = eggnog.create_persistent_id(prod_mode)
-
-            if rebind:
-                eggnog.bind_persistent_id(
-                    prod_mode,
-                    eggnog.pid2ark(persistent_id),      # removes URL hostname
-                    pretty.processRefsAsText(defTerm['term_string']),
-                    pretty.processRefsAsText(defTerm['definition']),
-                    pretty.processRefsAsText(defTerm['examples']))
-
-            if not persistent_id:       # if that didn't work, bail
-                print("warning: aborting insert for id=%s -- no persistent_id" % defTerm['id'], file=sys.stderr)
-                cur.execute("ROLLBACK;")
-                return None
-
-            concept_id = concept_id_regex.search(persistent_id).group(1)
-            if not concept_id:
-                print("warning: aborting insert for id=%s, persistent_id=%s" % (
-                    defTerm['id'],
-                    persistent_id), file=sys.stderr)
-                cur.execute("ROLLBACK;")
-                return None
-
-            sql = "update si.terms set persistent_id = %s, concept_id = %s where id = %s;"
-            data = (persistent_id, concept_id, id)
-            cur.execute(sql, data)
+            if persistent_id is None:
+                persistent_id ="http://n2t.net/ark:/99152/" + concept_id
+                bind = True
+            
+            
+            # We don't need to do this if the term is already assigned an ark_id.
+            if bind:
+                sql = "UPDATE SI.terms SET ark_id = %s, concept_id = %s, persistent_id = %s WHERE id = %s;"
+                data = (ark_id, concept_id, persistent_id, id)
+                cur.execute(sql, data)
 
             return (id, concept_id)
 

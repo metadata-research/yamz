@@ -813,18 +813,14 @@ def addTerm():
         # xxx add check for non-empty term_string before consuming new 'id'
         # xxx add check for temporary, test term_string and then only consume
         #     a test 'id'
-        temp_id = app.termIdPool.ConsumeId()
-        # FIXME: concept_id should probably get its own pool
-        concept_id = "h" + str(temp_id)
+
         term = {
             # 'term_string' : request.form['term_string'],
             "term_string": seaice.pretty.refs_norm(g.db, request.form["term_string"]),
             "definition": seaice.pretty.refs_norm(g.db, request.form["definition"]),
             "examples": seaice.pretty.refs_norm(g.db, request.form["examples"]),
             "owner_id": l.current_user.id,
-            "id": temp_id,
-            "concept_id": concept_id,
-            "persistent_id": "http://n2t.net/ark:/99152/" + concept_id,
+            "id": app.termIdPool.ConsumeId(),
         }
 
         (id, concept_id) = g.db.insertTerm(term, prod_mode)
