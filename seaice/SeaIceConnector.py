@@ -231,7 +231,7 @@ class SeaIceConnector(object):
             CREATE TABLE IF NOT EXISTS SI.Terms
                 (
                     id          SERIAL PRIMARY KEY NOT NULL,
-                    ark_id      INTEGER DEFAULT NULL,
+                    ark_id      SERIAL NOT NULL,
                     owner_id    INTEGER DEFAULT 0 NOT NULL,
                     created     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
                     modified    TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -410,7 +410,6 @@ class SeaIceConnector(object):
             cur.execute(
                 """INSERT INTO SI.Terms(
                     id,
-                    ark_id,
                     term_string,
                     definition,
                     examples,
@@ -421,11 +420,10 @@ class SeaIceConnector(object):
                     owner_id,
                     persistent_id,
                     concept_id )
-                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        RETURNING id
+                    VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING id, ark_id
                 """, (
                     defTerm['id'],
-                    defTerm['ark_id'],
                     defTerm['term_string'],
                     defTerm['definition'],
                     defTerm['examples'],
@@ -437,21 +435,17 @@ class SeaIceConnector(object):
                     defTerm['persistent_id'],
                     defTerm['concept_id']))
 
+            concept_id = defTerm['concept_id']
+            persistent_id = defTerm['persistent_id']
+
             res = cur.fetchone()
             id = None if res is None else res[0]
+            ark_id = None if res is None else res[1]   
 
             bind = False
 
             # persistent_id = defTerm['persistent_id']
-            concept_id = defTerm['concept_id']
-            persistent_id = defTerm['persistent_id']
-            ark_id = defTerm['ark_id']
-            
-            if ark_id is None:
-                cur.execute("SELECT MAX(ark_id) FROM SI.terms")
-                res = cur.fetchone()
-                ark_id = res[0] + 1
-                bind = True
+           
 
             if concept_id is None:
                 concept_id = "h" + str(ark_id)
@@ -459,13 +453,12 @@ class SeaIceConnector(object):
 
             if persistent_id is None:
                 persistent_id ="http://n2t.net/ark:/99152/" + concept_id
-                bind = True
-            
+
             
             # We don't need to do this if the term is already assigned an ark_id.
             if bind:
-                sql = "UPDATE SI.terms SET ark_id = %s, concept_id = %s, persistent_id = %s WHERE id = %s;"
-                data = (ark_id, concept_id, persistent_id, id)
+                sql = "UPDATE SI.terms SET concept_id = %s, persistent_id = %s WHERE id = %s;"
+                data = (concept_id, persistent_id, id)
                 cur.execute(sql, data)
 
             return (id, concept_id)
@@ -1728,11 +1721,11 @@ class SeaIceConnector(object):
       
         """
         cur = self.con.cursor()
-        cur.execute("""SELECT concept_id FROM SI.terms""")
+        cur.execute("""SELECT concept_id FROM SI.terms;""")
         concept_ids = cur.fetchall()
         for concept_id in concept_ids:
             ark_id = int(concept_id[0][1:])
             sql = "UPDATE SI.terms SET ark_id = %s WHERE concept_id = %s;"
             data = (ark_id, concept_id)
             cur.execute(sql, data)
-        
+        cur.execute("""ALTER SEQUENCE SI.Terms_ark_id_seq RESTART WITH 4001;""")
