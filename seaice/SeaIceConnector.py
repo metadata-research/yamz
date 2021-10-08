@@ -229,6 +229,7 @@ class SeaIceConnector(object):
             CREATE TABLE IF NOT EXISTS SI.Terms
                 (
                     id          SERIAL PRIMARY KEY NOT NULL,
+                    ark_id      INTEGER DEFAULT 0 NOT NULL,
                     owner_id    INTEGER DEFAULT 0 NOT NULL,
                     created     TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
                     modified    TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
@@ -1719,3 +1720,18 @@ class SeaIceConnector(object):
                 self.insertComment(row)
             elif table == "Tracking":
                 self.insertTracking(row)
+
+    # some temporary utility functions for changing how concept ids are assigned
+    def AlignArks(self):
+        """ Align an ark_id to a concept_id.
+      
+        """
+        cur = self.con.cursor()
+        cur.execute("""SELECT concept_id FROM SI.terms""")
+        concept_ids = cur.fetchall()
+        for concept_id in concept_ids:
+            ark_id = int(concept_id[0][1:])
+            sql = "UPDATE SI.terms SET ark_id = %s WHERE concept_id = %s;"
+            data = (ark_id, concept_id)
+            cur.execute(sql, data)
+        
