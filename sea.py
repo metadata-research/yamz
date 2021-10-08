@@ -211,6 +211,15 @@ parser.add_option(
     default="default",
 )
 
+# added as utility to align already assigned concept ids to ark_ids
+parser.add_option(
+    "--align",
+    action="store_true",    
+    dest="align_ark_ids",
+    default=False,
+    help="Align ARK IDs in the database with the concept_ids and strip the prefix.",
+    )
+
 if len(sys.argv) < 2:
     parser.print_help()
     sys.exit(0)
@@ -248,6 +257,9 @@ try:
         )
 
     # Run specified queries. #
+
+    if options.align_ark_ids:
+        sea.AlignArks()
 
     if options.remove_id:
         if not sea.removeTerm(int(options.remove_id)):
