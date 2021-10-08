@@ -495,7 +495,7 @@ class SeaIceConnector(object):
         cur.execute("DELETE FROM SI.Terms WHERE id=%s RETURNING id", (id,))
         res = cur.fetchone()
         # xxx catch exceptions?
-        eggnog.remove_persistent_id(prod_mode, eggnog.pid2ark(persistent_id))
+        #eggnog.remove_persistent_id(prod_mode, eggnog.pid2ark(persistent_id))
 
         if res:
             return res[0]
