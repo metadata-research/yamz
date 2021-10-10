@@ -1,0 +1,29 @@
+      <div class="row mt-4">
+        <div class="col-md-3 fw-bold">
+        Term
+        {% if sort_order == "ASC" %}
+          <a href="{{ url_for('getListAlphabetical', page=page, order='descending') }}"><i class="bi-sort-alpha-down"></i></a>
+        {% else %}
+          <a href="{{ url_for('getListAlphabetical', page=page, order='ascending') }}"><i class="bi-sort-alpha-up"></i></a>  
+        {% endif %}
+        
+        </div>
+        <div class="col-sm-1 fw-bold">Score</div>
+        <div class="col-sm-1 fw-bold">Consensus</div>
+        <div class="col-sm-1 fw-bold">Class</div>
+        <div class="col-sm-1 fw-bold">Date</div>
+        <div class="col-sm-3 fw-bold">Contributed by</div>
+      </div>
+
+
+    {% for term in terms  %}
+      <div class="row">
+        <div class="col-md-3"><a href="{{ url_for('getTerm', term_concept_id=term.concept_id) }}">{{ term.term_string|tag_to_term }}</a></div>
+        <div class="col-sm-1">{{term.up - term.down}}</div>
+        <div class="col-sm-1">{{ term.consensus|summarize_consensus }}</div>
+        <div class="col-sm-1">{{ term.class }}</div>
+        <div class="col-sm-1">Date</div>
+        <div class="col-sm-3">{{g.db.getUserNameById(term.owner_id, full=True)}}</div>
+      </div>
+
+    {% endfor %}

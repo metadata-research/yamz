@@ -35,6 +35,8 @@ from flask import Markup, flash, g, redirect, render_template, request, session,
 
 import seaice
 from pagination import getPaginationDetails
+from seaice.pretty import innerAnchor
+
 
 # Parse command line options. #
 parser = optparse.OptionParser()
@@ -142,6 +144,7 @@ app.debug = True
 app.use_reloader = True
 app.secret_key = credentials.get(options.deployment_mode, "app_secret")
 
+
 # Session logins #
 
 login_manager = l.LoginManager()
@@ -196,6 +199,31 @@ def pageNotFound(e):
         ),
         404,
     )
+
+# this is a rough cut for now
+@app.template_filter("tag_to_term")
+def format_term(term_string):
+    
+    if term_string.startswith("#{g: xq"):
+        term_string = term_string.replace("{g: xq", "")  
+    
+    if "| h" in term_string:
+        term_string = term_string[:term_string.find("| h")]
+
+    return term_string
+
+@app.template_filter("summarize_consensus")
+def summarize_consensus(consensus):
+    """
+    Return 'high', 'medium' or 'low' as a rough indicator of consensus.
+    """
+    cons = int(100 * consensus)
+    if cons >= 70:
+        return "high"
+    elif cons >= 30:
+        return "medium"
+    else:
+        return "low"
 
 
 # home page
@@ -607,6 +635,44 @@ def getTermsOfName(term_concept_id=None, message=""):
         content=Markup(content),
     )
 
+
+
+@app.route("/list/alphabetical")
+@app.route("/list/alphabetical/<int:page>")
+def getListAlphabetical(page=None):
+    sort_order = "ASC"
+    
+    if request.args.get("order") == "descending":
+        sort_order = "DESC"
+
+    g.db = app.dbPool.getScoped()
+    if page:
+        terms = g.db.getChunkTerms(sortBy="term_string " + sort_order, page=page, tpp=20)
+    else:
+        terms = g.db.getAllTerms(sortBy="term_string " + sort_order)
+
+    return render_template(
+        "list/index.html",
+        user_name=l.current_user.name,
+        title="List of terms",
+        headline="Terms",
+        terms=terms,
+        page=page,
+        sort_order=sort_order,
+    )
+
+@app.route("/list/score/<int:page>")
+def getListByScore(page):
+    g.db = app.dbPool.getScoped()
+    terms = g.db.getChunkTerms(sortBy="up - down DESC", page=page, tpp=20)
+
+    return render_template(
+        "list/index.html",
+        user_name=l.current_user.name,
+        title="List of terms",
+        headline="Terms",
+        terms=terms,
+    )
 
 @app.route("/browse")
 @app.route("/browse/<listing>")
