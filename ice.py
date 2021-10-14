@@ -34,8 +34,11 @@ import requests
 from flask import Markup, flash, g, redirect, render_template, request, session, url_for
 
 import seaice
+from seaice.paginate import Pager
+
+
 from pagination import getPaginationDetails
-from seaice.pretty import innerAnchor
+
 
 
 # Parse command line options. #
@@ -200,7 +203,7 @@ def pageNotFound(e):
         404,
     )
 
-# this is a rough cut for now
+# we'll move this to pretty for consistency but here for now
 @app.template_filter("tag_to_term")
 def format_term(term_string):
     
@@ -661,10 +664,23 @@ def getListAlphabetical(page=None):
         sort_order=sort_order,
     )
 
+@app.route("/list/score")
 @app.route("/list/score/<int:page>")
-def getListByScore(page):
+def getListByScore(page=None):
+    sort_order = "DESC"
+    terms_per_page = 20
+    pager = None
+    
+    if request.args.get("order") == "ascending":
+        sort_order = "ASC"
+
     g.db = app.dbPool.getScoped()
-    terms = g.db.getChunkTerms(sortBy="up - down DESC", page=page, tpp=20)
+    if page: 
+        terms = g.db.getChunkTerms(sortBy="up- down " + sort_order, page=page, tpp=terms_per_page)
+        pager = Pager(page=page, per_page=terms_per_page, total_count = g.db.getLengthTerms())
+    else:
+        terms = g.db.getAllTerms(sortBy="up - down " + sort_order)
+    
 
     return render_template(
         "list/index.html",
@@ -672,6 +688,9 @@ def getListByScore(page):
         title="List of terms",
         headline="Terms",
         terms=terms,
+        page=page,
+        sort_order=sort_order,
+        pager=pager,
     )
 
 @app.route("/browse")
@@ -786,7 +805,6 @@ hash2uniquerifier_regex = re.compile("(?<!#)#(\w[\w.-]+)")
 def returnQuery():
     g.db = app.dbPool.getScoped()
     if request.method == "POST":
-        # XXX whoa -- this use of term_string variable name (in all html forms)
         #     is totally different from term_string as used in the database!
         # search_words = hash2uniquerifier_regex.sub(
         #     seaice.pretty.ixuniq + '\\1',
@@ -819,8 +837,6 @@ def returnQuery():
 @app.route("/search/<search_term>/<int:page>")
 def returnQueryPaginated(search_term=None, page=1):
     g.db = app.dbPool.getScoped()
-    # XXX whoa -- this use of term_string variable name (in all html forms)
-    #     is totally different from term_string as used in the database!
     search_words = hash2uniquerifier_regex.sub(
         seaice.pretty.ixuniq + "\\1", search_term
     )
