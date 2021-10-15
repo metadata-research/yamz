@@ -49,13 +49,14 @@
 {% include 'list/_terms.html' %} 
 <hr>
 
-  
-{% for page in pager  %}
-  {% if page  %}
-    <a href="{{ url_for('getListByScore', page=page) }}">{{ page }}</a>
-  {% else %}
-    ...
-  {% endif %}
-{% endfor %}
+{% if pager %}
+  {% for page in pager  %}
+    {% if page  %}
+      <a href="{{ url_for('getList', type=type, page=page, order=sort_order) }}">{{ page }}</a>
+    {% else %}
+      ...
+    {% endif %}
+  {% endfor %}
+{% endif %}
 
 {% endblock %}

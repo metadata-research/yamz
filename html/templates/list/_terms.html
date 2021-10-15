@@ -1,10 +1,10 @@
       <div class="row mt-4">
         <div class="col-md-3 fw-bold">
         Term
-        {% if sort_order == "ASC" %}
-          <a href="{{ url_for('getListAlphabetical', page=page, order='descending') }}"><i class="bi-sort-alpha-down"></i></a>
+        {% if sort_order == "descending" %}
+          <a href="{{ url_for('getList', page=page, type="alphabetical", order='ascending') }}"><i class="bi-sort-alpha-up"></i></a>
         {% else %}
-          <a href="{{ url_for('getListAlphabetical', page=page, order='ascending') }}"><i class="bi-sort-alpha-up"></i></a>  
+          <a href="{{ url_for('getList', page=page, type="alphabetical", order='descending') }}"><i class="bi-sort-alpha-down"></i></a>  
         {% endif %}
         
         </div>

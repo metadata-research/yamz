@@ -638,49 +638,33 @@ def getTermsOfName(term_concept_id=None, message=""):
         content=Markup(content),
     )
 
-
-
-@app.route("/list/alphabetical")
-@app.route("/list/alphabetical/<int:page>")
-def getListAlphabetical(page=None):
-    sort_order = "ASC"
-    
-    if request.args.get("order") == "descending":
-        sort_order = "DESC"
-
+@app.route("/list")
+@app.route("/list/<type>")
+@app.route("/list/<type>/<int:page>")
+def getList(type= "alphabetical", page=None):
     g.db = app.dbPool.getScoped()
-    if page:
-        terms = g.db.getChunkTerms(sortBy="term_string " + sort_order, page=page, tpp=20)
+    sort_token = "ASC" # default
+    sort_order = request.args.get("order")
+    if sort_order == "descending":
+        sort_token = "DESC"
     else:
-        terms = g.db.getAllTerms(sortBy="term_string " + sort_order)
-
-    return render_template(
-        "list/index.html",
-        user_name=l.current_user.name,
-        title="List of terms",
-        headline="Terms",
-        terms=terms,
-        page=page,
-        sort_order=sort_order,
-    )
-
-@app.route("/list/score")
-@app.route("/list/score/<int:page>")
-def getListByScore(page=None):
-    sort_order = "DESC"
+        sort_order == "ascending"
+    
     terms_per_page = 20
-    pager = None
-    
-    if request.args.get("order") == "ascending":
-        sort_order = "ASC"
+    pager = Pager(page=page, per_page=terms_per_page, total_count = g.db.getLengthTerms()) if page else None
 
-    g.db = app.dbPool.getScoped()
-    if page: 
-        terms = g.db.getChunkTerms(sortBy="up- down " + sort_order, page=page, tpp=terms_per_page)
-        pager = Pager(page=page, per_page=terms_per_page, total_count = g.db.getLengthTerms())
-    else:
-        terms = g.db.getAllTerms(sortBy="up - down " + sort_order)
-    
+    if type == "score":
+        if page:
+            terms = g.db.getChunkTerms(sortBy="up- down " + sort_token, page=page, tpp=terms_per_page)
+        else:
+            terms = g.db.getAllTerms(sortBy="up - down " + sort_token)
+            
+    else: # type is alphabetical
+        if page:
+            terms = g.db.getChunkTerms(sortBy="term_string " + sort_token, page=page, tpp=terms_per_page)
+        else:
+            terms = g.db.getAllTerms(sortBy="term_string " + sort_token)
+
 
     return render_template(
         "list/index.html",
@@ -690,6 +674,7 @@ def getListByScore(page=None):
         terms=terms,
         page=page,
         sort_order=sort_order,
+        type=type,
         pager=pager,
     )
 
