@@ -40,7 +40,6 @@ from seaice.paginate import Pager
 from pagination import getPaginationDetails
 
 
-
 # Parse command line options. #
 parser = optparse.OptionParser()
 
@@ -203,17 +202,19 @@ def pageNotFound(e):
         404,
     )
 
+
 # we'll move this to pretty for consistency but here for now
 @app.template_filter("tag_to_term")
 def format_term(term_string):
-    
+
     if term_string.startswith("#{g: xq"):
-        term_string = term_string.replace("{g: xq", "")  
-    
+        term_string = term_string.replace("{g: xq", "")
+
     if "| h" in term_string:
-        term_string = term_string[:term_string.find("| h")]
+        term_string = term_string[: term_string.find("| h")]
 
     return term_string
+
 
 @app.template_filter("summarize_consensus")
 def summarize_consensus(consensus):
@@ -638,33 +639,46 @@ def getTermsOfName(term_concept_id=None, message=""):
         content=Markup(content),
     )
 
+
 @app.route("/list")
 @app.route("/list/<type>")
 @app.route("/list/<type>/<int:page>")
-def getList(type= "alphabetical", page=None):
+def getList(type="alphabetical", page=None):
     g.db = app.dbPool.getScoped()
-    sort_token = "ASC" # default
+    sort_token = "ASC"  # default
     sort_order = request.args.get("order")
+    has_next = False
+    has_prev = False
+    pager = None
+
     if sort_order == "descending":
         sort_token = "DESC"
     else:
         sort_order == "ascending"
-    
+
     terms_per_page = 20
-    pager = Pager(page=page, per_page=terms_per_page, total_count = g.db.getLengthTerms()) if page else None
+    if page:
+        pager = Pager(
+            page=page, per_page=terms_per_page, total_count=g.db.getLengthTerms()
+        )
+        has_next = pager.has_next
+        has_prev = pager.has_prev
 
     if type == "score":
         if page:
-            terms = g.db.getChunkTerms(sortBy="up- down " + sort_token, page=page, tpp=terms_per_page)
+            terms = g.db.getChunkTerms(
+                sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
+            )
         else:
             terms = g.db.getAllTerms(sortBy="up - down " + sort_token)
-            
-    else: # type is alphabetical
+
+    else:  # type is alphabetical
         if page:
-            terms = g.db.getChunkTerms(sortBy="term_string " + sort_token, page=page, tpp=terms_per_page)
+            terms = g.db.getChunkTerms(
+                sortBy="term_string " + sort_token, page=page, tpp=terms_per_page
+            )
         else:
             terms = g.db.getAllTerms(sortBy="term_string " + sort_token)
-
 
     return render_template(
         "list/index.html",
@@ -676,9 +690,10 @@ def getList(type= "alphabetical", page=None):
         sort_order=sort_order,
         type=type,
         pager=pager,
-        has_next=pager.has_next,
-        has_prev=pager.has_prev,
+        has_next=has_next,
+        has_prev=has_prev,
     )
+
 
 @app.route("/browse")
 @app.route("/browse/<listing>")
