@@ -217,6 +217,7 @@ def format_term(term_string):
 
 
 @app.template_filter("summarize_consensus")
+# pretty.summarizeConsensus
 def summarize_consensus(consensus):
     """
     Return 'high', 'medium' or 'low' as a rough indicator of consensus.
@@ -228,6 +229,15 @@ def summarize_consensus(consensus):
         return "medium"
     else:
         return "low"
+
+
+@app.template_filter("format_date")
+# pretty.prettyPrintDate
+def format_date(date):
+    """
+    Return a human readable date string.
+    """
+    return date.strftime("%m/%d/%Y")
 
 
 # home page
@@ -645,16 +655,17 @@ def getTermsOfName(term_concept_id=None, message=""):
 @app.route("/list/<type>/<int:page>")
 def getList(type="alphabetical", page=None):
     g.db = app.dbPool.getScoped()
-    sort_token = "ASC"  # default
+
     sort_order = request.args.get("order")
+    sort_token = None
     has_next = False
     has_prev = False
     pager = None
 
     if sort_order == "descending":
         sort_token = "DESC"
-    else:
-        sort_order == "ascending"
+    elif sort_order == "ascending":
+        sort_token = "ASC"
 
     terms_per_page = 20
     if page:
@@ -665,6 +676,8 @@ def getList(type="alphabetical", page=None):
         has_prev = pager.has_prev
 
     if type == "score":
+        if not sort_token:
+            sort_token = "DESC"
         if page:
             terms = g.db.getChunkTerms(
                 sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
@@ -672,7 +685,39 @@ def getList(type="alphabetical", page=None):
         else:
             terms = g.db.getAllTerms(sortBy="up - down " + sort_token)
 
+    elif type == "consensus":
+        if not sort_token:
+            sort_token = "DESC"
+        if page:
+            terms = g.db.getChunkTerms(
+                sortBy="consensus " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllTerms(sortBy="consensus " + sort_token)
+
+    elif type == "class":
+        if not sort_token:
+            sort_token = "ASC"
+        if page:
+            terms = g.db.getChunkTerms(
+                sortBy="class " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllTerms(sortBy="class " + sort_token)
+
+    elif type == "modified":
+        if not sort_token:
+            sort_token = "DESC"
+        if page:
+            terms = g.db.getChunkTerms(
+                sortBy="modified " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllTerms(sortBy="modified " + sort_token)
+
     else:  # type is alphabetical
+        if not sort_token:
+            sort_token = "ASC"
         if page:
             terms = g.db.getChunkTerms(
                 sortBy="term_string " + sort_token, page=page, tpp=terms_per_page

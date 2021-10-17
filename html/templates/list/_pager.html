@@ -1,6 +1,6 @@
 {% if pager %}
 <div class="row mt-4">
-    <div class="col-1">
+    <div class="col-1 text-end">
         {% if pager.has_prev %}
         <a href="{{ url_for('getList', type=type, page=pager.page-1, order=sort_order) }}">previous</a>
         {% else %}
