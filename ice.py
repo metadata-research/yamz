@@ -676,6 +676,8 @@ def getList(type= "alphabetical", page=None):
         sort_order=sort_order,
         type=type,
         pager=pager,
+        has_next=pager.has_next,
+        has_prev=pager.has_prev,
     )
 
 @app.route("/browse")

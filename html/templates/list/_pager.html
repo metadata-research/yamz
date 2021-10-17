@@ -1,0 +1,28 @@
+{% if pager %}
+<div class="row mt-4">
+    <div class="col-md-1">
+        {% if pager.has_prev %}
+        <a href="{{ url_for('getList', type=type, page=pager.page-1, order=sort_order) }}">previous</a>
+        {% else %}
+        <span class="text-muted">previous</span>
+        {% endif %}
+    </div>
+    <div class="col-md-5 text-center">
+
+        {% for page in pager %}
+        {% if page %}
+        <a href="{{ url_for('getList', type=type, page=page, order=sort_order) }}">{{ page }}</a>
+        {% else %}
+        ...
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="col-md-1">
+        {% if pager.has_next %}
+        <a href="{{ url_for('getList', type=type, page=pager.page+1, order=sort_order) }}">next</a>
+        {% else %}
+        <span class="text-muted">next</span>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
