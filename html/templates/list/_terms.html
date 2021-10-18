@@ -49,7 +49,15 @@
 
         </div>
         <div class="col fw-bold">Contributed by
-          <i class="bi-sort-alpha-up"></i></a>
+          {% if sort_order == "descending" %}
+          <a href="{{ url_for('getList', page=page, type='contributor', order='ascending') }}">
+            <i class="bi-sort-alpha-up"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='contributor', order='descending') }}">
+            <i class="bi-sort-alpha-down"></i></a>
+          {% endif %}
+
+
         </div>
       </div>
 
@@ -63,7 +71,7 @@
         <div class="col-1">{{ term.consensus|summarize_consensus }}</div>
         <div class="col-1">{{ term.class }}</div>
         <div class="col-1">{{ term.modified|format_date }}</div>
-        <div class="col">{{g.db.getUserNameById(term.owner_id, full=True)}}</div>
+        <div class="col">{{ term.last_name }}, {{ term.first_name}} </div>
       </div>
 
       {% endfor %}

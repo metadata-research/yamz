@@ -159,7 +159,7 @@ login_manager.anonymous_user = seaice.user.AnonymousUser
 # and isn't needed until I implement O(1) scoring.
 
 # print "ice: checking term score consistnency (dev)" TODO
-# for term in db_con.getAllTerms():
+# for term in db_con.getAllAuthTerms():
 #     if not db_con.checkTermConsistency(term['id']):
 #       print "warning: corrected inconsistent consensus score for term %d" % term['id']
 #  db_con.commit()
@@ -683,47 +683,61 @@ def getList(type="alphabetical", page=None):
                 sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
             )
         else:
-            terms = g.db.getAllTerms(sortBy="up - down " + sort_token)
+            terms = g.db.getAllAuthTerms(sortBy="up - down " + sort_token)
 
     elif type == "consensus":
         if not sort_token:
             sort_token = "DESC"
         if page:
-            terms = g.db.getChunkTerms(
+            terms = g.db.getChunkAuthTerms(
                 sortBy="consensus " + sort_token, page=page, tpp=terms_per_page
             )
         else:
-            terms = g.db.getAllTerms(sortBy="consensus " + sort_token)
+            terms = g.db.getAllAuthTerms(sortBy="consensus " + sort_token)
 
     elif type == "class":
         if not sort_token:
             sort_token = "ASC"
         if page:
-            terms = g.db.getChunkTerms(
+            terms = g.db.getChunkAuthTerms(
                 sortBy="class " + sort_token, page=page, tpp=terms_per_page
             )
         else:
-            terms = g.db.getAllTerms(sortBy="class " + sort_token)
+            terms = g.db.getAllAuthTerms(sortBy="class " + sort_token)
 
     elif type == "modified":
         if not sort_token:
             sort_token = "DESC"
         if page:
-            terms = g.db.getChunkTerms(
+            terms = g.db.getChunkAuthTerms(
                 sortBy="modified " + sort_token, page=page, tpp=terms_per_page
             )
         else:
-            terms = g.db.getAllTerms(sortBy="modified " + sort_token)
+            terms = g.db.getAllAuthTerms(sortBy="modified " + sort_token)
+
+    elif type == "contributor":
+        if not sort_token:
+            sort_token = "ASC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token,
+                page=page,
+                tpp=terms_per_page,
+            )
+        else:
+            terms = g.db.getAllAuthTerms(
+                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token
+            )
 
     else:  # type is alphabetical
         if not sort_token:
             sort_token = "ASC"
         if page:
-            terms = g.db.getChunkTerms(
+            terms = g.db.getChunkAuthTerms(
                 sortBy="term_string " + sort_token, page=page, tpp=terms_per_page
             )
         else:
-            terms = g.db.getAllTerms(sortBy="term_string " + sort_token)
+            terms = g.db.getAllAuthTerms(sortBy="term_string " + sort_token)
 
     return render_template(
         "list/index.html",
