@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+
+
+{% block title %}
+{% if title %}
+YAMZ {{ title }}
+{% else %}
+A basic page
+{% endif %}
+{% endblock %}
+
+{% block links %}
+<li class="nav-item">
+  <a class="nav-link active" href="/browse">Browse</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contribute">Add</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/about">About</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contact">Contact</a>
+</li>
+{% endblock %}
+
+
+{% block body %}
+
+<table width=100%>
+  <tr>
+    <td>
+      {% if headline %}
+      <h3>{{ headline }}</h3>
+      {% endif %}
+    </td>
+    <td valign=top align=right width=30%>
+      <form action="/search" method="post">
+        <div class="control-group"><label class="control-label"></label>
+          <div class="controls"><input name="term_string" type="text" class="input-lg search-query form-control"
+              placeholder="Search for a term"></div>
+        </div>
+      </form>
+    </td>
+  </tr>
+</table>
+
+<hr>
+{% include 'list/_terms.html' %}
+{% include 'list/_pager.html' %}
+
+<hr>
+{% endblock %}

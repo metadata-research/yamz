@@ -1,0 +1,77 @@
+      <div class="row mt-4 text-nowrap">
+        <div class="col-md-4 fw-bold">
+          Term
+          {% if sort_order == "descending" %}
+          <a href="{{ url_for('getList', page=page, type='alphabetical', order='ascending') }}">
+            <i class="bi-sort-alpha-up"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='alphabetical', order='descending') }}">
+            <i class="bi-sort-alpha-down"></i></a>
+          {% endif %}
+        </div>
+        <div class="col-1 fw-bold">
+          Score
+          {% if sort_order == "ascending" %}
+          <a href="{{ url_for('getList', page=page, type='score', order='decsending') }}">
+            <i class="bi-sort-numeric-down"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='score', order='ascending') }}">
+            <i class="bi-sort-numeric-up"></i></a>
+          {% endif %}
+        </div>
+        <div class="col-1 fw-bold">Consensus
+          {% if sort_order == "ascending" %}
+          <a href="{{ url_for('getList', page=page, type='consensus', order='decsending') }}">
+            <i class="bi-sort-down"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='consensus', order='ascending') }}">
+            <i class="bi-sort-up"></i></a>
+          {% endif %}
+        </div>
+        <div class="col-1 fw-bold">Class
+          {% if sort_order == "descending" %}
+          <a href="{{ url_for('getList', page=page, type='class', order='ascending') }}">
+            <i class="bi-sort-alpha-up"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='class', order='descending') }}">
+            <i class="bi-sort-alpha-down"></i></a>
+          {% endif %}
+        </div>
+        <div class="col-1 fw-bold">
+          Date
+          {% if sort_order == "ascending" %}
+          <a href="{{ url_for('getList', page=page, type='modified', order='decsending') }}">
+            <i class="bi-sort-down"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='modified', order='ascending') }}">
+            <i class="bi-sort-up"></i></a>
+          {% endif %}
+
+        </div>
+        <div class="col fw-bold">Contributed by
+          {% if sort_order == "descending" %}
+          <a href="{{ url_for('getList', page=page, type='contributor', order='ascending') }}">
+            <i class="bi-sort-alpha-up"></i></a>
+          {% else %}
+          <a href="{{ url_for('getList', page=page, type='contributor', order='descending') }}">
+            <i class="bi-sort-alpha-down"></i></a>
+          {% endif %}
+
+
+        </div>
+      </div>
+
+
+      {% for term in terms  %}
+      <div class="row">
+        <div class="col-md-4 text-truncate"><a
+            href="{{ url_for('getTerm', term_concept_id=term.concept_id) }}">{{ term.term_string|tag_to_term }}</a>
+        </div>
+        <div class="col-1">{{term.up - term.down}}</div>
+        <div class="col-1">{{ term.consensus|summarize_consensus }}</div>
+        <div class="col-1">{{ term.class }}</div>
+        <div class="col-1">{{ term.modified|format_date }}</div>
+        <div class="col">{{ term.last_name }}, {{ term.first_name}} </div>
+      </div>
+
+      {% endfor %}

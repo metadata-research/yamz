@@ -34,7 +34,11 @@ import requests
 from flask import Markup, flash, g, redirect, render_template, request, session, url_for
 
 import seaice
+from seaice.paginate import Pager
+
+
 from pagination import getPaginationDetails
+
 
 # Parse command line options. #
 parser = optparse.OptionParser()
@@ -142,6 +146,7 @@ app.debug = True
 app.use_reloader = True
 app.secret_key = credentials.get(options.deployment_mode, "app_secret")
 
+
 # Session logins #
 
 login_manager = l.LoginManager()
@@ -154,7 +159,7 @@ login_manager.anonymous_user = seaice.user.AnonymousUser
 # and isn't needed until I implement O(1) scoring.
 
 # print "ice: checking term score consistnency (dev)" TODO
-# for term in db_con.getAllTerms():
+# for term in db_con.getAllAuthTerms():
 #     if not db_con.checkTermConsistency(term['id']):
 #       print "warning: corrected inconsistent consensus score for term %d" % term['id']
 #  db_con.commit()
@@ -196,6 +201,43 @@ def pageNotFound(e):
         ),
         404,
     )
+
+
+# we'll move this to pretty for consistency but here for now
+@app.template_filter("tag_to_term")
+def format_term(term_string):
+
+    if term_string.startswith("#{g: xq"):
+        term_string = term_string.replace("{g: xq", "")
+
+    if "| h" in term_string:
+        term_string = term_string[: term_string.find("| h")]
+
+    return term_string
+
+
+@app.template_filter("summarize_consensus")
+# pretty.summarizeConsensus
+def summarize_consensus(consensus):
+    """
+    Return 'high', 'medium' or 'low' as a rough indicator of consensus.
+    """
+    cons = int(100 * consensus)
+    if cons >= 70:
+        return "high"
+    elif cons >= 30:
+        return "medium"
+    else:
+        return "low"
+
+
+@app.template_filter("format_date")
+# pretty.prettyPrintDate
+def format_date(date):
+    """
+    Return a human readable date string.
+    """
+    return date.strftime("%m/%d/%Y")
 
 
 # home page
@@ -608,6 +650,110 @@ def getTermsOfName(term_concept_id=None, message=""):
     )
 
 
+@app.route("/list")
+@app.route("/list/<type>")
+@app.route("/list/<type>/<int:page>")
+def getList(type="alphabetical", page=None):
+    g.db = app.dbPool.getScoped()
+
+    sort_order = request.args.get("order")
+    sort_token = None
+    has_next = False
+    has_prev = False
+    pager = None
+
+    if sort_order == "descending":
+        sort_token = "DESC"
+    elif sort_order == "ascending":
+        sort_token = "ASC"
+
+    terms_per_page = 20
+    if page:
+        pager = Pager(
+            page=page, per_page=terms_per_page, total_count=g.db.getLengthTerms()
+        )
+        has_next = pager.has_next
+        has_prev = pager.has_prev
+
+    if type == "score":
+        if not sort_token:
+            sort_token = "DESC"
+        if page:
+            terms = g.db.getChunkTerms(
+                sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllAuthTerms(sortBy="up - down " + sort_token)
+
+    elif type == "consensus":
+        if not sort_token:
+            sort_token = "DESC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="consensus " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllAuthTerms(sortBy="consensus " + sort_token)
+
+    elif type == "class":
+        if not sort_token:
+            sort_token = "ASC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="class " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllAuthTerms(sortBy="class " + sort_token)
+
+    elif type == "modified":
+        if not sort_token:
+            sort_token = "DESC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="modified " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllAuthTerms(sortBy="modified " + sort_token)
+
+    elif type == "contributor":
+        if not sort_token:
+            sort_token = "ASC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token,
+                page=page,
+                tpp=terms_per_page,
+            )
+        else:
+            terms = g.db.getAllAuthTerms(
+                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token
+            )
+
+    else:  # type is alphabetical
+        if not sort_token:
+            sort_token = "ASC"
+        if page:
+            terms = g.db.getChunkAuthTerms(
+                sortBy="term_string " + sort_token, page=page, tpp=terms_per_page
+            )
+        else:
+            terms = g.db.getAllAuthTerms(sortBy="term_string " + sort_token)
+
+    return render_template(
+        "list/index.html",
+        user_name=l.current_user.name,
+        title="List of terms",
+        headline="Terms",
+        terms=terms,
+        page=page,
+        sort_order=sort_order,
+        type=type,
+        pager=pager,
+        has_next=has_next,
+        has_prev=has_prev,
+    )
+
+
 @app.route("/browse")
 @app.route("/browse/<listing>")
 @app.route("/browse/<listing>/<int:page>")
@@ -720,7 +866,6 @@ hash2uniquerifier_regex = re.compile("(?<!#)#(\w[\w.-]+)")
 def returnQuery():
     g.db = app.dbPool.getScoped()
     if request.method == "POST":
-        # XXX whoa -- this use of term_string variable name (in all html forms)
         #     is totally different from term_string as used in the database!
         # search_words = hash2uniquerifier_regex.sub(
         #     seaice.pretty.ixuniq + '\\1',
@@ -753,8 +898,6 @@ def returnQuery():
 @app.route("/search/<search_term>/<int:page>")
 def returnQueryPaginated(search_term=None, page=1):
     g.db = app.dbPool.getScoped()
-    # XXX whoa -- this use of term_string variable name (in all html forms)
-    #     is totally different from term_string as used in the database!
     search_words = hash2uniquerifier_regex.sub(
         seaice.pretty.ixuniq + "\\1", search_term
     )
