@@ -1,149 +1,149 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-      {% if title %}
-        YAMZ {{ title }}
-      {% else %}
-        A basic page
-      {% endif %}
+{% if title %}
+YAMZ {{ title }}
+{% else %}
+A basic page
+{% endif %}
 {% endblock %}
 
 {% block links %}
-              <li class="nav-item">
-                <a class="nav-link active" href="/browse">Browse</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/contribute">Add</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/contact">Contact</a>
-              </li>
+<li class="nav-item">
+  <a class="nav-link active" href="/browse">List</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contribute">Add</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/about">About</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contact">Contact</a>
+</li>
 {% endblock %}
 
 
 {% block body %}
 
-    <table width=100%>
-     <tr>
-      <td>
-       {% if headline %}
-         <h3>{{ headline }}</h3>
-       {% endif %}
-      </td>
-      <td valign=top align=right width=30%>
-         <form action="/search" method="post">
-           <div class="control-group"><label class="control-label"></label>
-           <div class="controls"><input name="term_string" type="text"
-           class="input-lg search-query form-control" placeholder="Search for a term"></div></div>
-         </form>
-       </td>
-      </tr>
-    </table>
+<table width=100%>
+  <tr>
+    <td>
+      {% if headline %}
+      <h3>{{ headline }}</h3>
+      {% endif %}
+    </td>
+    <td valign=top align=right width=30%>
+      <form action="/search" method="post">
+        <div class="control-group"><label class="control-label"></label>
+          <div class="controls"><input name="term_string" type="text" class="input-lg search-query form-control"
+              placeholder="Search for a term"></div>
+        </div>
+      </form>
+    </td>
+  </tr>
+</table>
 
-    {% if content %}
-      {{ content }}
+{% if content %}
+{{ content }}
+{% endif %}
+
+
+{% if pagination_details['page'] %}
+<nav aria-label="Page navigation">
+  <ul class="pagination">
+
+    {% if pagination_details['page'] == 1 %}
+    <li class="page-item disabled">
+      <span class="page-link">first</span>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/1"> first </a>
+    </li>
     {% endif %}
 
-
-    {% if pagination_details['page'] %}
-      <nav aria-label="Page navigation">
-        <ul class="pagination">
-
-          {% if pagination_details['page'] == 1 %}
-            <li class="page-item disabled">
-              <span class="page-link">first</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/1"> first </a>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['prev_ten'] %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] - 10 }}"> << </a>
-            </li>
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link"><<</span>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['page'] == 1 %}
-            <li class="page-item disabled">
+    {% if pagination_details['prev_ten'] %}
+    <li class="page-item">
+      <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] - 10 }}">
+        << </a> </li> {% else %} <li class="page-item disabled">
+          <span class="page-link">
+            <<</span> </li> {% endif %} {% if pagination_details['page'] == 1 %} <li class="page-item disabled">
               <span class="page-link">Prev</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] - 1 }}">Prev</a>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['dots_left'] %}
-            <li class="page-item disabled">
-              <span class="page-link">. . .</span>
-            </li>
-          {% endif %}
-
-          {% for i in range(pagination_details['first'], pagination_details['page']) %}
-              <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a></li>
-          {% endfor %}
-
-              <li class="page-item active">
-                <span class="page-link">
-                  {{ pagination_details['page'] }}
-                  <span class="sr-only">(current)</span>
-                </span>
-              </li>
-
-          {% for i in range(pagination_details['page'] + 1, pagination_details['last']) %}
-              <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a></li>
-          {% endfor %}
-
-
-          {% if pagination_details['dots_right'] %}
-            <li class="page-item disabled">
-              <span class="page-link">. . .</span>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['page'] == pagination_details['end'] %}
-            <li class="page-item disabled">
-              <span class="page-link">Next</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 1 }}">Next</a>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['next_ten'] %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 10 }}"> >> </a>
-            </li>
-          {% else %}
-            <li class="page-item disabled">
-              <span class="page-link"> >> </span>
-            </li>
-          {% endif %}
-
-          {% if pagination_details['page'] == pagination_details['end'] %}
-            <li class="page-item disabled">
-              <span class="page-link">last</span>
-            </li>
-          {% else %}
-            <li class="page-item">
-              <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['end'] }}"> last </a>
-            </li>
-          {% endif %}
-
-        </ul>
-      </nav>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link"
+        href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] - 1 }}">Prev</a>
+    </li>
     {% endif %}
 
-      <hr>
+    {% if pagination_details['dots_left'] %}
+    <li class="page-item disabled">
+      <span class="page-link">. . .</span>
+    </li>
+    {% endif %}
+
+    {% for i in range(pagination_details['first'], pagination_details['page']) %}
+    <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a>
+    </li>
+    {% endfor %}
+
+    <li class="page-item active">
+      <span class="page-link">
+        {{ pagination_details['page'] }}
+        <span class="sr-only">(current)</span>
+      </span>
+    </li>
+
+    {% for i in range(pagination_details['page'] + 1, pagination_details['last']) %}
+    <li class="page-item"><a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ i }}">{{ i }}</a>
+    </li>
+    {% endfor %}
+
+
+    {% if pagination_details['dots_right'] %}
+    <li class="page-item disabled">
+      <span class="page-link">. . .</span>
+    </li>
+    {% endif %}
+
+    {% if pagination_details['page'] == pagination_details['end'] %}
+    <li class="page-item disabled">
+      <span class="page-link">Next</span>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link"
+        href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 1 }}">Next</a>
+    </li>
+    {% endif %}
+
+    {% if pagination_details['next_ten'] %}
+    <li class="page-item">
+      <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['page'] + 10 }}"> >>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"> >> </span>
+    </li>
+    {% endif %}
+
+    {% if pagination_details['page'] == pagination_details['end'] %}
+    <li class="page-item disabled">
+      <span class="page-link">last</span>
+    </li>
+    {% else %}
+    <li class="page-item">
+      <a class="page-link" href="/browse/{{ pagination_details['listing'] }}/{{ pagination_details['end'] }}"> last </a>
+    </li>
+    {% endif %}
+
+  </ul>
+</nav>
+{% endif %}
+
+<hr>
 
 {% endblock %}

@@ -12,86 +12,89 @@ A crowdsourced metadata dictionary
 Christopher Patton{% endblock %}
 
 {% block links %}
-              <li class="nav-item">
-                <a class="nav-link" href="/browse">Browse</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/contribute">Add</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/contact">Contact</a>
-              </li>
+<li class="nav-item">
+  <a class="nav-link" href="/browse">Browse</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contribute">Add</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/about">About</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contact">Contact</a>
+</li>
 {% endblock %}
 
 {% block body %}
-      <div>
-        <form action="/search" method="post">
-          <div class="control-group"><label class="control-label"></label><div class="controls">
-          <input name="term_string" type="text" class="input-lg search-query form-control" placeholder="Search for a term"></div></div>
-        </form>
-        {% if user_name %}
-        <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to yamzalot at gmail dot com.</h6>
+<div>
+  <form action="/search" method="post">
+    <div class="control-group"><label class="control-label"></label>
+      <div class="controls">
+        <input name="term_string" type="text" class="input-lg search-query form-control"
+          placeholder="Search for a term"></div>
+    </div>
+  </form>
+  {% if user_name %}
+  <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to
+    yamzalot at gmail dot com.</h6>
+  {% endif %}
+  <hr>
+</div>
+
+{% if not user_name %}
+
+<div class="jumbotron" style="background-color: transparent">
+  <h1 class='text-center'>Metadictionary</h1>
+  <p class="lead text-center">
+    A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
+  </p>
+</div>
+
+{% endif %}
+
+{% if user_name %}
+
+<div class="row marketing">
+  <table width=100%>
+    <tr>
+      <td rowspan=2 width=5%></td>
+
+      <td rowspan=2 width=75% valign=top>
+        <h4>Notifications</h4>
+        {% if notify %}
+        {{ notify }}
+        {% else %}
+        <font color="#B8B8B8"><i>No new notifications.</i></font>
         {% endif %}
-          <hr>
-      </div>
+      </td>
 
-      {% if not user_name %}
+      <td valign=top>
+        <h4>My terms</h4>
+        {% if my %}
+        {{ my }}
+        {% else %}
+        <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
+        {% endif %}
+        <br>
+      </td>
 
-        <div class="jumbotron" style="background-color: transparent">
-          <h1 class='text-center'>Metadictionary</h1>
-          <p class="lead text-center">
-            A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
-          </p>
-        </div>
+    <tr>
+      <td valign=top>
+        <hr>
+        <h4>Watching</h4>
+        {% if star %}
+        {{ star }}
+        {% else %}
+        <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
+        {% endif %}
+        <br>
+      </td>
+    </tr>
+  </table>
 
-      {% endif %}
+  {% endif %}
 
-      {% if user_name %}
+  <hr>
 
-        <div class="row marketing">
-          <table width=100%>
-            <tr>
-              <td rowspan=2 width=5%></td>
-
-              <td rowspan=2 width=75% valign=top>
-                <h4>Notifications</h4>
-                {% if notify %}
-                  {{ notify }}
-                {% else %}
-                  <font color="#B8B8B8"><i>No new notifications.</i></font>
-                {% endif %}
-              </td>
-
-              <td valign=top>
-                <h4>My terms</h4>
-                {% if my %}
-                  {{ my }}
-                {% else %}
-                  <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
-                {% endif %}
-                <br>
-              </td>
-
-            <tr>
-              <td valign=top>
-                <hr><h4>Watching</h4>
-                {% if star %}
-                  {{ star }}
-                {% else %}
-                  <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
-                {% endif %}
-                <br>
-              </td>
-            </tr>
-          </table>
-
-      {% endif %}
-
-      <hr>
-
-{% endblock %}
-
-
+  {% endblock %}

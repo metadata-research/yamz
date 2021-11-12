@@ -650,10 +650,16 @@ def getTermsOfName(term_concept_id=None, message=""):
     )
 
 
-@app.route("/list")
-@app.route("/list/<type>")
-@app.route("/list/<type>/<int:page>")
+@app.route("/browse")
+@app.route("/browse/<type>")
+@app.route("/browse/<type>/<int:page>")
 def getList(type="alphabetical", page=None):
+
+    if type is None:
+        return redirect("/browse/alphabetical/1")
+    if page is None:
+        return redirect("/browse/" + type + "/1")
+
     g.db = app.dbPool.getScoped()
 
     sort_order = request.args.get("order")
@@ -754,9 +760,9 @@ def getList(type="alphabetical", page=None):
     )
 
 
-@app.route("/browse")
-@app.route("/browse/<listing>")
-@app.route("/browse/<listing>/<int:page>")
+@app.route("/xbrowse")
+@app.route("/xbrowse/<listing>")
+@app.route("/xbrowse/<listing>/<int:page>")
 def browse(listing=None, page=None):
     if listing is None:
         return redirect("/browse/recent")
