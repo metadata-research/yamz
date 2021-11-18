@@ -4,7 +4,7 @@
 
         {% for pager_page in pager %}
         {% if pager_page %}
-        <a href="{{ url_for('getList', type=type, page=page, order=sort_order) }}">{{ pager_page }}</a>
+        <a href="{{ url_for('getList', type=type, page=pager_page, order=sort_order) }}">{{ pager_page }}</a>
         {% else %}
         ...
         {% endif %}
