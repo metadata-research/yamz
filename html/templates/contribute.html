@@ -54,29 +54,29 @@
 
       <hr>
 
-      <form class="form-horizontal" action="{% if edit_id %}/term={{edit_id}}/edit{% else %}/contribute{% endif %}" method="post">
-        <div class="form-group">
+      <form action="{% if edit_id %}/term={{edit_id}}/edit{% else %}/contribute{% endif %}" method="post">
+        <div class="row mb-3">
           <label for="term_string" class="col-sm-2 control-label" style='text-align: left'>Term string: </label>
           <div class="col-sm-3">
             <input type="text" name="term_string" value="{% if term_string_edit %}{{term_string_edit}}{% endif %}" class="form-control" id="term_string">
           </div>
         </div>
-        <div class="form-group">
+        <div class="row mb-3">
           <label for="definition" class="col-sm-2 control-label" style='text-align: left'>Definition: </label>
           <div class="col-sm-6">
             <textarea class="form-control" id="definition" placeholder="A _class_ of thing, followed by distinguishing characteristics, such as (for 'water'): 'A _clear liquid_ made up of hydrogen and oxygen molecules.'" type="text" rows=4
                 name="definition">{% if definition_edit %}{{ definition_edit }}{% endif %}</textarea>
           </div>
         </div>
-        <div class="form-group">
+        <div class="row mb-3">
           <label for="examples" class="col-sm-2 control-label" style='text-align: left'>Example(s): </label>
           <div class="col-sm-6">
             <textarea class="form-control" placeholder="Examples of usage or related concepts." rows=4 type="text" name="examples">{% if examples_edit %}{{ examples_edit }}{% endif %}</textarea>
           </div>
         </div>
-        <div class="form-group">
+        <div class="row mb-3">
           <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button type="submit">Submit</button>
           </div>
         </div>
       </form>
