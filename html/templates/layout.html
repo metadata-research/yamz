@@ -35,6 +35,13 @@
       <div class="collapse navbar-collapse" id="navbar01">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           {% block links %} {% endblock %}
+          <li class="nav-item">
+            {% if user_name %}
+            <a class="nav-link" href="/logout">Log out of {{ user_name }}</a>
+            {% else %}
+            <a class="nav-link" href="/login">Login</a>
+            {% endif %}
+          </li>
         </ul>
 
       </div>
