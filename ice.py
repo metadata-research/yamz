@@ -303,6 +303,7 @@ def login():
             In order to propose new terms or comment on others, you must first
             sign in.
              <li>Sign in with <a href="/login/google">Google</a>.</li>
+             <li>Sign in with <a href="/login/orcid">ORCID</a>.</li>
         </p>
         """
     return render_template(
@@ -358,8 +359,11 @@ def authorized():
     return redirect(url_for("index"))
 
 
-# @app.route("/login/orcid")
-# def login_orcid():
+@app.route("/login/orcid")
+def login_orcid():
+    return "ORCID Login Page"
+
+
 #    redirect_uri = url_for('orcid_authorized', _external=True)
 #    return orcid.authorize_redirect(redirect_uri)
 
