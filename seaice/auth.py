@@ -38,7 +38,7 @@ from authlib.integrations.flask_client import OAuth
 
 
 def accessible_by_group_or_world(file):
-    """ Verify the permissions of configuration file.
+    """Verify the permissions of configuration file.
             *Contributed by Nassib Nassar*.
 
     :param file: File name.
@@ -49,8 +49,8 @@ def accessible_by_group_or_world(file):
     return bool(st.st_mode & (stat.S_IRWXG | stat.S_IRWXO))
 
 
-def get_config(config_file='.seaice'):
-    """ Get local db configuration. *Contributed by Nassib Nassar*.
+def get_config(config_file=".seaice"):
+    """Get local db configuration. *Contributed by Nassib Nassar*.
 
         Structure with DB connection parameters for particular
         roles. See the top-level program *ice* for example usage.
@@ -62,9 +62,12 @@ def get_config(config_file='.seaice'):
     config = configparser.RawConfigParser()
     if os.path.isfile(config_file):
         if accessible_by_group_or_world(config_file):
-            print ('error: config file ' + config_file +
-                   ' has group or world ' +
-                   'access; permissions should be set to u=rw')
+            print(
+                "error: config file "
+                + config_file
+                + " has group or world "
+                + "access; permissions should be set to u=rw"
+            )
             sys.exit(1)
         config.read(config_file)
     return config
@@ -81,8 +84,8 @@ oauth = OAuth(app)
 #: **TODO:** To accomadate other authentication
 #: services, change this to '/authorized/google'
 #: (also on code.google.com/apis/console).
-REDIRECT_URI = '/authorized'
-REDIRECT_URI_ORCID = '/authorized/orcid'
+REDIRECT_URI = "/authorized"
+REDIRECT_URI_ORCID = "/orcid_authorized"
 
 
 #: Get Google authentication. Client ID and secrets are drawn from a
@@ -91,21 +94,21 @@ REDIRECT_URI_ORCID = '/authorized/orcid'
 #: and the secret **must** never be published.
 def get_google_auth(client_id, client_secret):
     google = oauth.register(
-        name='google',
-        api_base_url='https://www.google.com/accounts/',
-        authorize_url='https://accounts.google.com/o/oauth2/auth',
+        name="google",
+        api_base_url="https://www.google.com/accounts/",
+        authorize_url="https://accounts.google.com/o/oauth2/auth",
         request_token_url=None,
         request_token_params={
-            'scope': 'https://www.googleapis.com/auth/userinfo.email',
-            'response_type': 'code'
-            },
-        access_token_url='https://accounts.google.com/o/oauth2/token',
-        access_token_method='POST',
-        access_token_params={'grant_type': 'authorization_code'},
+            "scope": "https://www.googleapis.com/auth/userinfo.email",
+            "response_type": "code",
+        },
+        access_token_url="https://accounts.google.com/o/oauth2/token",
+        access_token_method="POST",
+        access_token_params={"grant_type": "authorization_code"},
         client_id=client_id,
         client_secret=client_secret,
-        client_kwargs={'scope': 'openid email profile'}
-        )
+        client_kwargs={"scope": "openid email profile"},
+    )
     return google
 
 
@@ -115,15 +118,16 @@ def get_google_auth(client_id, client_secret):
 #: and the secret **must** never be published.
 def get_orcid_auth(client_id, client_secret):
     orcid = oauth.register(
-        name='orcid',
-        base_url='https://sandbox.orcid.org/',
-        authorize_url='https://sandbox.orcid.org/oauth/authorize',
+        name="orcid",
+        base_url="https://sandbox.orcid.org/",
+        authorize_url="https://sandbox.orcid.org/oauth/authorize",
         request_token_url=None,
-        request_token_params={'scope': '/authenticate',
-                              'response_type': 'code'},
-        access_token_url='https://sandbox.orcid.org/oauth/token',
-        access_token_method='POST',
-        access_token_params={'grant_type': 'authorization_code'},
-        consumer_key=client_id,
-        consumer_secret=client_secret)
+        request_token_params={"scope": "/authenticate", "response_type": "code"},
+        access_token_url="https://sandbox.orcid.org/oauth/token",
+        access_token_method="POST",
+        access_token_params={"grant_type": "authorization_code"},
+        client_id=client_id,
+        client_secret=client_secret,
+        client_kwargs={"scope": "openid email profile"},
+    )
     return orcid

@@ -187,16 +187,22 @@ replacing google_client_id with the returned 'Client ID' and replacing google_cl
 
  `python -c 'import os; print(os.urandom(16))'`
 
-You can use a sepaprate set of credentials for the production instance if you like (as in the example below), just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. The identifier API will not work with local host so to get things set up you might use the merged version as an intermediate setup.
+You can use a sepaprate set of credentials for the production instance if you like (as in the example below), just separate them with a label which you can pass when you initialize the database [dev] is the default specified in ice.py. 
+
+Add additional credentials for other authentication services (right now the only other supported is ORCID)
 
     [dev]
-     google_client_id = google_client_id_placeholder
+     google_client_id = google_client_id_placeholder [these come from the google cloud api console]
      google_client_secret = google_client_secret_placeholder
+     orcid_client_id = orcid_client_id_placehoder [these come from 'developer tools' under your profile in the ORCID portal]
+     orcid_client_secret = orcid_client_secret_placeholder
      app_secret = SECRET
     [production] 
      google_client_id = google_client_id_placeholder
      google_client_secret = google_client_secret_placeholder
      app_secret = SECRET
+     orcid_client_id = orcid_client_id_placehoder
+     orcid_client_secret = orcid_client_secret_placeholder
 
 Assign the appropriate permissions to the file
 

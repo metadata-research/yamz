@@ -133,9 +133,10 @@ try:
         credentials.get(options.deployment_mode, "google_client_secret"),
     )
 
-    # orcid = seaice.auth.get_orcid_auth(
-    #    credentials.get(options.deployment_mode, 'orcid_client_id'),
-    #    credentials.get(options.deployment_mode, 'orcid_client_secret'))
+    orcid = seaice.auth.get_orcid_auth(
+        credentials.get(options.deployment_mode, "orcid_client_id"),
+        credentials.get(options.deployment_mode, "orcid_client_secret"),
+    )
 
 except OSError:
     print("error: config file '%s' not found" % options.config_file, file=sys.stderr)
@@ -217,7 +218,7 @@ def format_term(term_string):
 
 
 @app.template_filter("summarize_consensus")
-# pretty.summarizeConsensus
+# use pretty.summarizeConsensus
 def summarize_consensus(consensus):
     """
     Return 'high', 'medium' or 'low' as a rough indicator of consensus.
@@ -232,7 +233,7 @@ def summarize_consensus(consensus):
 
 
 @app.template_filter("format_date")
-# pretty.prettyPrintDate
+# use pretty.prettyPrintDate
 def format_date(date):
     """
     Return a human readable date string.
@@ -361,14 +362,15 @@ def authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
-    return "ORCID Login Page"
+    redirect_uri = url_for("orcid_authorized", _external=True)
+    return orcid.authorize_redirect(redirect_uri)
 
 
-#    redirect_uri = url_for('orcid_authorized', _external=True)
-#    return orcid.authorize_redirect(redirect_uri)
+@app.route(seaice.auth.REDIRECT_URI_ORCID)
+def orcid_authorized():
+    return "ORCID Authorized"
 
 
-# @app.route(seaice.auth.REDIRECT_URI_ORCID)
 # def orcid_authorized():
 #    access_token = orcid.authorize_access_token()
 #    session["orcid_access_token"] = access_token, ""
