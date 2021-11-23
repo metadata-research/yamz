@@ -32,6 +32,7 @@ import flask_login as l
 import psycopg2 as pgdb
 import requests
 from flask import Markup, flash, g, redirect, render_template, request, session, url_for
+from werkzeug.wrappers import response
 
 import seaice
 from seaice.paginate import Pager
@@ -362,13 +363,19 @@ def authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
+    # redirect_uri = "https://pub.sandbox.orcid.org"
     redirect_uri = url_for("orcid_authorized", _external=True)
     return orcid.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
 def orcid_authorized():
-    return "ORCID Authorized"
+    access_token = orcid.authorize_access_token()
+    orcid_id = access_token["orcid"]
+    resp = orcid.get("https://pub.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
+
+    user_info = resp.content_type
+    return user_info
 
 
 # def orcid_authorized():
