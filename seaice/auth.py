@@ -119,7 +119,7 @@ def get_google_auth(client_id, client_secret):
 def get_orcid_auth(client_id, client_secret):
     orcid = oauth.register(
         name="orcid",
-        base_url="https://sandbox.orcid.org/",
+        base_url="https://pub.sandbox.orcid.org/",
         authorize_url="https://sandbox.orcid.org/oauth/authorize",
         request_token_url=None,
         request_token_params={"scope": "/authenticate", "response_type": "code"},
