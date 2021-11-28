@@ -1050,6 +1050,7 @@ class SeaIceConnector(object):
             "reputation": None,
             "authority": "nil",
             "auth_id": "nil",
+            "orcid": "nil",
         }
 
         # Format entries for db query
@@ -1059,7 +1060,7 @@ class SeaIceConnector(object):
         try:
             cur = self.con.cursor()
             cur.execute(
-                """INSERT INTO SI.Users(id, email, last_name, first_name, reputation, authority, auth_id)
+                """INSERT INTO SI.Users(id, email, last_name, first_name, reputation, authority, auth_id, orcid)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
                 RETURNING id""",
                 (

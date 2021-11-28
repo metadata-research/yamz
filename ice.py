@@ -24,6 +24,7 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.# MIT License
 
 import configparser
+import email
 import re
 import sys
 from itertools import chain
@@ -377,7 +378,6 @@ def authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
-    # redirect_uri = "https://pub.sandbox.orcid.org"
     redirect_uri = url_for("orcid_authorized", _external=True)
     return orcid.authorize_redirect(redirect_uri)
 
@@ -390,13 +390,46 @@ def orcid_authorized():
 
     resp = orcid.get("https://pub.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
 
+    try:
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if resp.status_code == 401:  # Unauthorized - bad token
+            session.pop("access_token", None)
+            return "l"
+
     user_info = xmltodict.parse(resp.content, process_namespaces=True)
 
     orcid_email = user_info["http://www.orcid.org/ns/email:emails"][
         "http://www.orcid.org/ns/email:email"
     ]["http://www.orcid.org/ns/email:email"]
 
-    return orcid_name + " " + orcid_email
+    o_user = {}
+    user_name = orcid_name.split(" ")
+    first_name = user_name[0]
+    last_name = user_name[1]
+
+    g.db = app.dbPool.getScoped()
+    user = g.db.getUserByAuth("orcid", orcid_id)
+    if not user:
+        o_user["email"] = orcid_email
+        o_user["authority"] = "orcid"
+        o_user["auth_id"] = orcid_id
+        o_user["last_name"] = first_name
+        o_user["first_name"] = last_name
+        o_user["reputation"] = "30"
+        o_user["orcid"] = orcid_id
+        o_user["id"] = app.userIdPool.ConsumeId()
+        # g.db.insertUser(o_user)
+        # g.db.commit()
+
+    return render_template(
+        "account.html",
+        email=orcid_email,
+        orcid=orcid_id,
+        last_name_edit=last_name,
+        first_name_edit=first_name,
+    )
+    # orcid_name + " " + orcid_email
 
 
 # def orcid_authorized():
