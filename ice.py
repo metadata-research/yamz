@@ -419,16 +419,27 @@ def orcid_authorized():
         o_user["reputation"] = "30"
         o_user["orcid"] = orcid_id
         o_user["id"] = app.userIdPool.ConsumeId()
-        # g.db.insertUser(o_user)
-        # g.db.commit()
+        g.db.insertUser(o_user)
+        g.db.commit()
+        user = g.db.getUserByAuth("orcid", o_user["auth_id"])
+        app.SeaIceUsers[user["id"]] = seaice.user.User(user["id"], user["first_name"])
+        l.login_user(app.SeaIceUsers.get(user["id"]))
 
-    return render_template(
-        "account.html",
-        email=orcid_email,
-        orcid=orcid_id,
-        last_name_edit=last_name,
-        first_name_edit=first_name,
-    )
+        return render_template(
+            "account.html",
+            email=orcid_email,
+            orcid=orcid_id,
+            last_name_edit=last_name,
+            first_name_edit=first_name,
+            message="""
+                    According to our records, this is the first time you've logged onto
+                    SeaIce with this account. Please provide your first and last name as
+                    you would like it to appear with your contributions. Thank you!""",
+        )
+
+    l.login_user(app.SeaIceUsers.get(user["id"]))
+    flash("Logged in successfully")
+    return redirect(url_for("index"))
     # orcid_name + " " + orcid_email
 
 

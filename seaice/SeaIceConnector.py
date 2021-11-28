@@ -1061,7 +1061,7 @@ class SeaIceConnector(object):
             cur = self.con.cursor()
             cur.execute(
                 """INSERT INTO SI.Users(id, email, last_name, first_name, reputation, authority, auth_id, orcid)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id""",
                 (
                     defUser["id"],
@@ -1071,6 +1071,7 @@ class SeaIceConnector(object):
                     defUser["reputation"],
                     defUser["authority"],
                     defUser["auth_id"],
+                    defUser["orcid"],
                 ),
             )
             res = cur.fetchone()
