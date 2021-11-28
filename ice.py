@@ -28,14 +28,28 @@ import re
 import sys
 from itertools import chain
 import optparse
+from unittest import result
+import flask
 import flask_login as l
 import psycopg2 as pgdb
 import requests
-from flask import Markup, flash, g, redirect, render_template, request, session, url_for
+from flask import (
+    Markup,
+    flash,
+    g,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 from werkzeug.wrappers import response
+
 
 import seaice
 from seaice.paginate import Pager
+
+import xmltodict
 
 
 from pagination import getPaginationDetails
@@ -372,10 +386,17 @@ def login_orcid():
 def orcid_authorized():
     access_token = orcid.authorize_access_token()
     orcid_id = access_token["orcid"]
+    orcid_name = access_token["name"]
+
     resp = orcid.get("https://pub.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
 
-    user_info = resp.content_type
-    return user_info
+    user_info = xmltodict.parse(resp.content, process_namespaces=True)
+
+    orcid_email = user_info["http://www.orcid.org/ns/email:emails"][
+        "http://www.orcid.org/ns/email:email"
+    ]["http://www.orcid.org/ns/email:email"]
+
+    return orcid_name + " " + orcid_email
 
 
 # def orcid_authorized():

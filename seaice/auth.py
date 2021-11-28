@@ -107,7 +107,7 @@ def get_google_auth(client_id, client_secret):
         access_token_params={"grant_type": "authorization_code"},
         client_id=client_id,
         client_secret=client_secret,
-        client_kwargs={"scope": "openid email profile"},
+        client_kwargs={"scope": "email"},
     )
     return google
 
@@ -122,7 +122,10 @@ def get_orcid_auth(client_id, client_secret):
         base_url="https://pub.sandbox.orcid.org/",
         authorize_url="https://sandbox.orcid.org/oauth/authorize",
         request_token_url=None,
-        request_token_params={"scope": "/authenticate", "response_type": "code"},
+        request_token_params={
+            "scope": "/authenticate",
+            "response_type": "code",
+        },
         access_token_url="https://sandbox.orcid.org/oauth/token",
         access_token_method="POST",
         access_token_params={"grant_type": "authorization_code"},
