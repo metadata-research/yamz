@@ -96,14 +96,6 @@ clone the repository in the home directory
 
 `cd yamz`
 
-Check that you are in the uwsgi_updates branch
-
-`git branch`
-
-if not
-
-`git checkout uwsgi_updates`
-
 The contents of the directory are:
 
 | Filename         | Description                                                         |
