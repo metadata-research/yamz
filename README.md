@@ -92,7 +92,7 @@ Finally, log back in to postgres to create the database,
 
 clone the repository in the home directory
 
-`git clone https://github.com/cr625/yamz.git`
+`git clone https://github.com/metadata-research/yamz.git`
 
 `cd yamz`
 
