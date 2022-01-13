@@ -136,24 +136,6 @@ Install the packagages listed in `requirements.txt`. You can use a Python virtua
 
 `pip install -r requirements.txt`
 
-Initialize the DB schema and tables
-
-`$ ./sea.py --init-db`
-
-set up user standard read/write permissions on the table.
-
-`sudo -u postgres psql`
-
-`postgres=# \c seaice;`
-
-`seaice=# create user contributor with encrypted password 'PASS';`
-
-`seaice=# grant usage on schema SI, SI_Notify to contributor;`
-
-`seaice=# grant select, insert, update, delete on all tables in schema SI, SI_Notify to contributor;`
-
-`seaice=# \q`
-
 ## OAuth Credentials and appkey
 
 YAMZ uses Google for third party authentication (OAuth-2.0) management of
@@ -199,6 +181,24 @@ Add additional credentials for other authentication services (right now the only
 Assign the appropriate permissions to the file
 
 `chmod 600 .seaice_auth`
+
+Initialize the DB schema and tables
+
+`$ ./sea.py --init-db`
+
+set up user standard read/write permissions on the table.
+
+`sudo -u postgres psql`
+
+`postgres=# \c seaice;`
+
+`seaice=# create user contributor with encrypted password 'PASS';`
+
+`seaice=# grant usage on schema SI, SI_Notify to contributor;`
+
+`seaice=# grant select, insert, update, delete on all tables in schema SI, SI_Notify to contributor;`
+
+`seaice=# \q`
 
 ## N2T persistent identifier resolver credentials
 
