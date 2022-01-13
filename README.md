@@ -200,30 +200,6 @@ set up user standard read/write permissions on the table.
 
 `seaice=# \q`
 
-## N2T persistent identifier resolver credentials
-
-Whenever a new term is created, YAMZ uses an API to n2t.net (maintained by
-the California Digital Library) in order to generate ("mint") a persistent
-identifier.  The main role of n2t.net is to be a resolver for the public-
-facing URLs that persistently identify YAMZ terms.  It is necessary to
-provide a minter password for API access to this web service.  To do so
-include a line in ".seaice_auth" for every view:
-
-   minter_password = PASS (not the real password)
-
-A password found in the MINTER_PASSWORD environment variable will
-be preferred over the file setting.  This password is used again in the
-API call to store metadata in a YAMZ binder on n2t.net.  The main bit of
-metadata stored is the redirection target URL that supports resolution of
-ARK identifiers for YAMZ terms.
-
-Because real identifiers are meant to be persistent, no local or test
-instance of YAMZ should ever set the boolean "prod_mode" parameter in
-".seaice_auth".  For such instances the generated and updated terms
-should just be for identifiers meant to be thrown away.  Only on the
-real production instance of YAMZ, when you're done testing term creation
-and update, should it be set to "enable" (the default is don't enable).
-
 ## Testing
 
 ./ice.py
