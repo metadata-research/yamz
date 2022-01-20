@@ -981,7 +981,7 @@ def returnQuery():
         )
 
 
-@app.route("/search/<search_term>")
+@app.route("/search/<search_term>/<int:page>")
 def getSearchResults(search_term=None, page=1):
     g.db = app.dbPool.getScoped()
     search_words = hash2uniquerifier_regex.sub(
@@ -995,10 +995,16 @@ def getSearchResults(search_term=None, page=1):
     has_prev = False
     pager = None
 
-    return render_template("list/search.html", terms=terms, page=page)
+    return render_template(
+        "list/search.html",
+        user_name=l.current_user.name,
+        terms=terms,
+        page=page,
+        search_term=search_term,
+    )
 
 
-@app.route("/search/<search_term>/<int:page>")
+@app.route("/xsearch/<search_term>/<int:page>")
 def returnQueryPaginated(search_term=None, page=1):
     g.db = app.dbPool.getScoped()
     search_words = hash2uniquerifier_regex.sub(
