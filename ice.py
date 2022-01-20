@@ -746,6 +746,8 @@ def getList(type="alphabetical", page=None):
     has_prev = False
     pager = None
 
+    # TODO: extract this into a function
+
     if sort_order == "descending":
         sort_token = "DESC"
     elif sort_order == "ascending":
@@ -977,6 +979,23 @@ def returnQuery():
         return render_template(
             "search.html", user_name=l.current_user.name, pagination_details={}
         )
+
+
+@app.route("/search/<search_term>")
+def getSearchResults(search_term=None, page=1):
+    g.db = app.dbPool.getScoped()
+    search_words = hash2uniquerifier_regex.sub(
+        seaice.pretty.ixuniq + "\\1", search_term
+    )
+    terms = g.db.searchPage(search_words)
+
+    sort_order = request.args.get("order")
+    sort_token = None
+    has_next = False
+    has_prev = False
+    pager = None
+
+    return render_template("list/search.html", terms=terms, page=page)
 
 
 @app.route("/search/<search_term>/<int:page>")
