@@ -1001,6 +1001,7 @@ def getSearchResults(search_term=None, page=1):
         terms=terms,
         page=page,
         search_term=search_term,
+        title="Search Results",
     )
 
 
@@ -1035,7 +1036,7 @@ def returnQueryPaginated(search_term=None, page=1):
 
 # yyy to do: display tag definition at top of search results
 # when user clicks on community tag (searches for all terms bearing the tag)
-@app.route("/tag/<tag>")
+@app.route("/xtag/<tag>")
 def getTag(tag=None):
     g.db = app.dbPool.getScoped()
     terms = g.db.search(seaice.pretty.ixuniq + tag)
@@ -1051,6 +1052,19 @@ def getTag(tag=None):
             term_string=tag,
             result=Markup(result),
         )
+
+
+@app.route("/tag/<tag>")
+def getTagged(tag=None):
+    g.db = app.dbPool.getScoped()
+    terms = g.db.search(seaice.pretty.ixuniq + tag)
+    return render_template(
+        "list/tag.html",
+        user_name=l.current_user.name,
+        terms=terms,
+        tag=tag,
+        title="Tag: " + tag,
+    )
 
 
 # Propose, edit, or remove a term #
