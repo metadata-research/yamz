@@ -761,6 +761,24 @@ def getList(type="alphabetical", page=None):
         has_next = pager.has_next
         has_prev = pager.has_prev
 
+    terms = getSortedTerms(type, page, sort_token, terms_per_page)
+
+    return render_template(
+        "list/index.html",
+        user_name=l.current_user.name,
+        title="List of terms",
+        headline="Terms",
+        terms=terms,
+        page=page,
+        sort_order=sort_order,
+        type=type,
+        pager=pager,
+        has_next=has_next,
+        has_prev=has_prev,
+    )
+
+
+def getSortedTerms(type, page, sort_token, terms_per_page):
     if type == "score":
         if not sort_token:
             sort_token = "DESC"
@@ -824,20 +842,7 @@ def getList(type="alphabetical", page=None):
             )
         else:
             terms = g.db.getAllAuthTerms(sortBy="term_string " + sort_token)
-
-    return render_template(
-        "list/index.html",
-        user_name=l.current_user.name,
-        title="List of terms",
-        headline="Terms",
-        terms=terms,
-        page=page,
-        sort_order=sort_order,
-        type=type,
-        pager=pager,
-        has_next=has_next,
-        has_prev=has_prev,
-    )
+    return terms
 
 
 @app.route("/xbrowse")
