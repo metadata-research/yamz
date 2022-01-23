@@ -765,7 +765,7 @@ def getList(type="alphabetical", page=None):
         if not sort_token:
             sort_token = "DESC"
         if page:
-            terms = g.db.getChunkTerms(
+            terms = g.db.getChunkAuthTerms(
                 sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
             )
         else:
