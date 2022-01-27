@@ -1,7 +1,8 @@
 class Pager:
-    def __init__(self, page, per_page, total_count):
+    def __init__(self, page, listing, total_count):
         self.page = page
-        self.per_page = per_page
+        self.listing = listing
+        self.per_page = 20  # TODO: make this a setting
         self.total_count = total_count
 
     @property
