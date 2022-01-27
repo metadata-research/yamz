@@ -778,10 +778,12 @@ def getList(type="alphabetical", page=None):
     )
 
 
-@app.route("/browse/alphabetical/<int:page>")
-def getTermsPagedAlphabetical(page):
-    g.db = app.dbPool.getScoped()
+# @app.context_processor
 
+
+@app.route("/browse/alphabetical/<int:page>")
+def paged_terms_alphabetical(page):
+    g.db = app.dbPool.getScoped()
     pager = Pager(page=page, listing="alphabetical", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(
         sortBy="term_string ", page=pager.page, tpp=pager.per_page
@@ -790,27 +792,27 @@ def getTermsPagedAlphabetical(page):
 
 
 @app.route("/browse/class/<int:page>")
-def getTermsPagedByScore():
+def paged_terms_class():
     pass
 
 
 @app.route("/browse/consensus/<int:page>")
-def getTermsPagedByConensus():
+def paged_terms_consensus():
     pass
 
 
 @app.route("/browse/contributor/<int:page>")
-def getTermsPagedByContributor():
+def paged_terms_contributor():
     pass
 
 
 @app.route("/browse/modified/<int:page>")
-def getTermsPagedByDateModified():
+def paged_terms_modified():
     pass
 
 
 @app.route("/browse/score/<int:page>")
-def getTermsPageByScore():
+def paged_terms_score():
     pass
 
 

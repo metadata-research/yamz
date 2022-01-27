@@ -2,9 +2,9 @@
 <div class="row mt-4">
     <div class="col">
 
-        {% for pager_page in pager %}
-        {% if pager_page %}
-        <a href="{{ url_for('getList', type=type, page=pager_page, order=sort_order) }}">{{ pager_page }}</a>
+        {% for page in pager %}
+        {% if page %}
+        <a href="{{ url_for('paged_terms_' + pager.listing, page=page, order=sort_order) }}">{{ page }}</a>
         {% else %}
         ...
         {% endif %}
@@ -14,13 +14,14 @@
 <div class="row">
     <div class="col">
         {% if pager.has_prev %}
-        <a href="{{ url_for('getList', type=type, page=pager.page-1, order=sort_order) }}">previous</a>
+        <a
+            href="{{ url_for('paged_terms_' + pager.listing, type=type, page=pager.page-1, order=sort_order) }}">previous</a>
         {% else %}
         <span class="text-muted">previous</span>
         {% endif %}
         &nbsp;|&nbsp;
         {% if pager.has_next %}
-        <a href="{{ url_for('getList', type=type, page=pager.page+1, order=sort_order) }}">next</a>
+        <a href="{{ url_for('paged_terms_' + pager.listing, type=type, page=pager.page+1, order=sort_order) }}">next</a>
         {% else %}
         <span class="text-muted">next</span>
         {% endif %}

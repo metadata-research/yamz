@@ -13,3 +13,6 @@ venv
 settings.json
 .vscode/
 .vscode/launch.json
+localhost-key.pem
+mkcert-v1.4.3-linux-amd64
+localhost.pem
