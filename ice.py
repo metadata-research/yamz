@@ -778,6 +778,42 @@ def getList(type="alphabetical", page=None):
     )
 
 
+@app.route("/browse/alphabetical")
+@app.route("/browse/alphabetical/<int:page>")
+def getTermsPagedAlphabetical():
+    pass
+
+
+@app.route("/browse/class")
+@app.route("/browse/class/<int:page>")
+def getTermsPagedByScore():
+    pass
+
+
+@app.route("/browse/consensus")
+@app.route("/browse/consensus/<int:page>")
+def getTermsPagedByConensus():
+    pass
+
+
+@app.route("/browse/contributor")
+@app.route("/browse/contributor/<int:page>")
+def getTermsPagedByContributor():
+    pass
+
+
+@app.route("/browse/modified")
+@app.route("/browse/modified/<int:page>")
+def getTermsPagedByDateModified():
+    pass
+
+
+@app.route("/browse/score")
+@app.route("/browse/score/<int:page>")
+def getTermsPageByScore():
+    pass
+
+
 def getSortedTerms(type, page, sort_token, terms_per_page):
     if type == "score":
         if not sort_token:
