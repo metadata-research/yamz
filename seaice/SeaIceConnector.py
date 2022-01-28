@@ -654,7 +654,7 @@ class SeaIceConnector(object):
         for row in cur.fetchall():
             yield row
 
-    def getChunkTerms(self, sortBy=None, page=1, tpp=10):
+    def getChunkTerms(self, sortBy=None, page=1, tpp=20):
         """Return an iterator over one page of ``SI.Terms``.
 
         :param sortBy: Column by which sort the results in ascending order.
@@ -687,7 +687,7 @@ class SeaIceConnector(object):
         for row in cur.fetchall():
             yield row
 
-    def getAllAuthTerms(self, sortBy=None, page=1, tpp=10):
+    def getAllAuthTerms(self, sortBy=None, page=1, tpp=20):
         """Return an iterator over one page of ``SI.Terms joined to SI.Users``.
 
         :param page: Page number being served
@@ -713,7 +713,7 @@ class SeaIceConnector(object):
         for row in cur.fetchall():
             yield row
 
-    def getChunkAuthTerms(self, sortBy=None, page=1, tpp=10):
+    def getChunkAuthTerms(self, sortBy=None, page=1, tpp=20):
         """Return an iterator over one page of ``SI.Terms joined to SI.Users``.
 
         :param page: Page number being served

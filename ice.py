@@ -729,260 +729,101 @@ def getTermsOfName(term_concept_id=None, message=""):
 
 
 @app.route("/browse")
-@app.route("/browse/<type>")
-@app.route("/browse/<type>/<int:page>")
-def getList(type="alphabetical", page=None):
-
-    if type is None:
-        return redirect("/browse/alphabetical/1")
-    if page is None:
-        return redirect("/browse/" + type + "/1")
-
-    g.db = app.dbPool.getScoped()
-
-    sort_order = request.args.get("order")
-    sort_token = None
-    has_next = False
-    has_prev = False
-    pager = None
-
-    # TODO: extract this into a function
-
-    if sort_order == "descending":
-        sort_token = "DESC"
-    elif sort_order == "ascending":
-        sort_token = "ASC"
-
-    terms_per_page = 20
-    if page:
-        pager = Pager(
-            page=page, per_page=terms_per_page, total_count=g.db.getLengthTerms()
-        )
-        has_next = pager.has_next
-        has_prev = pager.has_prev
-
-    terms = getSortedTerms(type, page, sort_token, terms_per_page)
-
-    return render_template(
-        "list/index.html",
-        user_name=l.current_user.name,
-        title="List of terms",
-        headline="Terms",
-        terms=terms,
-        page=page,
-        sort_order=sort_order,
-        type=type,
-        pager=pager,
-        has_next=has_next,
-        has_prev=has_prev,
-    )
+def full_url():
+    return redirect("/browse/alphabetical/1")
 
 
-# @app.context_processor
+@app.context_processor
+def inject_user_name():
+    return dict(user_name=l.current_user.name)
+
+
+sql_order = {
+    "descending": "DESC",
+    "ascending": "ASC",
+}
 
 
 @app.route("/browse/alphabetical/<int:page>")
 def paged_terms_alphabetical(page):
+    sort_order = request.args.get("order", "ascending")
+    sort_by = "term_string " + sql_order[sort_order]
+
     g.db = app.dbPool.getScoped()
     pager = Pager(page=page, listing="alphabetical", total_count=g.db.getLengthTerms())
-    terms = g.db.getChunkAuthTerms(
-        sortBy="term_string ", page=pager.page, tpp=pager.per_page
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
+    return render_template(
+        "list/index.html", terms=terms, pager=pager, order=sort_order
     )
-    return render_template("list/index.html", terms=terms, pager=pager)
 
 
 @app.route("/browse/class/<int:page>")
-def paged_terms_class():
-    pass
+def paged_terms_class(page):
+    sort_order = request.args.get("order", "ascending")
+    sort_by = "class " + sql_order[sort_order]
+
+    g.db = app.dbPool.getScoped()
+    pager = Pager(page=page, listing="class", total_count=g.db.getLengthTerms())
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
+    return render_template(
+        "list/index.html", terms=terms, pager=pager, order=sort_order
+    )
 
 
 @app.route("/browse/consensus/<int:page>")
-def paged_terms_consensus():
-    pass
+def paged_terms_consensus(page):
+    sort_order = request.args.get("order", "descending")
+    sort_by = "consensus " + sql_order[sort_order]
+
+    g.db = app.dbPool.getScoped()
+    pager = Pager(page=page, listing="consensus", total_count=g.db.getLengthTerms())
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
+    return render_template(
+        "list/index.html", terms=terms, pager=pager, order=sort_order
+    )
 
 
 @app.route("/browse/contributor/<int:page>")
-def paged_terms_contributor():
-    pass
+def paged_terms_contributor(page):
+    sort_order = request.args.get("order", "ascending")
+    sort_by = (
+        "u.last_name "
+        + sql_order[sort_order]
+        + ", u.first_name "
+        + sql_order[sort_order]
+    )
+
+    g.db = app.dbPool.getScoped()
+    pager = Pager(page=page, listing="contributor", total_count=g.db.getLengthTerms())
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
+    return render_template(
+        "list/index.html", terms=terms, pager=pager, order=sort_order
+    )
 
 
 @app.route("/browse/modified/<int:page>")
-def paged_terms_modified():
-    pass
+def paged_terms_modified(page):
+    sort_order = request.args.get("order", "descending")
+    sort_by = "modified " + sql_order[sort_order]
+
+    g.db = app.dbPool.getScoped()
+    pager = Pager(page=page, listing="modified", total_count=g.db.getLengthTerms())
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
+    return render_template(
+        "list/index.html", terms=terms, pager=pager, order=sort_order
+    )
 
 
 @app.route("/browse/score/<int:page>")
-def paged_terms_score():
-    pass
-
-
-def getSortedTerms(type, page, sort_token, terms_per_page):
-    if type == "score":
-        if not sort_token:
-            sort_token = "DESC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="up- down " + sort_token, page=page, tpp=terms_per_page
-            )
-        else:
-            terms = g.db.getAllAuthTerms(sortBy="up - down " + sort_token)
-
-    elif type == "consensus":
-        if not sort_token:
-            sort_token = "DESC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="consensus " + sort_token, page=page, tpp=terms_per_page
-            )
-        else:
-            terms = g.db.getAllAuthTerms(sortBy="consensus " + sort_token)
-
-    elif type == "class":
-        if not sort_token:
-            sort_token = "ASC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="class " + sort_token, page=page, tpp=terms_per_page
-            )
-        else:
-            terms = g.db.getAllAuthTerms(sortBy="class " + sort_token)
-
-    elif type == "modified":
-        if not sort_token:
-            sort_token = "DESC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="modified " + sort_token, page=page, tpp=terms_per_page
-            )
-        else:
-            terms = g.db.getAllAuthTerms(sortBy="modified " + sort_token)
-
-    elif type == "contributor":
-        if not sort_token:
-            sort_token = "ASC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token,
-                page=page,
-                tpp=terms_per_page,
-            )
-        else:
-            terms = g.db.getAllAuthTerms(
-                sortBy="u.last_name " + sort_token + ", u.first_name " + sort_token
-            )
-
-    else:  # type is alphabetical
-        if not sort_token:
-            sort_token = "ASC"
-        if page:
-            terms = g.db.getChunkAuthTerms(
-                sortBy="term_string " + sort_token, page=page, tpp=terms_per_page
-            )
-        else:
-            terms = g.db.getAllAuthTerms(sortBy="term_string " + sort_token)
-    return terms
-
-
-@app.route("/xbrowse")
-@app.route("/xbrowse/<listing>")
-@app.route("/xbrowse/<listing>/<int:page>")
-def browse(listing=None, page=None):
-    if listing is None:
-        return redirect("/browse/recent")
-    if page is None:
-        return redirect("/browse/" + listing + "/1")
+def paged_terms_score(page):
+    sort_order = request.args.get("order", "descending")
+    sort_by = "up - down " + sql_order[sort_order]
 
     g.db = app.dbPool.getScoped()
-    pagination_details = getPaginationDetails(
-        dbConnector=g.db, page=page, listing=listing
-    )
-    terms = pagination_details["terms"]
-    letter = "~"
-    result = "<h5>{0} | {1} | {2} | {3} | {4}</h5><hr>".format(
-        '<a href="/browse/score">high score</a>'
-        if listing != "score"
-        else "high score",
-        '<a href="/browse/recent">recent</a>' if listing != "recent" else "recent",
-        '<a href="/browse/volatile">volatile</a>'
-        if listing != "volatile"
-        else "volatile",
-        '<a href="/browse/stable">stable</a>' if listing != "stable" else "stable",
-        '<a href="/browse/alphabetical">alphabetical</a>'
-        if listing != "alphabetical"
-        else "alphabetical",
-    )
-    # xxx alpha ordering of tags is wrong (because they start '#{g: ')
-
-    if listing == "recent":  # Most recently added listing
-        result += seaice.pretty.printTermsAsBriefHTML(
-            g.db,
-            sorted(terms, key=lambda term: term["modified"], reverse=True),
-            l.current_user.id,
-        )
-
-    elif listing == "score":  # Highest consensus
-        terms = sorted(terms, key=lambda term: term["consensus"], reverse=True)
-        result += seaice.pretty.printTermsAsBriefHTML(
-            g.db,
-            sorted(terms, key=lambda term: term["up"] - term["down"], reverse=True),
-            l.current_user.id,
-        )
-
-    elif (
-        listing == "volatile"
-    ):  # Least stable (Frequent updates, commenting, and voting)
-        terms = sorted(
-            terms, key=lambda term: term["t_stable"] or term["t_last"], reverse=True
-        )
-        result += seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
-
-    elif listing == "stable":  # Most stable, highest consensus
-        terms = sorted(terms, key=lambda term: term["t_stable"] or term["t_last"])
-        result += seaice.pretty.printTermsAsBriefHTML(g.db, terms, l.current_user.id)
-
-    elif listing == "alphabetical":  # Alphabetical listing
-        result += "<table>"
-        for term in terms:
-            # skip if term is empty
-            if not term["term_string"]:
-                print("error: empty term string in alpha listing", file=sys.stderr)
-                continue
-            # firstc = term['term_string'][0].upper()
-            firstc = term["term_string"][0].upper() if term["term_string"] else " "
-            if firstc != "#" and firstc != letter:
-                # letter = term['term_string'][0].upper()
-                letter = firstc
-                result += "</td></tr><tr><td width=20% align=center valign=top><h4>{0}</h4></td><td width=80%>".format(
-                    letter
-                )
-            result += "<p><a %s</a>" % seaice.pretty.innerAnchor(
-                g.db,
-                term["term_string"],
-                term["concept_id"],
-                term["definition"],
-                tagAsTerm=True,
-            )
-            orcid = g.db.getOrcidById(term["owner_id"])
-            if orcid:
-                result += (
-                    " <i>contributed by <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></i></p>"
-                    % (orcid, g.db.getUserNameById(term["owner_id"], full=True))
-                )
-            else:
-                result += " <i>contributed by %s</i></p>" % g.db.getUserNameById(
-                    term["owner_id"], full=True
-                )
-        result += "</table>"
-        # yyy temporary proof that this code is running
-        print("note: end alpha listing", file=sys.stderr)
-
+    pager = Pager(page=page, listing="score", total_count=g.db.getLengthTerms())
+    terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "browse.html",
-        user_name=l.current_user.name,
-        title="Browse",
-        headline="Browse dictionary",
-        content=Markup(result),
-        pagination_details=pagination_details,
+        "list/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
