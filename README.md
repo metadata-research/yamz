@@ -141,7 +141,7 @@ Install the packagages listed in `requirements.txt`. You can use a Python virtua
 YAMZ uses Google for third party authentication (OAuth-2.0) management of
 logins. Visit https://console.cloud.google.com to set this service up
 for your instance. Navigate to something like APIs and Services -> Credentials
-and select whatever lets you create a new OAauth client ID.  For local
+and select whatever lets you create a new OAuth client ID.  For local
 configuration, supply these answers:
 
     Application type . . . . . . . . . . Web application
