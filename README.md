@@ -63,6 +63,7 @@ Postgres psql requires an administrative user called 'postgres'.
 
 Configure the authentication method for postgres and all other users connecting locally
 In `/etc/postgresql/12/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
+
     # Database administrative login by Unix domain socket
     local   all             postgres                                md5
     
