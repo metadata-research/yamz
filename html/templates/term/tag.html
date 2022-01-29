@@ -6,7 +6,7 @@
 {% if title %}
 YAMZ {{ title }}
 {% else %}
-A basic page
+{{ tag }}
 {% endif %}
 {% endblock %}
 
@@ -49,7 +49,7 @@ A basic page
 <hr>
 <p>Results for tag <strong>{{ tag }}</strong></p>
 
-{% include 'list/_search_terms.html' %}
+{% include 'term/_search_terms.html' %}
 
 
 <hr>
