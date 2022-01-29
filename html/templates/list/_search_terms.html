@@ -2,19 +2,6 @@
   <div class="col-md-4 fw-bold">
     Term
   </div>
-  <div class="col-1 fw-bold">
-    Score
-  </div>
-  <div class="col-1 fw-bold">
-    Consensus
-  </div>
-  <div class="col-1 fw-bold">Class
-  </div>
-  <div class="col-1 fw-bold">
-    Date
-  </div>
-  <div class="col fw-bold">Contributed by
-  </div>
 </div>
 
 
@@ -23,11 +10,7 @@
   <div class="col-md-4 text-truncate"><a
       href="{{ url_for('getTerm', term_concept_id=term.concept_id) }}">{{ term.term_string|tag_to_term }}</a>
   </div>
-  <div class="col-1">{{term.up - term.down}}</div>
-  <div class="col-1">{{ term.consensus|summarize_consensus }}</div>
-  <div class="col-1">{{ term.class }}</div>
-  <div class="col-1">{{ term.modified|format_date }}</div>
-  <div class="col">{{ term.last_name }}, {{ term.first_name}} </div>
+
 </div>
 
 {% endfor %}

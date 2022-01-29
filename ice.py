@@ -871,19 +871,11 @@ def getSearchResults(search_term=None, page=1):
     search_words = hash2uniquerifier_regex.sub(
         seaice.pretty.ixuniq + "\\1", search_term
     )
-    terms = g.db.searchPage(search_words)
-
-    sort_order = request.args.get("order")
-    sort_token = None
-    has_next = False
-    has_prev = False
-    pager = None
+    terms = g.db.search(search_words)
 
     return render_template(
         "list/search.html",
-        user_name=l.current_user.name,
         terms=terms,
-        page=page,
         search_term=search_term,
         title="Search Results",
     )

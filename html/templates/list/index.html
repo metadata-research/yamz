@@ -1,5 +1,10 @@
 {% extends 'layout.html' %}
 
+{% if order == 'ascending' %}
+{% set sort_order = 'descending'  %}
+{% elif order== 'descending'%}
+{% set sort_order = 'ascending'  %}
+{% endif %}
 
 
 {% block title %}
@@ -24,7 +29,6 @@ A basic page
   <a class="nav-link" href="/contact">Contact</a>
 </li>
 {% endblock %}
-
 
 {% block body %}
 
