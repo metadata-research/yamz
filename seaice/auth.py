@@ -73,24 +73,16 @@ def get_config(config_file=".seaice"):
     return config
 
 
-# Google authentication. #
-
-#: Google authentication (OAuth)
-#: **TODO**: Change to *google_oauth*.
 app = Flask(__name__)
 oauth = OAuth(app)
 
-#: Variable prescribed by the Google OAuth API.
-#: **TODO:** To accomadate other authentication
-#: services, change this to '/authorized/google'
-#: (also on code.google.com/apis/console).
-REDIRECT_URI = "/authorized"
-REDIRECT_URI_ORCID = "/orcid_authorized"
+REDIRECT_URI_GOOGLE = "/g_authorized"
+REDIRECT_URI_ORCID = "/authorized/orcid"
 
 
 #: Get Google authentication. Client ID and secrets are drawn from a
 #: config file which may contain multiple values for various
-#: deplo9yments. NOTE The client ID **should** never be published
+#: deployments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_google_auth(client_id, client_secret):
     google = oauth.register(

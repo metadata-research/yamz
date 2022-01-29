@@ -329,12 +329,12 @@ def login():
 
 
 @app.route("/login/google")
-def login_google():
+def google_login():
     redirect_uri = url_for("authorized", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
-@app.route(seaice.auth.REDIRECT_URI)
+@app.route(seaice.auth.REDIRECT_URI_GOOGLE)
 def authorized():
     access_token = google.authorize_access_token()
     resp = google.get("https://www.googleapis.com/oauth2/v1/userinfo")
@@ -361,7 +361,7 @@ def authorized():
         app.SeaIceUsers[user["id"]] = seaice.user.User(user["id"], user["first_name"])
         l.login_user(app.SeaIceUsers.get(user["id"]))
         return render_template(
-            "account.html",
+            "user/account.html",
             user_name=l.current_user.name,
             email=g_user["email"],
             orcid=None,
@@ -426,7 +426,7 @@ def orcid_authorized():
         l.login_user(app.SeaIceUsers.get(user["id"]))
 
         return render_template(
-            "account.html",
+            "./user/account.html",
             email=orcid_email,
             orcid=orcid_id,
             last_name_edit=last_name,
@@ -516,7 +516,7 @@ def settings():
     app.dbPool.enqueue(g.db)
     print(user["orcid"])
     return render_template(
-        "account.html",
+        "user/account.html",
         user_name=l.current_user.name,
         email=user["email"],
         last_name_edit=user["last_name"],
@@ -753,7 +753,7 @@ def paged_terms_alphabetical(page):
     pager = Pager(page=page, listing="alphabetical", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -766,7 +766,7 @@ def paged_terms_class(page):
     pager = Pager(page=page, listing="class", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -779,7 +779,7 @@ def paged_terms_consensus(page):
     pager = Pager(page=page, listing="consensus", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -797,7 +797,7 @@ def paged_terms_contributor(page):
     pager = Pager(page=page, listing="contributor", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -810,7 +810,7 @@ def paged_terms_modified(page):
     pager = Pager(page=page, listing="modified", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -823,7 +823,7 @@ def paged_terms_score(page):
     pager = Pager(page=page, listing="score", total_count=g.db.getLengthTerms())
     terms = g.db.getChunkAuthTerms(sortBy=sort_by, page=pager.page, tpp=pager.per_page)
     return render_template(
-        "list/index.html", terms=terms, pager=pager, order=sort_order
+        "term/index.html", terms=terms, pager=pager, order=sort_order
     )
 
 
@@ -874,7 +874,7 @@ def getSearchResults(search_term=None, page=1):
     terms = g.db.search(search_words)
 
     return render_template(
-        "list/search.html",
+        "term/search.html",
         terms=terms,
         search_term=search_term,
         title="Search Results",
@@ -935,7 +935,7 @@ def getTagged(tag=None):
     g.db = app.dbPool.getScoped()
     terms = g.db.search(seaice.pretty.ixuniq + tag)
     return render_template(
-        "list/tag.html",
+        "term/tag.html",
         user_name=l.current_user.name,
         terms=terms,
         tag=tag,

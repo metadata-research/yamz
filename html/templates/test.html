@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block title %}
+This is the title
+{% endblock %}
+
+{% block links %}
+              <li class="nav-item">
+                <a class="nav-link" href="/browse">Browse</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/contribute">Add</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/about">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/contact">Contact</a>
+              </li>
+{% endblock %}
+
+{% block body %}
+{% block content %}
+    this is the content<br>
+    {{ user}}
+
+{% endblock content %}
+this is a test
+{% endblock %}
