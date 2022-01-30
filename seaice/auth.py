@@ -77,7 +77,7 @@ app = Flask(__name__)
 oauth = OAuth(app)
 
 REDIRECT_URI_GOOGLE = "/g_authorized"
-REDIRECT_URI_ORCID = "/authorized/orcid"
+REDIRECT_URI_ORCID = "/o_authorized"
 
 
 #: Get Google authentication. Client ID and secrets are drawn from a

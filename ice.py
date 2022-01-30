@@ -114,6 +114,7 @@ parser.add_option(
 
 (options, args) = parser.parse_args()
 
+# TODO: don't need two different parsers
 # Figure out if we're in production mode.
 config = configparser.ConfigParser()
 config.read(".seaice_auth")
@@ -220,7 +221,7 @@ def pageNotFound(e):
     )
 
 
-# we'll move this to pretty for consistency but here for now
+# this is to make the tags look like hashtags until we can figure out how to store them better
 @app.template_filter("tag_to_term")
 def format_term(term_string):
 
@@ -330,12 +331,12 @@ def login():
 
 @app.route("/login/google")
 def google_login():
-    redirect_uri = url_for("authorized", _external=True)
+    redirect_uri = url_for("g_authorized", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_GOOGLE)
-def authorized():
+def g_authorized():
     access_token = google.authorize_access_token()
     resp = google.get("https://www.googleapis.com/oauth2/v1/userinfo")
     try:
@@ -378,17 +379,17 @@ def authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
-    redirect_uri = url_for("orcid_authorized", _external=True)
+    redirect_uri = url_for("o_authorized", _external=True)
     return orcid.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
-def orcid_authorized():
+def o_authorized():
     access_token = orcid.authorize_access_token()
     orcid_id = access_token["orcid"]
     orcid_name = access_token["name"]
 
-    resp = orcid.get("https://pub.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
+    resp = orcid.get("https://orcid.org/v3.0/" + orcid_id + "/email")
 
     try:
         resp.raise_for_status()
