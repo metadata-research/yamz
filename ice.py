@@ -331,12 +331,12 @@ def login():
 
 @app.route("/login/google")
 def google_login():
-    redirect_uri = url_for("g_authorized", _external=True)
+    redirect_uri = url_for("google_authorized", _external=True)
     return google.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_GOOGLE)
-def g_authorized():
+def google_authorized():
     access_token = google.authorize_access_token()
     resp = google.get("https://www.googleapis.com/oauth2/v1/userinfo")
     try:
@@ -379,12 +379,12 @@ def g_authorized():
 
 @app.route("/login/orcid")
 def login_orcid():
-    redirect_uri = url_for("o_authorized", _external=True)
+    redirect_uri = url_for("orcid_authorized", _external=True)
     return orcid.authorize_redirect(redirect_uri)
 
 
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
-def o_authorized():
+def orcid_authorized():
     access_token = orcid.authorize_access_token()
     orcid_id = access_token["orcid"]
     orcid_name = access_token["name"]
