@@ -146,7 +146,7 @@ Install uwsgi via pip
 
 ## Python environment
 
-Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. 
+Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like, just don't forget to specify the path in the ini file. 
 
 `pip install -r requirements.txt`
 
@@ -164,11 +164,15 @@ configuration, supply these answers:
                                          http://localhost
                                          https://domain.name
 
-    Authorized redirect URI  . . . . . . http://localhost:5000/authorized
-                                         http://localhost/authorized
+    Authorized redirect URI  . . . . . . http://localhost:5000/g_authorized
+                                         http://localhost:5000/o_authorized
+                                         https://localhost/g_authorized
+                                         https://localhost/o_authorized
                                          https://domain.name/authorized
 
-The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server.
+The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory
+
+`uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or os store.
 
 In each case, you should obtain a pair of values to put into another configuration file called '.seaice_auth'.  Create or edit this file,
 replacing google_client_id with the returned 'Client ID' and replacing google_client_secret with the returned 'Client secret'. The app secret is for the flask application and just be a unique and random string. Here's one way to do it
