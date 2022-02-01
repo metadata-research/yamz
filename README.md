@@ -165,10 +165,8 @@ configuration, supply these answers:
                                          https://domain.name
 
     Authorized redirect URI  . . . . . . http://localhost:5000/g_authorized
-                                         http://localhost:5000/o_authorized
                                          https://localhost/g_authorized
-                                         https://localhost/o_authorized
-                                         https://domain.name/authorized
+                                         https://domain.name/g_authorized
 
 The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory
 
