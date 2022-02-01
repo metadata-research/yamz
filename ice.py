@@ -255,7 +255,7 @@ def format_date(date):
     """
     Return a human readable date string.
     """
-    return date.strftime("%m/%d/%Y")
+    return date.strftime("%Y.%m.%d")
 
 
 # home page
