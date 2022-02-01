@@ -134,6 +134,16 @@ Set permissions with
 
 `chmod 600 .seaice`
 
+
+## uwsgi
+Install (if necessary) a C compiler and the Python development headers
+
+`sduo apt install build-essential python3-dev`
+
+Install uwsgi via pip
+
+`pip install uwsgi`
+
 ## Python environment
 
 Install the packagages listed in `requirements.txt`. You can use a Python virtual environment if you like. 
