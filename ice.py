@@ -25,6 +25,7 @@
 
 import configparser
 import email
+from http.client import responses
 import re
 import sys
 from itertools import chain
@@ -386,61 +387,56 @@ def login_orcid():
 @app.route(seaice.auth.REDIRECT_URI_ORCID)
 def orcid_authorized():
     access_token = orcid.authorize_access_token()
+
     orcid_id = access_token["orcid"]
     orcid_name = access_token["name"]
 
-    resp = orcid.get("https://orcid.org/v3.0/" + orcid_id + "/email")
+    orcid_email = orcid.get("https://orcid.org/v3.0/" + orcid_id + "/email")
 
-    try:
-        resp.raise_for_status()
-    except requests.exceptions.HTTPError:
-        if resp.status_code == 401:  # Unauthorized - bad token
-            session.pop("access_token", None)
-            return "l"
+    return render_template("test.html", orcid_info=access_token)
+    # user_info = xmltodict.parse(resp.content, process_namespaces=True)
 
-    user_info = xmltodict.parse(resp.content, process_namespaces=True)
+    # orcid_email = user_info["http://www.orcid.org/ns/email:emails"][
+    #     "http://www.orcid.org/ns/email:email"
+    # ]["http://www.orcid.org/ns/email:email"]
 
-    orcid_email = user_info["http://www.orcid.org/ns/email:emails"][
-        "http://www.orcid.org/ns/email:email"
-    ]["http://www.orcid.org/ns/email:email"]
+    # o_user = {}
+    # user_name = orcid_name.split(" ")
+    # first_name = user_name[0]
+    # last_name = user_name[1]
 
-    o_user = {}
-    user_name = orcid_name.split(" ")
-    first_name = user_name[0]
-    last_name = user_name[1]
+    # g.db = app.dbPool.getScoped()
+    # user = g.db.getUserByAuth("orcid", orcid_id)
+    # if not user:
+    #     o_user["email"] = orcid_email
+    #     o_user["authority"] = "orcid"
+    #     o_user["auth_id"] = orcid_id
+    #     o_user["last_name"] = first_name
+    #     o_user["first_name"] = last_name
+    #     o_user["reputation"] = "30"
+    #     o_user["orcid"] = orcid_id
+    #     o_user["id"] = app.userIdPool.ConsumeId()
+    #     g.db.insertUser(o_user)
+    #     g.db.commit()
+    #     user = g.db.getUserByAuth("orcid", o_user["auth_id"])
+    #     app.SeaIceUsers[user["id"]] = seaice.user.User(user["id"], user["first_name"])
+    #     l.login_user(app.SeaIceUsers.get(user["id"]))
 
-    g.db = app.dbPool.getScoped()
-    user = g.db.getUserByAuth("orcid", orcid_id)
-    if not user:
-        o_user["email"] = orcid_email
-        o_user["authority"] = "orcid"
-        o_user["auth_id"] = orcid_id
-        o_user["last_name"] = first_name
-        o_user["first_name"] = last_name
-        o_user["reputation"] = "30"
-        o_user["orcid"] = orcid_id
-        o_user["id"] = app.userIdPool.ConsumeId()
-        g.db.insertUser(o_user)
-        g.db.commit()
-        user = g.db.getUserByAuth("orcid", o_user["auth_id"])
-        app.SeaIceUsers[user["id"]] = seaice.user.User(user["id"], user["first_name"])
-        l.login_user(app.SeaIceUsers.get(user["id"]))
+    #     return render_template(
+    #         "./user/account.html",
+    #         email=orcid_email,
+    #         orcid=orcid_id,
+    #         last_name_edit=last_name,
+    #         first_name_edit=first_name,
+    #         message="""
+    #                 According to our records, this is the first time you've logged onto
+    #                 SeaIce with this account. Please provide your first and last name as
+    #                 you would like it to appear with your contributions. Thank you!""",
+    #     )
 
-        return render_template(
-            "./user/account.html",
-            email=orcid_email,
-            orcid=orcid_id,
-            last_name_edit=last_name,
-            first_name_edit=first_name,
-            message="""
-                    According to our records, this is the first time you've logged onto
-                    SeaIce with this account. Please provide your first and last name as
-                    you would like it to appear with your contributions. Thank you!""",
-        )
-
-    l.login_user(app.SeaIceUsers.get(user["id"]))
-    flash("Logged in successfully")
-    return redirect(url_for("index"))
+    # l.login_user(app.SeaIceUsers.get(user["id"]))
+    # flash("Logged in successfully")
+    # return redirect(url_for("index"))
     # orcid_name + " " + orcid_email
 
 
