@@ -109,20 +109,15 @@ def get_google_auth(client_id, client_secret):
 #: deplo9yments. NOTE The client ID **should** never be published
 #: and the secret **must** never be published.
 def get_orcid_auth(client_id, client_secret):
-    orcid = oauth.register(
+    oauth.register(
         name="orcid",
-        base_url="https://sandbox.orcid.org/",
-        authorize_url="https://sandbox.orcid.org/oauth/authorize",
-        request_token_url=None,
-        request_token_params={
-            "scope": "/authenticate",
-            "response_type": "code",
-        },
-        access_token_url="https://sandbox.orcid.org/oauth/token",
-        access_token_method="POST",
-        access_token_params={"grant_type": "authorization_code"},
         client_id=client_id,
         client_secret=client_secret,
+        access_token_url="https://sandbox.orcid.org/oauth/token",
+        access_token_params=None,
+        authorize_url="https://sandbox.orcid.org/oauth/authorize",
+        autorize_params=None,
+        api_base_url="https://api.sandbox.orcid.org/v2.0/",
         client_kwargs={"scope": "openid email profile"},
     )
-    return orcid
+    return oauth.orcid
