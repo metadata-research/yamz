@@ -392,16 +392,27 @@ def orcid_authorized():
     orcid_id = access_token["orcid"]
     orcid_name = access_token["name"]
 
-    orcid_email = orcid.get(
-        "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
+    orcid_email_response = orcid.get(
+        "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email"
+    )
 
+    orcid_email_dict = xmltodict.parse(
+        orcid_email_response.content, process_namespaces=True
+    )
+    email = orcid_email_dict["http://www.orcid.org/ns/email:emails"][
+        "http://www.orcid.org/ns/email:email"
+    ]["http://www.orcid.org/ns/email:email"]
 
-    return render_template("test.html", orcid_info=access_token)
-    # user_info = xmltodict.parse(resp.content, process_namespaces=True)
-
-    # orcid_email = user_info["http://www.orcid.org/ns/email:emails"][
-    #     "http://www.orcid.org/ns/email:email"
-    # ]["http://www.orcid.org/ns/email:email"]
+    return render_template(
+        "user/account.html",
+        # user_name=l.current_user.name,
+        email=email,
+        orcid=orcid_id,
+        message="""
+                According to our records, this is the first time you've logged onto
+                SeaIce with this account. Please provide your first and last name as
+                you would like it to appear with your contributions. Thank you!""",
+    )
 
     # o_user = {}
     # user_name = orcid_name.split(" ")
