@@ -25,6 +25,7 @@
 
 import configparser
 import email
+from email import header
 from http.client import responses
 import re
 import sys
@@ -391,7 +392,13 @@ def orcid_authorized():
     orcid_id = access_token["orcid"]
     orcid_name = access_token["name"]
 
-    orcid_email = orcid.get("https://orcid.org/v3.0/" + orcid_id + "/email")
+    orcid_email = orcid.get(
+        "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email",
+        headers={
+            "Authorization": "Bearer " + access_token["access_token"],
+            "Accept": "application/json",
+        },
+    )
 
     return render_template("test.html", orcid_info=access_token)
     # user_info = xmltodict.parse(resp.content, process_namespaces=True)
