@@ -77,7 +77,7 @@ app = Flask(__name__)
 oauth = OAuth(app)
 
 REDIRECT_URI_GOOGLE = "/g_authorized"
-REDIRECT_URI_ORCID = "/o_authorized"
+REDIRECT_URI_ORCID = "/orcid_authorized"
 
 
 #: Get Google authentication. Client ID and secrets are drawn from a
@@ -117,7 +117,7 @@ def get_orcid_auth(client_id, client_secret):
         access_token_params=None,
         authorize_url="https://sandbox.orcid.org/oauth/authorize",
         autorize_params=None,
-        api_base_url="https://api.sandbox.orcid.org/v2.0/",
-        client_kwargs={"scope": "openid email profile"},
+        api_base_url="https://api.sandbox.orcid.org/v3.0/",
+        client_kwargs={"scope": "openid email"},
     )
     return oauth.orcid
