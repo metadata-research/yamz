@@ -393,12 +393,8 @@ def orcid_authorized():
     orcid_name = access_token["name"]
 
     orcid_email = orcid.get(
-        "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email",
-        headers={
-            "Authorization": "Bearer " + access_token["access_token"],
-            "Accept": "application/json",
-        },
-    )
+        "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email")
+
 
     return render_template("test.html", orcid_info=access_token)
     # user_info = xmltodict.parse(resp.content, process_namespaces=True)
