@@ -368,10 +368,12 @@ def google_authorized():
             user_name=l.current_user.name,
             email=g_user["email"],
             orcid=None,
+            first_name_edit=g_user["first_name"],
+            last_name_edit=g_user["last_name"],
             message="""
-                According to our records, this is the first time you've logged onto
-                SeaIce with this account. Please provide your first and last name as
-                you would like it to appear with your contributions. Thank you!""",
+            #    According to our records, this is the first time you've logged onto
+            #    YAMZ with this account. Please provide your first and last name as
+            #    you would like it to appear with your contributions. Thank you!""",
         )
 
     l.login_user(app.SeaIceUsers.get(user["id"]))
@@ -395,6 +397,13 @@ def orcid_authorized():
     orcid_email_response = orcid.get(
         "https://api.sandbox.orcid.org/v3.0/" + orcid_id + "/email"
     )
+
+    try:
+        orcid_email_response.raise_for_status()
+    except requests.exceptions.HTTPError:
+        if orcid_email_response.status_code == 401:  # Unauthorized - bad token
+            session.pop("access_token", None)
+            return "l"
 
     orcid_email_dict = xmltodict.parse(
         orcid_email_response.content, process_namespaces=True
@@ -429,9 +438,11 @@ def orcid_authorized():
             user_name=l.current_user.name,
             email=orcid_email,
             orcid=orcid_id,
+            first_name_edit=first_name,
+            last_name_edit=last_name,
             message="""
                 According to our records, this is the first time you've logged onto
-                SeaIce with this account. Please provide your first and last name as
+                YAMZ with this account. Please provide your first and last name as
                 you would like it to appear with your contributions. Thank you!""",
         )
     l.login_user(app.SeaIceUsers.get(user["id"]))
@@ -539,12 +550,14 @@ def getUser(user_id=None):
                     <tr><td valign=top>Email:</td><td>{2}</td></td>
                     <tr><td valign=top>Reputation:</td><td>{3}</td></td>
                     <tr><td valign=top>Receive email notifications:</td><td>{4}</td>
+                    <tr><td valign=top>ORCiD:</td><td>{5}</td>
                 </table> """.format(
                 user["first_name"],
                 user["last_name"],
                 user["email"],
                 user["reputation"] + " *" if user["super_user"] else "",
                 user["enotify"],
+                user["orcid"] if user["orcid"] else "",
             )
 
             return render_template(
