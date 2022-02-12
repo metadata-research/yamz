@@ -742,9 +742,9 @@ def printTermAsHTML(db_con, row, user_id=0):
         % db_con.getUserNameById(row["owner_id"], full=True)
     )
     orcid = db_con.getOrcidById(row["owner_id"])
-    if orcid:
+    if not orcid == "nil":
         string += (
-            "      <nobr><i>ORCID</i> <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"
+            "      <nobr><img src='/static/img/ORCiD_icon.png' width='20'>&nbsp; <a target='_blank' href='https://sandbox.orcid.org/%s'>%s</a></nobr><br>"
             % (orcid, orcid)
         )
     if persistent_id != "":

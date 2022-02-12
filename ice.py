@@ -494,7 +494,7 @@ def settings():
                 l.current_user.id
             )  # fetch user for reputation and email
             return render_template(
-                "account.html",
+                "/user/account.html",
                 user_name=l.current_user.name,
                 email=user["email"],
                 last_name_edit=request.form["last_name"],
