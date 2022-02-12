@@ -1,86 +1,91 @@
 {% extends 'layout.html' %}
 
 {% block title %}
-      {% if title %}
-        YAMZ {{ title }}
-      {% else %}
-        A basic page
-      {% endif %}
+{% if title %}
+YAMZ {{ title }}
+{% else %}
+A basic page
+{% endif %}
 {% endblock %}
 
 {% block links %}
-              <li class="nav-item">
-                <a class="nav-link" href="/browse">Browse</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" href="/contribute">Add</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/contact">Contact</a>
-              </li>
+<li class="nav-item">
+  <a class="nav-link" href="/browse">Browse</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link active" href="/contribute">Add</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/about">About</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="/contact">Contact</a>
+</li>
 {% endblock %}
 
 
 {% block body %}
 
-    <table width=100%>
-     <tr>
-      <td>
-       {% if headline %}
-         <h3>{{ headline }}</h3>
-       {% endif %}
+<table width=100%>
+  <tr>
+    <td>
+      {% if headline %}
+      <br />
+      <h1>{{ headline }}</h1>
+      {% endif %}
 
-          {% if edit_id %}
-            See our community <a href="/guidelines">community guidelines</a> for best practice tips.
-          {% else %}
-            Here you can propose a new term. You can help us maintain a high-quality metadictionary
-            and minimize redundancies by <a href="/search">searching</a> for your term. Take a look
-            at our community <a href="/guidelines">community guidelines</a> for best practice tips.
-          {% endif %}
+      {% if edit_id %}
+      See our community <a href="/guidelines">community guidelines</a> for best practice tips.
+      {% else %}
+      Here you can propose a new term. You can help us maintain a high-quality metadictionary
+      and minimize redundancies by <a href="/search">searching</a> for your term. Take a look
+      at our community <a href="/guidelines">community guidelines</a> for best practice tips.
+      {% endif %}
 
-      </td>
-      <td valign=top align=right width=30%>
-         <form action="/search" method="post">
-           <div class="control-group"><label class="control-label"></label>
-           <div class="controls"><input name="term_string" type="text"
-           class="input-lg search-query form-control" placeholder="Search for a term"></div></div>
-         </form>
-       </td>
-      </tr>
-    </table>
-
-      <hr>
-
-      <form action="{% if edit_id %}/term={{edit_id}}/edit{% else %}/contribute{% endif %}" method="post">
-        <div class="row mb-3">
-          <label for="term_string" class="col-sm-2 control-label" style='text-align: left'>Term string: </label>
-          <div class="col-sm-3">
-            <input type="text" name="term_string" value="{% if term_string_edit %}{{term_string_edit}}{% endif %}" class="form-control" id="term_string">
-          </div>
-        </div>
-        <div class="row mb-3">
-          <label for="definition" class="col-sm-2 control-label" style='text-align: left'>Definition: </label>
-          <div class="col-sm-6">
-            <textarea class="form-control" id="definition" placeholder="A _class_ of thing, followed by distinguishing characteristics, such as (for 'water'): 'A _clear liquid_ made up of hydrogen and oxygen molecules.'" type="text" rows=4
-                name="definition">{% if definition_edit %}{{ definition_edit }}{% endif %}</textarea>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <label for="examples" class="col-sm-2 control-label" style='text-align: left'>Example(s): </label>
-          <div class="col-sm-6">
-            <textarea class="form-control" placeholder="Examples of usage or related concepts." rows=4 type="text" name="examples">{% if examples_edit %}{{ examples_edit }}{% endif %}</textarea>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="submit">Submit</button>
-          </div>
+    </td>
+    <td valign=top align=right width=30%>
+      <form action="/search" method="post">
+        <div class="control-group"><label class="control-label"></label>
+          <div class="controls"><input name="term_string" type="text" class="input-lg search-query form-control"
+              placeholder="Search for a term"></div>
         </div>
       </form>
+    </td>
+  </tr>
+</table>
 
-      <hr>
+<hr>
+
+<form action="{% if edit_id %}/term={{edit_id}}/edit{% else %}/contribute{% endif %}" method="post">
+  <div class="row mb-3">
+    <label for="term_string" class="col-sm-2 control-label" style='text-align: left'>Term string: </label>
+    <div class="col-sm-3">
+      <input type="text" name="term_string" value="{% if term_string_edit %}{{term_string_edit}}{% endif %}"
+        class="form-control" id="term_string">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="definition" class="col-sm-2 control-label" style='text-align: left'>Definition: </label>
+    <div class="col-sm-6">
+      <textarea class="form-control" id="definition"
+        placeholder="A _class_ of thing, followed by distinguishing characteristics, such as (for 'water'): 'A _clear liquid_ made up of hydrogen and oxygen molecules.'"
+        type="text" rows=4 name="definition">{% if definition_edit %}{{ definition_edit }}{% endif %}</textarea>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="examples" class="col-sm-2 control-label" style='text-align: left'>Example(s): </label>
+    <div class="col-sm-6">
+      <textarea class="form-control" placeholder="Examples of usage or related concepts." rows=4 type="text"
+        name="examples">{% if examples_edit %}{{ examples_edit }}{% endif %}</textarea>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit">Submit</button>
+    </div>
+  </div>
+</form>
+
+<hr>
 
 {% endblock %}

@@ -36,8 +36,8 @@ Christopher Patton{% endblock %}
     </div>
   </form>
   {% if user_name %}
-  <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata. &nbsp;&nbsp; Feedback to
-    yamzalot at gmail dot com.</h6>
+  <br />
+  <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata.</h6>
   {% endif %}
   <hr>
 </div>
@@ -61,6 +61,7 @@ Christopher Patton{% endblock %}
       <td rowspan=2 width=5%></td>
 
       <td rowspan=2 width=75% valign=top>
+        <br />
         <h4>Notifications</h4>
         {% if notify %}
         {{ notify }}
@@ -70,6 +71,7 @@ Christopher Patton{% endblock %}
       </td>
 
       <td valign=top>
+        <br />
         <h4>My terms</h4>
         {% if my %}
         {{ my }}
@@ -88,7 +90,7 @@ Christopher Patton{% endblock %}
         {% else %}
         <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
         {% endif %}
-        <br>
+        <br /><br />
       </td>
     </tr>
   </table>
