@@ -106,8 +106,9 @@ def get_google_auth(client_id, client_secret):
 
 #: Get Orcid authentication. Client ID and secrets are drawn from a
 #: config file which may contain multiple values for various
-#: deplo9yments. NOTE The client ID **should** never be published
-#: and the secret **must** never be published.
+#: deployments. NOTE Do not publishe the client secret.
+
+
 def get_orcid_auth(client_id, client_secret):
     oauth.register(
         name="orcid",

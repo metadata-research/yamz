@@ -403,7 +403,7 @@ def orcid_authorized():
     except requests.exceptions.HTTPError:
         if orcid_email_response.status_code == 401:  # Unauthorized - bad token
             session.pop("access_token", None)
-            return "l"
+            return "Something went wrong with the ORCID login. Please try again."
 
     orcid_email_dict = xmltodict.parse(
         orcid_email_response.content, process_namespaces=True
