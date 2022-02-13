@@ -565,6 +565,23 @@ class SeaIceConnector(object):
         for row in results:
             yield row
 
+    def getTermStringCount(self, term_string):
+        """Get number of terms with the same term string (homonyms)
+
+        :type term_string str: natural language term for string
+        :rtype: int or None
+        """
+        cur = self.con.cursor()
+        cur.execute(
+            """
+                SELECT COUNT(*)
+                FROM SI.Terms
+                WHERE LOWER(term_string)=LOWER(%s);
+                """,
+            (term_string,),
+        )
+        return cur.fetchone()[0]
+
     def getTermString(self, id):
         """Get term string by ID.
 
