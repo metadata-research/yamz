@@ -634,13 +634,13 @@ def getTerm(term_concept_id=None, message=""):
 
     else:
         same_term_count = g.db.getTermStringCount(term["term_string"])
+        result = ""
         if same_term_count > 1:
-            result = '<p><a href="/term/all_of_name/concept=%s">%s (%s)</a></p>' % (
+            result += '<p><a href="/term/all_of_name/concept=%s">%s (%s)</a></p>' % (
                 term_concept_id,
                 term["term_string"],
                 same_term_count,
             )
-        else: result = ""
         result += seaice.pretty.printTermAsHTML(g.db, term, l.current_user.id)
         result = message + "<hr>" + result + "<hr>"
         result += seaice.pretty.printCommentsAsHTML(
