@@ -50,7 +50,9 @@ from werkzeug.wrappers import response
 
 
 import seaice
+import seaice.forms
 from seaice.paginate import Pager
+
 
 import xmltodict
 
@@ -323,7 +325,7 @@ def login():
             In order to propose new terms or comment on others, you must first
             sign in.
              <li>Sign in with <a href="/login/google">Google</a>.</li>
-             <li>Sign in with <a href="/login/orcid">ORCID</a>.</li>
+             <li>Sign in with <img src="/static/img/ORCiD_icon.png" width="20">&nbsp;<a href="/login/orcid">ORCiD</a>.</li>
         </p>
         """
     return render_template(
@@ -521,7 +523,6 @@ def settings():
     # method was GET
     user = g.db.getUser(l.current_user.id)
     app.dbPool.enqueue(g.db)
-    print(user["orcid"])
     return render_template(
         "user/account.html",
         user_name=l.current_user.name,
