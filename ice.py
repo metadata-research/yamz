@@ -50,7 +50,7 @@ from werkzeug.wrappers import response
 
 
 import seaice
-import seaice.forms
+
 from seaice.paginate import Pager
 
 
