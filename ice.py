@@ -637,7 +637,7 @@ def getTerm(term_concept_id=None, message=""):
         same_term_count = g.db.getTermStringCount(term["term_string"])
         result = ""
         if same_term_count > 1:
-            result += '<p><a href="/term/all_of_name/concept=%s">%s (%s)</a></p>' % (
+            result += '<p><a title="Show all terms with this natural language string." href="/term/all_of_name/concept=%s">%s (%s)</a></p>' % (
                 term_concept_id,
                 term["term_string"],
                 same_term_count,
