@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+
+<head>
+    {% if title %}
+    <title>{{ title }} - YAMZ</title>
+    {% else %}
+    <title>Welcome to YAMZ</title>
+    {% endif %}
+</head>
+
+<body>
+    <div>Yamz: <a href="/">Home</a></div>
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+
+</html>
