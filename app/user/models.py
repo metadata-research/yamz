@@ -3,7 +3,7 @@ from app import db
 
 
 class User(UserMixin, db.Model):
-
+    # TODO: this is the legacy schema, use sqlalchemy.create_all() to create the tables and user the default naming conventions
     __tablename__ = "users"
     __table_args__ = {"schema": "si"}
     id = db.Column(db.Integer, primary_key=True)
@@ -22,4 +22,8 @@ class User(UserMixin, db.Model):
 
 
 class AnonymousUser(AnonymousUserMixin):
-    pass
+    def can(self, permissions):
+        return False
+
+    def is_administrator(self):
+        return False
