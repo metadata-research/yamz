@@ -17,6 +17,6 @@ def contact():
     return render_template("main/contact.jinja")
 
 
-@main.route("guidelines")
+@main.route("/guidelines")
 def guidelines():
     return render_template("main/guidelines.jinja")

@@ -1,0 +1,24 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Log in to YAMZ
+{% endblock %}
+
+{% block headline %}
+Login
+{% endblock headline %}
+
+{% block links %}
+{% endblock links%}
+
+{% block content %}
+<p>
+    In order to propose new terms or comment on others, you must first
+    sign in.
+    <li>Sign in with <a href="{{ url_for('auth.oauth_authorize', provider='google') }}">Google</a>.</li>
+    <li>Sign in with
+        <img src="{{ url_for('static', filename='/images/ORCiD_icon.png')}}" alt="ORCiD Logo" width="20">
+        <span class="pl-1"><a href="/login/orcid">ORCiD</a>.</span>
+    </li>
+</p>
+{% endblock content%}
