@@ -1,0 +1,57 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block headline %}
+Account
+{% endblock headline %}
+
+{% block links %}
+{% endblock links%}
+
+{% block content %}
+
+{% if is_new_user %}
+<p>
+    According to our records, this is the first time you've logged onto YAMZ with this account. Please provide your
+    first
+    and last name as you would like it to appear with your contributions. Thank you!
+    {% else %}
+    Here you can change how your name will appear to other users. Navigating away from this page will safely discard any
+    changes.
+    {% endif %}
+</p>
+<hr>
+<form action="{{ url_for('user.edit_profile') }}" method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group row">
+        {{ form.first_name.label(class="col-sm-2 col-form-label", for="first_name") }}
+        <div class="col-auto">
+            {{ form.first_name }}
+        </div>
+    </div>
+    <div class="form-group row">
+        {{ form.last_name.label(class="col-sm-2 col-form-label", for="last_name") }}
+        <div class="col-auto">
+            {{ form.last_name }}
+        </div>
+    </div>
+    <div class="form-group row">
+        {{ form.email.label(class="col-sm-2 col-form-label", for="email") }}
+        <div class="col-auto">
+            {{ form.email }}
+        </div>
+    </div>
+
+
+    <div class="form-group row mt-4">
+        <div class="col-sm-4 text-end">
+            {{form.submit(class="btn btn-dark") }}
+        </div>
+    </div>
+
+</form>
+
+{% endblock content%}

@@ -55,7 +55,10 @@ def oauth_callback(provider):
         db.session.refresh(user)
         is_new_user = True
 
-    login(user, True)
+    else:
+        is_new_user = False
+
+    login_user(user, True)
     if is_new_user:
         return redirect(url_for("user.edit_profile", new_user=is_new_user))
     else:
