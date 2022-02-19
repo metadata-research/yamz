@@ -18,3 +18,4 @@ mkcert-v1.4.3-linux-amd64
 localhost.pem
 localhost.crt
 localhost.key
+config.py
