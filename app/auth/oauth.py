@@ -1,7 +1,7 @@
 import json
 
 from flask import current_app, url_for, redirect, request
-from rauth import OAuth1Service, OAuth2Service
+from rauth import OAuth2Service
 
 
 class OAuthSignIn(object):
@@ -20,7 +20,9 @@ class OAuthSignIn(object):
         pass
 
     def get_callback_url(self):
-        return url_for("oauth_callback", provider=self.provider_name, _external=True)
+        return url_for(
+            "auth.oauth_callback", provider=self.provider_name, _external=True
+        )
 
     @classmethod
     def get_provider(self, provider_name):
@@ -47,7 +49,7 @@ class GoogleSignIn(OAuthSignIn):
     def authorize(self):
         return redirect(
             self.service.get_authorize_url(
-                scope="email",
+                scope="profile email",
                 response_type="code",
                 redirect_uri=self.get_callback_url(),
             )
@@ -67,9 +69,11 @@ class GoogleSignIn(OAuthSignIn):
             },
             decoder=decode_json,
         )
-        me = oauth_session.get("https://www.googleapis.com/oauth2/v1/userinfo").json()
-        return me.get("email")
+        me = oauth_session.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
 
-
-class OrcidSignIn(OAuthSignIn):
-    pass
+        return (
+            me.get("id"),
+            me.get("given_name"),
+            me.get("family_name"),
+            me.get("email"),
+        )

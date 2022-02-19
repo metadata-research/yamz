@@ -31,9 +31,10 @@
             <div class="collapse navbar-collapse" id="navbar01">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% block links %} {% endblock %}
-                    {% if user_name %}
+                    {% if current_user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out of {{ user_name }}</a>
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out of
+                            {{ current_user.first_name }}</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/account">Account</a>

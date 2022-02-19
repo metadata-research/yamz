@@ -17,7 +17,7 @@ class Config(object):
     OAUTH_CREDENTIALS = {
         "google": {
             "id": "253843192125-vor93ruq7bqgrjp4u41iet9gv73qau6j.apps.googleusercontent.com",
-            "secret": "96a07a50-3a0b-4342-8c12-79d7f83a1b4a",
+            "secret": "mE1Xy4bqlNn4rOHpANGRV4h4",
         },
         "orcid": {
             "id": "APP-08MFGMT2OQULKN5J",
