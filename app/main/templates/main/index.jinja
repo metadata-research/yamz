@@ -8,5 +8,14 @@ YAMZ Metadata Dictionary
 {% endblock headline %}
 
 {% block content %}
-Metadictionary
+
+{% if current_user.is_authenticated %}
+current user
+{% else %}
+<h1 class="text-center">Metadictionary</h1>
+<p class="lead text-center pb-5">
+    A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
+</p>
+{% endif %}
+
 {% endblock%}
