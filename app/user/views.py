@@ -19,6 +19,8 @@ def edit_profile():
         current_user.email = form.email.data
         current_user.orcid = form.orcid.data
         current_user.enotify = form.enotify.data
+        if current_user.is_administrator:
+            current_user.reputation = form.reputation.data
         current_user.save()
         flash("Your changes have been saved.")
         return render_template("user/edit_profile.jinja", form=form)

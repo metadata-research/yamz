@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
 
+{% import "macros.jinja" as macros %}
+
 <head>
     <title>
         {% block title %}
@@ -32,17 +34,22 @@
 
             <div class="collapse navbar-collapse" id="navbar01">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    {% block links %} {% endblock %}
+                    <li class="nav-item">
+                        {{ macros.nav_link('main.about', 'About') }}
+                    </li>
+                    <li class="nav-item">
+                        {{ macros.nav_link('main.contact', 'Contact') }}
+                    </li>
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out of
                             {{ current_user.first_name }}</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('user.edit_profile') }}">Profile</a>
+                        {{ macros.nav_link('user.edit_profile', 'Profile') }}
                     </li>
                     {% else %}
-                    <li class="nav-item">
+                    <li class=" nav-item">
                         <a class="nav-link" href="{{ url_for('auth.login') }}">Log in</a>
                     </li>
                     {% endif %}
