@@ -1,5 +1,7 @@
 import json
 
+# import orcid
+
 from flask import current_app, url_for, redirect, request
 from rauth import OAuth2Service
 
@@ -69,6 +71,52 @@ class GoogleSignIn(OAuthSignIn):
             },
             decoder=decode_json,
         )
+        me = oauth_session.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
+
+        return (
+            me.get("id"),
+            me.get("given_name"),
+            me.get("family_name"),
+            me.get("email"),
+        )
+
+
+class OrcidSignIn(OAuthSignIn):
+    def __init__(self):
+        super(OrcidSignIn, self).__init__("orcid")
+        self.service = OAuth2Service(
+            name="orcid",
+            client_id=self.consumer_id,
+            client_secret=self.consumer_secret,
+            authorize_url="https://sandbox.orcid.org/oauth/authorize",
+            access_token_url="https://sandbox.orcid.org/oauth/token",
+            base_url="https://api.sandbox.orcid.org/v3.0/",
+        )
+
+    def authorize(self):
+        return redirect(
+            self.service.get_authorize_url(
+                scope="/read-member",
+                response_type="code",
+                redirect_uri=self.get_callback_url(),
+            )
+        )
+
+    def callback(self):
+        def decode_json(payload):
+            return json.loads(payload.decode("utf-8"))
+
+        if "code" not in request.args:
+            return None, None, None
+        oauth_session = self.service.get_auth_session(
+            data={
+                "code": request.args["code"],
+                "grant_type": "authorization_code",
+                "redirect_uri": self.get_callback_url(),
+            },
+            decoder=decode_json,
+        )
+
         me = oauth_session.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
 
         return (

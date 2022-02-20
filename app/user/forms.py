@@ -13,7 +13,6 @@ class EditProfileForm(FlaskForm):
     last_name = StringField("Last Name", validators=[DataRequired()])
     first_name = StringField("First Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
-    orcid = StringField("ORCiD")
     enotify = BooleanField("Receive email notifications")
     reputation = IntegerField("Reputation")
     submit = SubmitField("Apply changes")
