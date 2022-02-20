@@ -4,7 +4,6 @@
 About YAMZ
 {% endblock %}
 
-
 {% block links %}
 <li class="nav-item">
     <a class="nav-link" href="/browse">Browse</a>
@@ -20,6 +19,182 @@ About YAMZ
 </li>
 {% endblock%}
 
+{% block headline %}
+About the metadata dictionary
+{% endblock headline %}
+
+
 {% block content %}
-About
+<hr>
+<p>
+  The YAMZ Metadictionary is an open vocabulary of metadata terms
+  from all domains and from all parts of "metadata speech". That
+  will be exciting the
+  <a href="#more">more about metadata</a> you know.
+</p>
+
+<p>
+  In brief, with no login required, anyone can search for and link
+  to terms. Login to create and edit your terms, and to comment on
+  others' terms.
+  <a href="/guidelines">Community guidelines</a> help make
+  the metadictionary a high-quality cross-domain metadata
+  lexicon that is directly connected to evolving user needs.
+</p>
+
+<h4>From specialized projects</h4>
+<p>
+  Almost every software project needs controlled vocabularies for
+  interacting with users. Effort that goes into devising a set
+  of terms for a search interface, a dropdown pick list, a form
+  for entering data, etc. involves researching, consensus building,
+  and communicating. YAMZ provides
+  a platform for you to take advantage of prior work and to share
+  your own new or divergent work with others, whether you are one
+  developer making UI design choices or a large working group
+  creating a formal ontology.
+</p>
+
+<h4>... to international standards</h4>
+<p>
+  Maintaining and developing international standards is normally
+  an expensive, inefficient, design-by-committee process producing
+  results that are out-of-date as soon as they are published.
+  With the metadictionary, change will be rapid and affordable,
+  driven by practitioners and active testers. There will be no
+  need for panels of busy experts to convene and deliberate. We
+  expect dramatic simplification of vocabulary evolution compared
+  to traditional methods. Before YAMZ, it was hard for one group
+  to learn about the efforts of another group, which has resulted
+  in a large number of overlapping, conflicting
+  vocabularies. YAMZ
+  is not the first crowdsourced metadata dictionary, but as a
+  shelter for living, changing machine-readable terminology, it
+  is not unlike Yet Another Metadata Zoo.
+</p>
+
+<p>
+  The hope is that users &ndash; people creating and receiving
+  machine-readable descriptions of objects they care about &ndash;
+  will be able to find
+  most of the terms they need in <i>one place</i> namely, the
+  metadictionary. One vocabulary, one namespace. This should
+  reduce the number of namespaces and the
+  expense of maintaining crosswalks with other vocabularies.
+  And the vocabulary is completely ready for linked data applications,
+  each term having its own permalink (an ARK identifier).
+</p>
+
+<h3>Basic metadictionary structure</h3>
+
+<p>
+  Across YAMZ there are three disjoint term classes.
+  Classification is ongoing and fully-automated, based on voting
+  and user reputation.
+
+  <h4>Vernacular</h4>
+  <li>all terms are born here and considered to be works-in-progress</li>
+  <li>unstable terms; permalink points to a definition that may change</li>
+  <li>anyone can propose new vernacular terms</li>
+  <li>proposer(s) of a term "own" it initially; only they can make changes</li>
+  <li>communities of interest spring up around related term clusters</li>
+  <li>term tagging make it easy for communities (eg, working groups) to switch focus to selected term subsets</li>
+
+  <h4>Canonical</h4>
+  <li>terms safe for short- or long-term reference</li>
+  <li>stable terms; permalink points to an unchanging definition</li>
+  <li>terms move from vernacular to canonical by consensus</li>
+  <li>terms still subject to voting</li>
+
+  <h4>Deprecated</h4>
+  <li>stable terms, but deprecated for long-term reference</li>
+  <li>terms move from canonical to archival by consensus</li>
+  <li>archival terms have links such as "ObsoletedBy: term X"</li>
+</p>
+
+<p>
+  <a id="more"></a>
+</p>
+<h3>Some background</h3>
+
+<h4>Metadata and data</h4>
+<p>
+  Metadata is structured information for describing things we care about.
+  It looks like text with extra punctuation to mark different regions,
+  and elements and values within those regions. That structure makes the
+  information readable by software, which in turn helps us organize,
+  manage, analyze, and discover things we care about.
+</p>
+<p>
+  Real computational power comes when there is wide agreement on metadata
+  terms, such as element names and the values they take on. The goal of
+  YAMZ is to support finding, creating, and achieving community accord on
+  high-quality terms. These are the terms that you and others will use
+  to create high-quality metadata. Unlike a regular dictionary, the
+  metadictionary is therefore about terms used to create <i>structured</i>
+  (machine-readable) information.
+</p>
+<p>
+  The metadictionary supports data too. Like metadata, data is structured
+  information, but with a shift in emphasis away from being <i>about</i> a
+  particular thing. Some people say there's no important difference
+  between data and metadata.
+</p>
+
+<h4>Assertions about things</h4>
+<p>
+  Metadata looks like a group of assertions about a particular thing, such
+  as a document. For example, metadata may assert that a given document's
+  title is X, its author Y, and its publication date Z.
+</p>
+<p>
+  It's not always obvious what thing a metadata assertion is about.
+  Term definitions often refer to it with a word like "thing", "resource",
+  or "object". Thus a "title" element might be defined as "a name given
+  to the resource". Which exact "resource" won't be found in a term
+  definition but is revealed elsewhere in the metadata or by context.
+  For example, metadata embedded in a JPEG file is usually assumed to
+  describe an image embedded in the same file, and a metadata record often
+  has a special place to hold an identifier for the object being described.
+</p>
+
+<h4>Elements and values</h4>
+<p>
+  Lots of terms define metadata/data elements, which are small categories
+  of information, such as "title", "author", or "response". An element
+  might also be a structured statement that itself contains other elements.
+  A "location" element might contain "latitude" and "longitude" elements.
+  Other elements are meant to take on metadata/data values, for example,
+  pieces of text or personal names.
+</p>
+<p>
+  Terms help identify metadata/data values, especially when they are
+  limited in some way. For example, a "response" element might be one of
+  "yes", "no", or "maybe". A "count" element might take an infinite number
+  of values, but always restricted to "integer".
+</p>
+</p>
+
+<h3>Context</h3>
+<p>
+  All YAMZ content &ndash; terms, definitions, examples, illustrations,
+  etc. &ndash; are dedicated to the public domain under the terms of
+  the CC0 license. The source code for the metadictionary is
+  available on
+  <a href="https://www.github.com/metadata-research/yamz">Github</a> as a Python
+  package under a BSD open source license.
+  Full <a href="/api">API documentation</a> is also available.
+</p>
+
+<p>
+  YAMZ was initially developed in 2013-2014 by the Metadata Working
+  Group of the NSF-funded
+  <a href="http://www.dataone.org">DataONE</a> initiative.
+  It was later extended with support from the
+  <a href="https://www.diglib.org">Digital Library Federation</a>.
+  Working group members were John Kunze (chair), Jane Greenberg (chair),
+  Christopher Patton (lead developer), Karthik Ram, Greg Janée,
+  Nassib Nassar, Angela Murillo, Sarah Callaghan, Rob Guralnick,
+  and Tim Robertson.
+</p>
 {% endblock%}

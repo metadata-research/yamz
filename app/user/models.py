@@ -18,6 +18,13 @@ class User(UserMixin, db.Model):
     enotify = db.Column(db.Boolean)
     super_user = db.Column(db.Boolean)
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def is_administrator(self):
+        return self.super_user
+
     def __repr__(self):
         return "<User: {}, {}>".format(self.last_name, self.first_name)
 

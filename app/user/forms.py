@@ -4,8 +4,9 @@ from wtforms import (
     SubmitField,
     EmailField,
     BooleanField,
+    IntegerField,
 )
-from wtforms.validators import DataRequired, Email, Length, EqualTo
+from wtforms.validators import DataRequired, Email
 
 
 class EditProfileForm(FlaskForm):
@@ -13,5 +14,6 @@ class EditProfileForm(FlaskForm):
     first_name = StringField("First Name", validators=[DataRequired()])
     email = EmailField("Email", validators=[DataRequired(), Email()])
     orcid = StringField("ORCiD")
-    receive_notifications = BooleanField("Receive email notifications")
+    enotify = BooleanField("Receive email notifications")
+    reputation = IntegerField("Reputation")
     submit = SubmitField("Apply changes")
