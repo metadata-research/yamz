@@ -1,5 +1,3 @@
-from email.policy import default
-import imp
 from flask_login import AnonymousUserMixin, UserMixin
 from app import db
 
@@ -17,6 +15,8 @@ class User(UserMixin, db.Model):
     reputation = db.Column(db.Integer, default=30)
     enotify = db.Column(db.Boolean, default=False)
     super_user = db.Column(db.Boolean, default=False)
+
+    # terms = db.relationship("Term", backref="author", lazy="dynamic")
 
     def save(self):
         db.session.add(self)

@@ -30,4 +30,5 @@ def edit_profile():
         form.enotify.data = current_user.enotify
         if current_user.is_administrator:
             form.reputation.data = current_user.reputation
-    return render_template("user/edit_profile.jinja", form=form)
+        new_user = request.args.get("new_user")
+    return render_template("user/edit_profile.jinja", form=form, is_new_user=new_user)

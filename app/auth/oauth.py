@@ -135,12 +135,6 @@ class OrcidSignIn(OAuthSignIn):
             orc_id, "person", token, put_code=None, accept_type="application/orcid+json"
         )
 
-        email = (
-            person["emails"]["email"][0]["email"]
-            if len(person["emails"]["email"]) > 0
-            else ""
-        )
-
         return (
             orc_id,
             person["name"]["given-names"]["value"],
