@@ -120,10 +120,17 @@ class OrcidSignIn(OAuthSignIn):
 
         orc_id = raw_token.json()["orcid"]
 
-        return orc_id
+        api = orcid.MemberAPI(
+            self.consumer_id,
+            self.consumer_secret,
+            sandbox=current_app.config["IS_SANDBOX"],
+        )
+        search_results = api.search_member("text:English")
+        summary = api.read_record_member(orc_id, "person")
+
         return (
-            access_token,
-            access_token,
+            orc_id,
+            "first_name",
             "last_name",
             "cr625@drexel.edu",
             orc_id,

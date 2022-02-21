@@ -35,10 +35,8 @@ def oauth_callback(provider):
         return redirect(url_for("main.index"))
 
     oauth = OAuthSignIn.get_provider(provider)
-    # auth_id, first_name, last_name, email, orcid = oauth.callback()
+    auth_id, first_name, last_name, email, orcid = oauth.callback()
 
-    resp = oauth.callback()
-    return resp
     if auth_id is None:
         flash("Authentication failed.")
         return redirect(url_for("main.index"))
