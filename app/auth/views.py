@@ -44,8 +44,10 @@ def oauth_callback(provider):
     user = User.query.filter_by(auth_id=auth_id).first()
 
     if not user:
+        # TODO: lock the table db.session.query(User).with_for_update()
+        next_id = db.session.query(db.func.max(User.id)).scalar() + 1
         user = User(
-            id=9999,
+            id=next_id,
             authority=provider,
             auth_id=auth_id,
             last_name=last_name,
@@ -57,8 +59,9 @@ def oauth_callback(provider):
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)
+        is_new_user = True
         login_user(user, True)
-        return render_template("user/edit_profile.jinja", is_new_user=True)
+        return redirect(url_for("user.edit_profile", new_user=is_new_user))
 
     else:
         login_user(user, True)
