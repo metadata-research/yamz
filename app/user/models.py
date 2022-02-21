@@ -1,3 +1,4 @@
+from typing import Sequence
 from flask_login import AnonymousUserMixin, UserMixin
 from app import db
 
@@ -5,7 +6,8 @@ from app import db
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     __table_args__ = {"schema": "si"}
-    id = db.Column(db.Integer, primary_key=True)
+    # TODO: sequence
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     authority = db.Column(db.String(64))
     auth_id = db.Column(db.String(64), unique=True)
     last_name = db.Column(db.String(64))

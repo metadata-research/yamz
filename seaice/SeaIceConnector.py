@@ -214,7 +214,7 @@ class SeaIceConnector(object):
                     super_user   BOOLEAN default false,
                     UNIQUE (email)
                 );
-            ALTER SEQUENCE SI.Users_id_seq RESTART WITH 1001;
+            ALTER SEQUENCE SI.Users_id_seq RESTART WITH 1200;
             ALTER TABLE SI.Users ADD COLUMN IF NOT EXISTS orcid VARCHAR(64);"""
         )
 

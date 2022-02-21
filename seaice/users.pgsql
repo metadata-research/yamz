@@ -1,0 +1,3 @@
+SELECT MAX(id) FROM Si.users;
+
+ALTER SEQUENCE SI.Users_id_seq RESTART WITH 1159;

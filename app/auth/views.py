@@ -44,10 +44,9 @@ def oauth_callback(provider):
     user = User.query.filter_by(auth_id=auth_id).first()
 
     if not user:
-        # TODO: lock the table db.session.query(User).with_for_update()
-        next_id = db.session.query(db.func.max(User.id)).scalar() + 1
+        # next_id = db.session.query(db.func.max(User.id)).scalar() + 1
         user = User(
-            id=next_id,
+            # id=next_id,
             authority=provider,
             auth_id=auth_id,
             last_name=last_name,
