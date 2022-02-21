@@ -33,9 +33,12 @@ def oauth_authorize(provider):
 def oauth_callback(provider):
     if not current_user.is_anonymous:
         return redirect(url_for("main.index"))
-    oauth = OAuthSignIn.get_provider(provider)
 
-    auth_id, given_name, family_name, email = oauth.callback()
+    oauth = OAuthSignIn.get_provider(provider)
+    # auth_id, first_name, last_name, email, orcid = oauth.callback()
+
+    resp = oauth.callback()
+    return resp
     if auth_id is None:
         flash("Authentication failed.")
         return redirect(url_for("main.index"))
@@ -43,12 +46,14 @@ def oauth_callback(provider):
 
     if not user:
         user = User(
+            id=9999,
             authority=provider,
             auth_id=auth_id,
-            last_name=given_name,
-            first_name=family_name,
+            last_name=last_name,
+            first_name=first_name,
             reputation="30",
             email=email,
+            orcid=orcid,
         )
         db.session.add(user)
         db.session.commit()

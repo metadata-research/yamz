@@ -1,6 +1,6 @@
 import json
 
-# import orcid
+import orcid
 
 from flask import current_app, url_for, redirect, request
 from rauth import OAuth2Service
@@ -78,6 +78,7 @@ class GoogleSignIn(OAuthSignIn):
             me.get("given_name"),
             me.get("family_name"),
             me.get("email"),
+            None,
         )
 
 
@@ -96,32 +97,34 @@ class OrcidSignIn(OAuthSignIn):
     def authorize(self):
         return redirect(
             self.service.get_authorize_url(
-                scope="/read-member",
+                scope="/read-limited",
                 response_type="code",
                 redirect_uri=self.get_callback_url(),
             )
         )
 
+    # get_raw_access_token
     def callback(self):
         def decode_json(payload):
             return json.loads(payload.decode("utf-8"))
 
         if "code" not in request.args:
             return None, None, None
-        oauth_session = self.service.get_auth_session(
+        raw_token = self.service.get_raw_access_token(
             data={
                 "code": request.args["code"],
                 "grant_type": "authorization_code",
                 "redirect_uri": self.get_callback_url(),
             },
-            decoder=decode_json,
         )
 
-        me = oauth_session.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
+        orc_id = raw_token.json()["orcid"]
 
+        return orc_id
         return (
-            me.get("id"),
-            me.get("given_name"),
-            me.get("family_name"),
-            me.get("email"),
+            access_token,
+            access_token,
+            "last_name",
+            "cr625@drexel.edu",
+            orc_id,
         )
