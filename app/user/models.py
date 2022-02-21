@@ -1,3 +1,4 @@
+from email.policy import default
 import imp
 from flask_login import AnonymousUserMixin, UserMixin
 from app import db
@@ -12,16 +13,17 @@ class User(UserMixin, db.Model):
     auth_id = db.Column(db.String(64), unique=True)
     last_name = db.Column(db.String(64))
     first_name = db.Column(db.String(64))
-    email = db.Column(db.String(64), unique=True)
+    email = db.Column(db.String(64))
     orcid = db.Column(db.String(64), unique=True)
-    reputation = db.Column(db.Integer)
-    enotify = db.Column(db.Boolean)
-    super_user = db.Column(db.Boolean)
+    reputation = db.Column(db.Integer, default=30)
+    enotify = db.Column(db.Boolean, default=False)
+    super_user = db.Column(db.Boolean, default=False)
 
     def save(self):
         db.session.add(self)
         db.session.commit()
 
+    @property
     def is_administrator(self):
         return self.super_user
 

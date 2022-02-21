@@ -8,15 +8,6 @@ Edit Profile
 Account
 {% endblock headline %}
 
-{% block links %}
-<li class="nav-item">
-    <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
-</li>
-<li class="nav-item">
-    <a class="nav-link" href="{{ url_for('main.contact') }}">Contact</a>
-</li>
-{% endblock links%}
-
 {% block content %}
 
 <p class="pb-2">
@@ -73,7 +64,7 @@ Account
         </div>
         <div class="col-sm-10">
             {% if current_user.orcid and "nil" not in current_user.orcid %}
-            {{ current_user.orcid }}
+            <i class="fab fa-orcid"></i>{{ current_user.orcid }}
             {% else %}
             <a href="{{ url_for('auth.login') }}">
                 <button type="button" class="btn btn-primary">

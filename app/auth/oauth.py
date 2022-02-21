@@ -71,13 +71,15 @@ class GoogleSignIn(OAuthSignIn):
             },
             decoder=decode_json,
         )
-        me = oauth_session.get("https://www.googleapis.com/oauth2/v2/userinfo").json()
+        person = oauth_session.get(
+            "https://www.googleapis.com/oauth2/v2/userinfo"
+        ).json()
 
         return (
-            me.get("id"),
-            me.get("given_name"),
-            me.get("family_name"),
-            me.get("email"),
+            person.get("id"),
+            person.get("given_name"),
+            person.get("family_name"),
+            person.get("email"),
             None,
         )
 
@@ -118,20 +120,33 @@ class OrcidSignIn(OAuthSignIn):
             },
         )
 
-        orc_id = raw_token.json()["orcid"]
+        raw_token_json = raw_token.json()
+
+        orc_id = raw_token_json["orcid"]
+        token = raw_token_json["access_token"]
 
         api = orcid.MemberAPI(
             self.consumer_id,
             self.consumer_secret,
-            sandbox=current_app.config["IS_SANDBOX"],
+            sandbox=current_app.config["SANDBOX"],
         )
-        search_results = api.search_member("text:English")
-        summary = api.read_record_member(orc_id, "person")
+
+        person = api.read_record_member(
+            orc_id, "person", token, put_code=None, accept_type="application/orcid+json"
+        )
+
+        email = (
+            person["emails"]["email"][0]["email"]
+            if len(person["emails"]["email"]) > 0
+            else ""
+        )
 
         return (
             orc_id,
-            "first_name",
-            "last_name",
-            "cr625@drexel.edu",
+            person["name"]["given-names"]["value"],
+            person["name"]["family-name"]["value"],
+            person["emails"]["email"][0]["email"]
+            if len(person["emails"]["email"]) > 0
+            else "",
             orc_id,
         )

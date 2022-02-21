@@ -35,6 +35,7 @@ def oauth_callback(provider):
         return redirect(url_for("main.index"))
 
     oauth = OAuthSignIn.get_provider(provider)
+
     auth_id, first_name, last_name, email, orcid = oauth.callback()
 
     if auth_id is None:
