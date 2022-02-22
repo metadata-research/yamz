@@ -31,44 +31,34 @@ Term
                 </div>
             </div>
         </div>
-        <div class="col-md-1 fst-italic">
-            <div class="row">
-                <div class="col">
-                    Term:
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    Definition:
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    Examples:
-                </div>
-            </div>
-        </div>
         <div class="col">
             <div class="row">
-                <div class="col">
-                    <a class="fw-bold"
+                <div class="col-md-1 fst-italic">
+                    Term:
+                </div>
+                <div class="col mx-3">
+                    <a class="fw-bold text-decoration-none"
                         href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
-                </div>
-                <div class="col text-end px-5">
-                    Class: {{ selected_term.si_class.value}}
-                </div>
-            </div>
-            <div class=" row">
-                <div class="col">
-                    {{ selected_term.definition }}
                 </div>
             </div>
             <div class="row">
-                <div class="col">
-                    {{ selected_term.examples }}
+                <div class="col-md-1 fst-italic">
+                    Definition:
+                </div>
+                <div class="col mx-3">
+                    {{ selected_term.definition | convert_line_breaks | format_tags }}
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-1 fst-italic">
+                    Examples:
+                </div>
+                <div class="col mx-3">
+                    Examples
                 </div>
             </div>
         </div>
+
         <div class="col-md-3 fst-italic">
             <div class="row">
                 <div class="col">
@@ -86,6 +76,14 @@ Term
                         {{ selected_term.contributor.last_name }}</span>
                 </div>
             </div>
+            {% if not selected_term.contributor.orcid  == "nil" or None %}
+            <div class="row">
+                <div class="col">
+                    ORCID: <span class="fst-normal"><i class="fab fa-orcid"> {{ selected_term.contributor.orcid }}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
             <div class="row">
                 <div class="col mt-3">
                     Permalink:
