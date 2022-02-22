@@ -1,0 +1,99 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+{{ selected_term.term_string}}
+{% endblock %}
+
+{% block headline %}
+Term
+{% endblock headline %}
+
+{% block content %}
+<hr>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            {{ selected_term.term_string }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="row">
+                <div class="col text-center p-3">
+                    <img src="{{ url_for('static', filename='/images/up.png')}}">
+                    <h4>{{ selected_term.score }}</h4>
+                    <img src="{{ url_for('static', filename='/images/down.png')}}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-2 text-center">
+                    [watch]
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1 fst-italic">
+            <div class="row">
+                <div class="col">
+                    Term:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Definition:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Examples:
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    {{ selected_term.term_string }}
+                </div>
+            </div>
+            <div class=" row">
+                <div class="col">
+                    {{ selected_term.definition }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ selected_term.examples }}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 fst-italic">
+            <div class="row">
+                <div class="col">
+                    Created
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Last Modified
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Contributed by
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mt-3">
+                    Permalink:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mx-2">
+                    <span class="fst-normal">{{ selected_term.persistent_id}}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock content%}

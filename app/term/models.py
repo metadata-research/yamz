@@ -1,3 +1,4 @@
+from unicodedata import name
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 import enum
@@ -25,12 +26,16 @@ class Term(db.Model):
     up = db.Column(db.Integer, default=0)
     down = db.Column(db.Integer, default=0)
     consensus = db.Column(db.Float, default=0)
-    si_class = db.Column("value", si_class, default=si_class.vernacular)
+    si_class = db.Column("class", db.Enum(si_class), default=si_class.vernacular)
     u_sum = db.Column(db.Integer, default=0)
     d_sum = db.Column(db.Integer, default=0)
     t_last = db.Column(db.DateTime)
     t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
+
+    @property
+    def score(self):
+        return self.up - self.down
 
     def save(self):
         db.session.add(self)
