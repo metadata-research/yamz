@@ -51,7 +51,11 @@ Term
         <div class="col">
             <div class="row">
                 <div class="col">
-                    {{ selected_term.term_string }}
+                    <a class="fw-bold"
+                        href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
+                </div>
+                <div class="col text-end px-5">
+                    Class: {{ selected_term.si_class.value}}
                 </div>
             </div>
             <div class=" row">
@@ -68,17 +72,18 @@ Term
         <div class="col-md-3 fst-italic">
             <div class="row">
                 <div class="col">
-                    Created
+                    Created {{ selected_term.created | format_date }}
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    Last Modified
+                    Last Modified {{ selected_term.modified | format_date }}
                 </div>
             </div>
             <div class="row">
                 <div class="col">
-                    Contributed by
+                    Contributed by <span class="fst-normal">{{ selected_term.contributor.first_name }}
+                        {{ selected_term.contributor.last_name }}</span>
                 </div>
             </div>
             <div class="row">

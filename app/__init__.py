@@ -35,3 +35,8 @@ app.register_blueprint(main_bp, url_prefix="/")
 app.register_blueprint(auth_bp, url_prefix="/")
 app.register_blueprint(term_bp, url_prefix="/term")
 app.register_blueprint(user_bp, url_prefix="/user")
+
+
+@app.template_filter("format_date")
+def format_date(date):
+    return date.strftime("%Y.%m.%d")

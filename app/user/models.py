@@ -18,7 +18,7 @@ class User(UserMixin, db.Model):
     enotify = db.Column(db.Boolean, default=False)
     super_user = db.Column(db.Boolean, default=False)
 
-    # terms = db.relationship("Term", backref="author", lazy="dynamic")
+    terms = db.relationship("Term", backref="contributor", lazy="dynamic")
 
     def save(self):
         db.session.add(self)
