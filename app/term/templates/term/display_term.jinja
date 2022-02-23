@@ -4,11 +4,19 @@
 {{ selected_term.term_string}}
 {% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+    var term;
+</script>
+{% endblock scripts %}
+
 {% block headline %}
 Term
 {% endblock headline %}
 
 {% block content %}
+
 <hr>
 <div class="container">
     <div class="row">
@@ -20,9 +28,9 @@ Term
         <div class="col-md-1">
             <div class="row">
                 <div class="col text-center p-3">
-                    <img src="{{ url_for('static', filename='/images/up.png')}}">
+                    <img src="{{ url_for('static', filename='images/up.png')}}">
                     <h4>{{ selected_term.score }}</h4>
-                    <img src="{{ url_for('static', filename='/images/down.png')}}">
+                    <img src="{{ url_for('static', filename='images/down.png')}}">
                 </div>
             </div>
             <div class="row">
@@ -54,7 +62,7 @@ Term
                     Examples:
                 </div>
                 <div class="col mx-3">
-                    Examples
+                    {{ selected_term.examples | convert_line_breaks | format_tags }}
                 </div>
             </div>
         </div>

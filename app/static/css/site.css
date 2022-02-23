@@ -1,0 +1,12 @@
+.term-tag {
+    font-size: 85%;
+    font-family: 'Sans-Serif', Arial, serif;
+    color: blue;
+    background-color: #cceeff;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.tooltip-inner {
+    max-width: 450px;
+}
