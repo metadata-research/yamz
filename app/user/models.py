@@ -1,5 +1,6 @@
 from typing import Sequence
 from flask_login import AnonymousUserMixin, UserMixin
+from sqlalchemy import null
 from app import db
 
 
@@ -8,21 +9,31 @@ class User(UserMixin, db.Model):
     __table_args__ = {"schema": "si"}
     # TODO: sequence
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    authority = db.Column(db.String(64))
-    auth_id = db.Column(db.String(64), unique=True)
-    last_name = db.Column(db.String(64))
-    first_name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
+    authority = db.Column(db.String(64), nullable=False)
+    auth_id = db.Column(db.String(64), unique=True, nullable=False)
+    last_name = db.Column(db.String(64), nullable=False)
+    first_name = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
     orcid = db.Column(db.String(64), unique=True)
     reputation = db.Column(db.Integer, default=30)
     enotify = db.Column(db.Boolean, default=False)
     super_user = db.Column(db.Boolean, default=False)
 
+    # relationships
     terms = db.relationship("Term", backref="contributor", lazy="dynamic")
+
+    tracking = db.relationship(
+        "Track", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    def is_tracking(self, term):
+        if term.id is None:
+            return False
+        return self.tracking.filter_by(term_id=term.id).first() is not None
 
     @property
     def is_administrator(self):

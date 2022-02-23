@@ -1,8 +1,9 @@
 import re
-from flask import render_template
+from flask import render_template, redirect, url_for, flash, current_app
+from flask_login import current_user, login_required
 from app.term import term_blueprint as term
-from app.term.models import Term
-
+from app.term.models import *
+from app.term.forms import *
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
@@ -19,10 +20,28 @@ def format_tags(string):
     return string
 
 
+@term.app_template_filter("format_score")
+def format_score(score):
+    pass
+
+
 @term.route("/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
+    form = EmptyForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
-    return render_template("term/display_term.jinja", selected_term=selected_term)
+    return render_template(
+        "term/display_term.jinja", selected_term=selected_term, form=form
+    )
+
+
+@term.route("track/<concept_id>", methods=["POST"])
+@login_required
+def track_term(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        term = Term.query.filter_by(concept_id=concept_id).first()
+        term.track(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
 # this is taken largely as is from seaice.pretty since we're going to use a comoponent instead

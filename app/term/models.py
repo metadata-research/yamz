@@ -5,9 +5,9 @@ import enum
 
 
 class si_class(enum.Enum):
-    vernacular = ("vernacular",)
-    canonical = ("canonical",)
-    depricated = ("depricated",)
+    vernacular = (1, "vernacular")
+    canonical = (2, "canonical")
+    deprecated = (3, "deprecated")
 
 
 class Term(db.Model):
@@ -33,6 +33,9 @@ class Term(db.Model):
     t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
 
+    # relationships
+    tracks = db.relationship("Track", backref="term", lazy="dynamic")
+
     @property
     def score(self):
         return self.up - self.down
@@ -41,5 +44,23 @@ class Term(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def track(self, current_user):
+        if not self.tracks.filter_by(user_id=current_user.id).first():
+            track = Track(user_id=current_user.id, term_id=self.id)
+            track.save()
+
     def __repr__(self):
         return "<Term %r>" % self.term_string
+
+
+class Track(db.Model):
+    __tablename__ = "tracking"
+    __table_args__ = {"schema": "si"}
+    user_id = db.Column(db.Integer, db.ForeignKey("si.users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    vote = db.Column(db.Integer, default=0)
+    star = db.Column(db.Boolean, default=False)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

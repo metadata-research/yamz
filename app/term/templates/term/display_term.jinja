@@ -35,11 +35,18 @@ Term
             </div>
             <div class="row">
                 <div class="col mt-2 text-center">
-                    [watch]
+                    {% if current_user.is_tracking(selected_term) %}
+                    is already tracking!!!!!
+                    {% else %}
+                    <form action="{{ url_for('term.track_term', concept_id=selected_term.concept_id) }}" method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.submit(value='[watch]', class_='btn btn-link') }}
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        <div class="col">
+        <div class=" col">
             <div class="row">
                 <div class="col-md-1 fst-italic">
                     Term:
@@ -87,7 +94,8 @@ Term
             {% if not selected_term.contributor.orcid  == "nil" or None %}
             <div class="row">
                 <div class="col">
-                    ORCID: <span class="fst-normal"><i class="fab fa-orcid"> {{ selected_term.contributor.orcid }}
+                    ORCID: <span class="fst-normal"><i class="fab fa-orcid">
+                            {{ selected_term.contributor.orcid }}
                     </span>
                 </div>
             </div>
