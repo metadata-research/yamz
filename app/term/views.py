@@ -25,6 +25,20 @@ def format_score(score):
     pass
 
 
+@term.route("/create", methods=["GET", "POST"])
+@login_required
+def create_term():
+    form = CreateTermForm()
+    if form.validate_on_submit():
+        term_string = form.term_string.data
+        definition = form.definition.data
+        examples = form.examples.data
+        term = Term(term_string, definition, examples)
+        term.save()
+        return redirect(url_for("term.display_term", concept_id=term.concept_id))
+    return render_template("term/create_term.jinja", form=form)
+
+
 @term.route("/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
     form = EmptyForm()

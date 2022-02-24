@@ -1,0 +1,44 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Contribute to YAMZ
+{% endblock %}
+
+{% block headline %}
+Add a dictionary term
+{% endblock headline %}
+
+{% block content %}
+
+{% if edit_id %}
+See our community <a href="/guidelines">community guidelines</a> for best practice tips.
+{% else %}
+Here you can propose a new term. You can help us maintain a high-quality metadictionary
+and minimize redundancies by <a href="/search">searching</a> for your term. Take a look
+at our community <a href="/guidelines">community guidelines</a> for best practice tips.
+{% endif %}
+<hr>
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group row py-4">
+        {{ form.term_string.label(class="col-sm-2 col-form-label", for="term_string") }}
+        <div class="col-sm-7">
+            {{ form.term_string(class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        {{ form.definition.label(class="col-sm-2 col-form-label", for="definition") }}
+        <div class="col-sm-7">
+            {{ form.definition(class="form-control", rows="4", placeholder="A _class_ of thing, followed by distinguishing characteristics, such as (for 'water'): 'A _clear liquid_ made up of hydrogen and oxygen molecules.'") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        {{ form.examples.label(class="col-sm-2 col-form-label", for="examples") }}
+        <div class="col-sm-7">
+            {{ form.examples(class="form-control", rows="4", placeholder="Examples of usage or related concepts.") }}
+        </div>
+    </div>
+
+</form>
+
+{% endblock content%}
