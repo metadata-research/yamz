@@ -40,6 +40,15 @@ class Term(db.Model):
     def score(self):
         return self.up - self.down
 
+    @property
+    def alt_definitions_count(self):
+        return (
+            db.session.query(db.func.count(Term.id))
+            .filter_by(term_string=self.term_string)
+            .filter(Term.id != self.id)
+            .scalar()
+        )
+
     def save(self):
         db.session.add(self)
         db.session.commit()
@@ -48,6 +57,12 @@ class Term(db.Model):
         if not self.tracks.filter_by(user_id=current_user.id).first():
             track = Track(user_id=current_user.id, term_id=self.id)
             track.save()
+
+    def untrack(self, current_user):
+        if self.tracks.filter_by(user_id=current_user.id).first():
+            untrack = self.tracks.filter_by(user_id=current_user.id).first()
+            db.session.delete(untrack)
+            db.session.commit()
 
     def __repr__(self):
         return "<Term %r>" % self.term_string

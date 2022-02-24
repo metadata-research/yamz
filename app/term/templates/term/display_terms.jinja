@@ -1,7 +1,7 @@
 {% extends './base.jinja' %}
 
 {% block title %}
-{{ selected_term.term_string}}
+Alternates for {{ alternatives_for_string }}
 {% endblock %}
 
 {% block headline %}
@@ -10,6 +10,10 @@ Term
 
 {% block content %}
 
+{% for selected_term in selected_terms  %}
+
 {% include 'term/_term.jinja' %}
+
+{% endfor %}
 
 {% endblock content%}

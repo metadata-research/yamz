@@ -1,5 +1,5 @@
 import re
-from flask import render_template, redirect, url_for, flash, current_app
+from flask import render_template, redirect, url_for, g
 from flask_login import current_user, login_required
 from app.term import term_blueprint as term
 from app.term.models import *
@@ -34,6 +34,19 @@ def display_term(concept_id):
     )
 
 
+@term.route("/alternates/<term_string>")  # change concelpt id to ark
+def show_alternate_terms(term_string):
+    form = EmptyForm()
+    selected_terms = Term.query.filter_by(term_string=term_string)
+
+    return render_template(
+        "term/display_terms.jinja",
+        selected_terms=selected_terms,
+        form=form,
+        alternatives_for_string=term_string,
+    )
+
+
 @term.route("track/<concept_id>", methods=["POST"])
 @login_required
 def track_term(concept_id):
@@ -41,6 +54,16 @@ def track_term(concept_id):
     if form.validate_on_submit():
         term = Term.query.filter_by(concept_id=concept_id).first()
         term.track(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+
+
+@term.route("untrack/<concept_id>", methods=["POST"])
+@login_required
+def untrack_term(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        term = Term.query.filter_by(concept_id=concept_id).first()
+        term.untrack(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
 

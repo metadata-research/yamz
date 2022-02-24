@@ -1,6 +1,4 @@
-from typing import Sequence
 from flask_login import AnonymousUserMixin, UserMixin
-from sqlalchemy import null
 from app import db
 
 

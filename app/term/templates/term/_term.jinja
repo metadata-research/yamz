@@ -1,0 +1,112 @@
+<hr>
+<div class="container">
+    <div class="row bg-light p-2 mb-1">
+        <div class="col">
+            Alternative definitions (<a
+                href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
+            class:
+            <mark>{{ selected_term.si_class.value[1] }}</mark> ({{ selected_term.consensus }})
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+            <div class="row">
+                <div class="col text-center p-3">
+                    <img src="{{ url_for('static', filename='images/up.png')}}">
+                    <h4>{{ selected_term.score }}</h4>
+                    <img src="{{ url_for('static', filename='images/down.png')}}">
+                </div>
+            </div>
+            {% if current_user.is_authenticated %}
+            <div class="row">
+                <div class="col mt-2 text-center">
+                    {% if current_user.is_tracking(selected_term) %}
+                    <form action="{{ url_for('term.untrack_term', concept_id=selected_term.concept_id) }}"
+                        method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.submit(value='[unwatch]', class_='btn btn-link') }}
+                    </form>
+                    {% else %}
+                    <form action="{{ url_for('term.track_term', concept_id=selected_term.concept_id) }}" method="post">
+                        {{ form.hidden_tag() }}
+                        {{ form.submit(value='[watch]', class_='btn btn-link') }}
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% else%}
+            <div class="row">
+                <div class="col mt-2 text-center">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-link">[watch]</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class=" col">
+            <div class="row">
+                <div class="col-md-1 fst-italic">
+                    Term:
+                </div>
+                <div class="col mx-3">
+                    <a class="fw-bold text-decoration-none"
+                        href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1 fst-italic">
+                    Definition:
+                </div>
+                <div class="col mx-3">
+                    {{ selected_term.definition | convert_line_breaks | format_tags }}
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-1 fst-italic">
+                    Examples:
+                </div>
+                <div class="col mx-3">
+                    {{ selected_term.examples | convert_line_breaks | format_tags }}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 fst-italic">
+            <div class="row">
+                <div class="col">
+                    Created {{ selected_term.created | format_date }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Last Modified {{ selected_term.modified | format_date }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    Contributed by <span class="fst-normal">{{ selected_term.contributor.first_name }}
+                        {{ selected_term.contributor.last_name }}</span>
+                </div>
+            </div>
+            {% if not selected_term.contributor.orcid  == "nil" or None %}
+            <div class="row">
+                <div class="col">
+                    ORCID: <span class="fst-normal"><i class="fab fa-orcid">
+                            {{ selected_term.contributor.orcid }}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+                <div class="col mt-3">
+                    Permalink:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mx-2">
+                    <span class="fst-normal">{{ selected_term.persistent_id}}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
