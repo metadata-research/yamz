@@ -7,7 +7,7 @@
                 href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
             {% endif %}
             class:
-            <mark>{{ selected_term.si_class.value[1] }}</mark> ({{ selected_term.consensus }})
+            <mark>{{ selected_term.term_class.value[1] }}</mark> ({{ selected_term.consensus }})
         </div>
     </div>
     <div class="row">

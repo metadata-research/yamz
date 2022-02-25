@@ -26,7 +26,7 @@ class Term(db.Model):
     up = db.Column(db.Integer, default=0)
     down = db.Column(db.Integer, default=0)
     consensus = db.Column(db.Float, default=0)
-    si_class = db.Column("class", db.Enum(si_class), default=si_class.vernacular)
+    term_class = db.Column("class", db.Enum(si_class), default=si_class.vernacular)
     u_sum = db.Column(db.Integer, default=0)
     d_sum = db.Column(db.Integer, default=0)
     t_last = db.Column(db.DateTime)

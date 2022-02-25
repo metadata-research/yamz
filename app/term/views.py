@@ -1,9 +1,10 @@
 import re
-from flask import render_template, redirect, url_for, g
+from flask import render_template, redirect, url_for, current_app, request
 from flask_login import current_user, login_required
 from app.term import term_blueprint as term
 from app.term.models import *
 from app.term.forms import *
+
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
@@ -25,20 +26,6 @@ def format_score(score):
     pass
 
 
-@term.route("/create", methods=["GET", "POST"])
-@login_required
-def create_term():
-    form = CreateTermForm()
-    if form.validate_on_submit():
-        term_string = form.term_string.data
-        definition = form.definition.data
-        examples = form.examples.data
-        term = Term(term_string, definition, examples)
-        term.save()
-        return redirect(url_for("term.display_term", concept_id=term.concept_id))
-    return render_template("term/create_term.jinja", form=form)
-
-
 @term.route("/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
     form = EmptyForm()
@@ -52,7 +39,6 @@ def display_term(concept_id):
 def show_alternate_terms(term_string):
     form = EmptyForm()
     selected_terms = Term.query.filter_by(term_string=term_string)
-
     return render_template(
         "term/display_terms.jinja",
         selected_terms=selected_terms,
@@ -61,13 +47,44 @@ def show_alternate_terms(term_string):
     )
 
 
+@term.route("/list")
+def list_terms():
+    return redirect(url_for("term.list_alphabetical"))
+
+
+@term.route("/list/alphabetical/")
+def list_alphabetical():
+    sort_type = "alphabetical"
+    page = request.args.get("page", 1, type=int)
+    term_list = (
+        Term.query.order_by(Term.term_string)
+        .paginate(page, current_app.config["PER_PAGE"], False)
+        .items
+    )
+    return render_template("term/list.jinja", term_list=term_list, sort_type=sort_type)
+
+
+@term.route("/create", methods=["GET", "POST"])
+@login_required
+def create_term():
+    form = CreateTermForm()
+    if form.validate_on_submit():
+        term_string = form.term_string.data
+        definition = form.definition.data
+        examples = form.examples.data
+        new_term = Term(term_string, definition, examples)
+        new_term.save()
+        return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
+    return render_template("term/create_term.jinja", form=form)
+
+
 @term.route("track/<concept_id>", methods=["POST"])
 @login_required
 def track_term(concept_id):
     form = EmptyForm()
     if form.validate_on_submit():
-        term = Term.query.filter_by(concept_id=concept_id).first()
-        term.track(current_user)
+        tracked_term = Term.query.filter_by(concept_id=concept_id).first()
+        tracked_term.track(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
