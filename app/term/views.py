@@ -4,7 +4,7 @@ from flask_login import current_user, login_required
 from app.term import term_blueprint as term
 from app.term.models import *
 from app.term.forms import *
-
+from app.utilities import Pager
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
@@ -52,16 +52,22 @@ def list_terms():
     return redirect(url_for("term.list_alphabetical"))
 
 
-@term.route("/list/alphabetical/")
+@term.route("/list/alphabetical")
 def list_alphabetical():
     sort_type = "alphabetical"
     page = request.args.get("page", 1, type=int)
-    term_list = (
-        Term.query.order_by(Term.term_string)
-        .paginate(page, current_app.config["PER_PAGE"], False)
-        .items
+    per_page = current_app.config["TERMS_PER_PAGE"]
+    total_count = Term.query.count()
+    term_list = Term.query.order_by(Term.term_string).paginate(page, per_page, False)
+
+    pager = Pager(term_list, page, per_page, total_count)
+
+    return render_template(
+        "term/list_terms.jinja",
+        term_list=term_list.items,
+        sort_type=sort_type,
+        pager=pager,
     )
-    return render_template("term/list.jinja", term_list=term_list, sort_type=sort_type)
 
 
 @term.route("/create", methods=["GET", "POST"])
