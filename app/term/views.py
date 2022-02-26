@@ -108,8 +108,38 @@ def track_term(concept_id):
 def untrack_term(concept_id):
     form = EmptyForm()
     if form.validate_on_submit():
-        term = Term.query.filter_by(concept_id=concept_id).first()
-        term.untrack(current_user)
+        tracked_term = Term.query.filter_by(concept_id=concept_id).first()
+        tracked_term.untrack(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+
+
+@term.route("/vote/up/<concept_id>", methods=["POST"])
+@login_required
+def vote_up(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        selected_term = Term.query.filter_by(concept_id=concept_id).first()
+        selected_term.up_vote(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+
+
+@term.route("/vote/down/<concept_id>", methods=["POST"])
+@login_required
+def vote_down(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        selected_term = Term.query.filter_by(concept_id=concept_id).first()
+        selected_term.down_vote(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+
+
+@term.route("/vote/zero/<concept_id>", methods=["POST"])
+@login_required
+def vote_zero(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        selected_term = Term.query.filter_by(concept_id=concept_id).first()
+        selected_term.zero_vote(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
 

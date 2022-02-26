@@ -1,0 +1,26 @@
+<div class="row">
+    <div class="col">
+        {% if pager.prev_url %}
+        <a href="{{pager.prev_url}}">Previous</a>
+        {% endif %}
+        {% if pager.next_url %}
+        <a href="{{ pager.next_url}}">Next</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        {% for page in pager  %}
+        {% if page %}
+        {% if pager.page == page %}
+        <span class="fw-bold">{{page}}</span>
+        {% else %}
+        <a href="{{ url_for('term.list_' + sort_type, page=page) }}">{{ page }}</a>
+        {% endif %}
+        {% else %}
+        ...
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>

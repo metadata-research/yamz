@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS si.votes (
+    user_id INTEGER NOT NULL,
+    term_id INTEGER NOT NULL,
+    vote INTEGER DEFAULT 0 NOT NULL,
+    UNIQUE (user_id, term_id),
+    FOREIGN KEY (user_id) REFERENCES SI.Users(id) ON DELETE CASCADE,
+    FOREIGN KEY (term_id) REFERENCES SI.Terms(id) ON DELETE CASCADE
+);
