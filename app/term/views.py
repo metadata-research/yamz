@@ -1,4 +1,4 @@
-from soupsieve import select
+import datetime
 from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
@@ -41,12 +41,15 @@ def format_score(score):
     pass
 
 
+SHOULDER = "h"
+
+
 @term.route("/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
     form = EmptyForm()
     comment_form = CommentForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
-    comments = selected_term.comments.order_by(Comment.modified.desc())
+    comments = selected_term.comments.order_by(Comment.modified.desc()) or None
     return render_template(
         "term/display_term.jinja",
         selected_term=selected_term,
@@ -75,17 +78,45 @@ def show_alternate_terms(term_string):
     )
 
 
-@term.route("/create", methods=["POST"])
+@term.route("/contribute/create", methods=["GET", "POST"])
 @login_required
 def create_term():
     form = CreateTermForm()
     if form.validate_on_submit():
-        term_string = form.term_string.data
+
+        last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
+        ark_id = int(last_ark_id) + 1
+        term_string = form.term_string.data.strip()
+        owner_id = current_user.id
         definition = form.definition.data
         examples = form.examples.data
-        new_term = Term(term_string, definition, examples)
+        concept_id = SHOULDER + str(ark_id)
+        persistent_id = "https://n2t.net/ark:/99152/" + concept_id
+        # this doesn't need to be 3 columns
+
+        new_term = Term(
+            ark_id=ark_id,
+            concept_id=concept_id,
+            persistent_id=persistent_id,
+            owner_id=owner_id,
+            term_string=term_string,
+            definition=definition,
+            examples=examples,
+            up=0,
+            down=0,
+            consensus=0,
+            term_class="vernacular",
+            u_sum=0,
+            d_sum=0,
+            t_last=datetime.datetime.now(),
+            t_stable=datetime.datetime.now(),
+        )
+        new_term.save()
+
+        new_term.persistent_id = "https://n2t.net/ark:/99152/" + new_term.concept_id
         new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
+
     return render_template("term/create_term.jinja", form=form)
 
 

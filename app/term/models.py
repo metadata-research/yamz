@@ -25,7 +25,7 @@ class Term(db.Model):
     definition = db.Column(db.Text)
     examples = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
-    persistent_id = db.Column(db.Text)
+    persistent_id = db.Column(db.Text)  # make this always computed
     up = db.Column(db.Integer, default=0)
     down = db.Column(db.Integer, default=0)
     consensus = db.Column(db.Float, default=0)
