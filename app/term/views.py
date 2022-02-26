@@ -1,10 +1,10 @@
-import re
 from flask import render_template, redirect, url_for, current_app, request
 from flask_login import current_user, login_required
 from app.term import term_blueprint as term
 from app.term.models import *
 from app.term.forms import *
-from app.utilities import Pager
+from app.utilities import *
+
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
@@ -52,20 +52,85 @@ def list_terms():
     return redirect(url_for("term.list_alphabetical"))
 
 
+# /list helpers
+sort_columns = {
+    "alphabetical": "term_string",
+    "consensus": "consensus",
+    "class": "class",
+    "score": "score",
+    "modified": "modified",
+    "contributor": "contributor",
+}
+
+
+def term_query(page, per_page, sort_order, sort_type):
+    sort_key = sort_columns[sort_type]
+    if sort_order == "descending":
+        return Term.query.order_by(db.text(sort_key + " DESC")).paginate(
+            page, per_page, False
+        )
+    else:
+        return Term.query.order_by(db.text(sort_key + " ASC")).paginate(
+            page, per_page, False
+        )
+
+
 @term.route("/list/alphabetical")
 def list_alphabetical():
     sort_type = "alphabetical"
+    sort_order = request.args.get("order", "ascending")
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
-    total_count = Term.query.count()
-    term_list = Term.query.order_by(Term.term_string).paginate(page, per_page, False)
 
-    pager = Pager(term_list, page, per_page, total_count)
+    term_list = term_query(page, per_page, sort_order, sort_type)
+
+    pager = Pager(term_list, page, per_page, Term.query.count())
 
     return render_template(
         "term/list_terms.jinja",
         term_list=term_list.items,
         sort_type=sort_type,
+        sort_order=sort_order,
+        pager=pager,
+    )
+
+
+@term.route("/list/class")
+def list_class():
+    sort_type = "class"
+    sort_order = request.args.get("order", "ascending")
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
+
+    term_list = term_query(page, per_page, sort_order, sort_type)
+
+    pager = Pager(term_list, page, per_page, Term.query.count())
+
+    return render_template(
+        "term/list_terms.jinja",
+        term_list=term_list.items,
+        sort_type=sort_type,
+        sort_order=sort_order,
+        pager=pager,
+    )
+
+
+@term.route("/list/score")
+def list_score():
+    sort_type = "score"
+    sort_order = request.args.get("order", "descending")
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
+
+    term_list = term_query(page, per_page, sort_order, sort_type)
+
+    pager = Pager(term_list, page, per_page, Term.query.count())
+
+    return render_template(
+        "term/list_terms.jinja",
+        term_list=term_list.items,
+        sort_type=sort_type,
+        sort_order=sort_order,
         pager=pager,
     )
 
@@ -102,15 +167,6 @@ def untrack_term(concept_id):
         term = Term.query.filter_by(concept_id=concept_id).first()
         term.untrack(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
-
-
-# this is taken largely as is from seaice.pretty since we're going to use a comoponent instead
-ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
-# subexpr start positions:    01                  2        3         4
-
-ixuniq = "xq"
-ixqlen = len(ixuniq)
-tagstart = "#{g: "  # note: final space is important
 
 
 def references_to_html(match):

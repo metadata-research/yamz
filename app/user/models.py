@@ -37,6 +37,10 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.super_user
 
+    @property
+    def full_name(self):
+        return self.first_name + " " + self.last_name
+
     def __repr__(self):
         return "<User: {}, {}>".format(self.last_name, self.first_name)
 

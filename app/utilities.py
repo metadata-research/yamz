@@ -1,4 +1,14 @@
+import re
 from flask import url_for
+
+
+# this is taken largely as is from seaice.pretty since we're going to use a comoponent instead
+ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+# subexpr start positions:    01                  2        3         4
+
+ixuniq = "xq"
+ixqlen = len(ixuniq)
+tagstart = "#{g: "  # note: final space is important
 
 
 class Pager:

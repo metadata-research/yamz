@@ -1,5 +1,12 @@
 {% extends './base.jinja' %}
 
+{% if sort_order == 'ascending' %}
+{% set sort_order = 'descending'  %}
+{% elif sort_order== 'descending'%}
+{% set sort_order = 'ascending'  %}
+{% endif %}
+
+
 {% block title %}
 Browse Terms
 {% endblock %}
@@ -12,7 +19,7 @@ Browse terms - {{ sort_type }}
 <table class="table table-borderless table-sm">
     <thead>
         <tr>
-            <th>Term</th>
+            <th><a href="{{ url_for('term.list_alphabetical', page=pager.page, order=sort_order)}}">Term</a></th>
             <th>Score</th>
             <th>Consensus</th>
             <th>Class</th>
@@ -27,7 +34,7 @@ Browse terms - {{ sort_type }}
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
             <td>
-                Score
+                {{ term.score }}
             </td>
             <td>
                 Consensus
@@ -39,7 +46,7 @@ Browse terms - {{ sort_type }}
                 {{ term.modified | format_date}}
             </td>
             <td>
-                {{ term.contributor.first_name }} {{ term.contributor.last_name }}
+                {{ term.contributor.full_name }}
             </td>
         </tr>
     </tbody>
@@ -58,11 +65,11 @@ Browse terms - {{ sort_type }}
 </div>
 
 <div class="row">
-    <div class="col fw-bold">
+    <div class="col">
         {% for page in pager  %}
         {% if page %}
         {% if pager.page == page %}
-        {{page}}
+        <span class="fw-bold">{{page}}</span>
         {% else %}
         <a href="{{ url_for('term.list_' + sort_type, page=page) }}">{{ page }}</a>
         {% endif %}
