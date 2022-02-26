@@ -22,6 +22,20 @@ def format_tags(string):
     return string
 
 
+@term.app_template_filter("as_contributor_link")
+def as_link(contributor):
+    if contributor is None:
+        return ""
+    elif contributor.orcid and contributor.orcid != "nil":
+        return '<a href="https://orcid.org/{}">{}</a>'.format(
+            contributor.orcid, contributor.full_name
+        )
+    else:
+        return '<a href="mailto:{}">{}</a>'.format(
+            contributor.email, contributor.full_name
+        )
+
+
 @term.app_template_filter("format_score")
 def format_score(score):
     pass
@@ -61,7 +75,7 @@ def show_alternate_terms(term_string):
     )
 
 
-@term.route("/create", methods=["GET", "POST"])
+@term.route("/create", methods=["POST"])
 @login_required
 def create_term():
     form = CreateTermForm()
@@ -73,6 +87,27 @@ def create_term():
         new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
     return render_template("term/create_term.jinja", form=form)
+
+
+# here we are using term id because the key is better as an integer and we don't have to look it up
+# we should probably decide if we are going to use the concept id or the term id
+# for now it has to be like this because of the seaice db schema
+@term.route("comment/<term_id>", methods=["POST"])
+@login_required
+def add_comment(term_id):
+    form = CommentForm()
+    if form.validate_on_submit():
+        owner_id = current_user.id
+        term_id = term_id
+        comment_string = form.comment_string.data
+
+        new_comment = Comment(
+            owner_id=owner_id, term_id=term_id, comment_string=comment_string
+        )
+        new_comment.save()
+
+        return redirect(url_for("term.display_term_by_id", term_id=term_id))
+    return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
 
 @term.route("/list")

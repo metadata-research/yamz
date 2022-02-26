@@ -12,7 +12,7 @@ class CreateTermForm(FlaskForm):
 
 class CommentForm(FlaskForm):
     comment_string = TextAreaField("Comment", validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    submit = SubmitField("Comment")
 
 
 class EmptyForm(FlaskForm):

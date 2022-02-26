@@ -121,13 +121,17 @@ class Comment(db.Model):
     __tablename__ = "comments"
     __table_args__ = {"schema": DB_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"), primary_key=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"))
+    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"))
     created = db.Column(db.DateTime, default=db.func.now())
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     comment_string = db.Column(db.Text)
 
     author = db.relationship("User", backref="author", lazy="joined")
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
 
 class Track(db.Model):

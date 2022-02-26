@@ -1,7 +1,7 @@
 {% extends './base.jinja' %}
 
 {% block title %}
-{{ selected_term.term_string}}
+YAMZ Term- {{ selected_term.term_string}}
 {% endblock %}
 
 {% block headline %}
@@ -14,5 +14,7 @@
 {% include 'term/_term.jinja' %}
 
 {% include 'term/_comments.jinja' %}
+
+{% include 'term/_comment_form.jinja' %}
 
 {% endblock content%}
