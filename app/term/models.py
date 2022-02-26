@@ -1,7 +1,8 @@
+import enum
 from unicodedata import name
+
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
-import enum
 
 DB_SCHEMA = "si"
 
@@ -41,6 +42,8 @@ class Term(db.Model):
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
     )
+
+    comments = db.relationship("Comment", backref="term", lazy="dynamic")
 
     @property
     def vote_total(self):
@@ -114,6 +117,19 @@ class Term(db.Model):
         vote.save()
 
 
+class Comment(db.Model):
+    __tablename__ = "comments"
+    __table_args__ = {"schema": DB_SCHEMA}
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    created = db.Column(db.DateTime, default=db.func.now())
+    modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    comment_string = db.Column(db.Text)
+
+    author = db.relationship("User", backref="author", lazy="joined")
+
+
 class Track(db.Model):
     __tablename__ = "tracking"
     __table_args__ = {"schema": DB_SCHEMA}
@@ -137,14 +153,3 @@ class Vote(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
-
-
-class Comment(db.Model):
-    __tablename__ = "comments"
-    __table_args__ = {"schema": DB_SCHEMA}
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"))
-    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
-    created = db.Column(db.DateTime, default=db.func.now())
-    modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
-    comment_string = db.Column(db.Text)

@@ -5,11 +5,14 @@
 {% endblock %}
 
 {% block headline %}
-Term
+{{ selected_term.term_string}}
+
 {% endblock headline %}
 
 {% block content %}
 
 {% include 'term/_term.jinja' %}
+
+{% include 'term/_comments.jinja' %}
 
 {% endblock content%}

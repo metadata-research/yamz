@@ -1,9 +1,10 @@
-from flask import render_template, redirect, url_for, current_app, request
-from flask_login import current_user, login_required
+from soupsieve import select
 from app.term import term_blueprint as term
-from app.term.models import *
 from app.term.forms import *
+from app.term.models import *
 from app.utilities import *
+from flask import current_app, redirect, render_template, request, url_for
+from flask_login import current_user, login_required
 
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
@@ -29,10 +30,23 @@ def format_score(score):
 @term.route("/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
     form = EmptyForm()
+    comment_form = CommentForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
-        "term/display_term.jinja", selected_term=selected_term, form=form
+        "term/display_term.jinja",
+        selected_term=selected_term,
+        form=form,
+        comments=comments,
+        comment_form=comment_form,
     )
+
+
+@term.route("/id/<term_id>")  # change concelpt id to ark
+def display_term_by_id(term_id):
+    form = EmptyForm()
+    selected_term = Term.query.get_or_404(term_id)
+    return redirect(url_for("term.display_term", concept_id=selected_term.concept_id))
 
 
 @term.route("/alternates/<term_string>")  # change concelpt id to ark

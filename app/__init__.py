@@ -37,6 +37,15 @@ app.register_blueprint(term_bp, url_prefix="/term")
 app.register_blueprint(user_bp, url_prefix="/user")
 
 
+@app.cli.command()
+def test():
+    """Run the unit tests."""
+    import unittest
+
+    tests = unittest.TestLoader().discover("tests")
+    unittest.TextTestRunner(verbosity=2).run(tests)
+
+
 @app.template_filter("format_date")
 def format_date(date):
     return date.strftime("%Y.%m.%d")
