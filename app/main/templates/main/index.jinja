@@ -9,13 +9,74 @@ YAMZ Metadata Dictionary
 
 {% block content %}
 
-{% if current_user.is_authenticated %}
-current user
-{% else %}
-<h1 class="text-center">Metadictionary</h1>
-<p class="lead text-center pb-5">
-    A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
-</p>
-{% endif %}
+<div>
+    <form action="/search" method="post">
+        <div class="control-group"><label class="control-label"></label>
+            <div class="controls">
+                <input name="term_string" type="text" class="input-lg search-query form-control"
+                    placeholder="Search for a term"></div>
+        </div>
+    </form>
+    {% if current_user.is_authenticated %}
+    <br />
+    <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata.</h6>
+    {% endif %}
+</div>
 
-{% endblock%}
+{% if not current_user.is_authenticated %}
+
+<div class="jumbotron" style="background-color: transparent">
+    <br />
+    <h1 class='text-center'>Metadictionary</h1>
+    <p class="lead text-center">
+        A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
+    </p>
+    <br />
+</div>
+
+{% endif %}
+{% if current_user.is_authenticated %}
+
+<div class="row marketing">
+    <table width=100%>
+        <tr>
+            <td rowspan=2 width=5%></td>
+
+            <td rowspan=2 width=75% valign=top>
+                <br />
+                <h4>Notifications</h4>
+                {% if notify %}
+                {{ notify }}
+                {% else %}
+                <font color="#B8B8B8"><i>No new notifications.</i></font>
+                {% endif %}
+            </td>
+
+            <td valign=top>
+                <br />
+                <h4>My terms</h4>
+                {% if my %}
+                {{ my }}
+                {% else %}
+                <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
+                {% endif %}
+                <br>
+            </td>
+
+        <tr>
+            <td valign=top>
+                <hr>
+                <h4>Watching</h4>
+                {% if star %}
+                {{ star }}
+                {% else %}
+                <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
+                {% endif %}
+                <br /><br />
+            </td>
+        </tr>
+    </table>
+
+    {% endif %}
+
+    {% endblock%}
