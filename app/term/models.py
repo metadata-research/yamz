@@ -1,8 +1,10 @@
 import enum
-from unicodedata import name
+from app.user.models import User
 
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import select
 
 DB_SCHEMA = "si"
 
@@ -46,23 +48,85 @@ class Term(db.Model):
     comments = db.relationship("Comment", backref="term", lazy="dynamic")
 
     @property
+    def display_score_sum(self):
+        stm = select([db.func.sum(Vote.vote)]).where(Vote.term_id == self.id)
+        result = db.session.execute(stm).scalar()
+        return result
+
+    @hybrid_property
+    def score_sum_sql(self):
+        stm = select([db.func.sum(Vote.vote)]).where(Vote.term_id == self.id)
+        # result = db.session.execute(stm).scalar()
+        return stm
+
+    @property
     def vote_total(self):
-        votes = self.votes
+        # can the db do this?
+        user_votes = self.votes
         vote_sum = 0
-        for vote in votes:
-            vote_sum += vote.vote
+        for user_vote in user_votes:
+            vote_sum += user_vote.vote
         return vote_sum
 
-    def get_user_vote(self, current_user):
-        # return lambda self, current_user: self.votes.filter_by(
-        #    user_id=current_user.id
-        # ).first()
-        user_vote = self.votes.filter_by(user_id=current_user.id).first()
-        return user_vote.vote if user_vote else 0
+    def vote_count(self):
+        return self.votes.count()
 
     @property
     def score(self):
-        return self.up - self.down
+        return self.vote_total  # add weight
+
+    @property
+    def votes_up_sum(self):
+        votes_up_sum = self.votes.filter_by(vote=1).count()
+        return votes_up_sum
+
+    @property
+    def votes_down_sum(self):
+        # votes_down_sum = self.votes.filter(Vote.vote < 0).count()
+        votes_down_sum = self.votes.filter_by(vote=-1).count()
+        return -abs(votes_down_sum)
+
+    @property
+    def votes_up_count(self):
+        return self.votes.filter_by(vote=1).count()
+
+    @property
+    def votes_down_count(self):
+        return self.votes.filter_by(vote=-1).count()
+
+    @property
+    def consensus(self):
+        """Calcluate consensus score. This is a heuristic for the percentage
+        of the community who finds a term useful. Based on the observation
+        that not every user will vote on a given term, user reptuation is
+        used to estimate consensus. As the number of voters approaches
+        the number of users, the votes become more equitable. (See
+        doc/Scoring.pdf for details.
+
+        :param u: Number of up voters.
+        :param d: Number of down voters.
+        :param t: Number of total users.
+        :param U_sum: Sum of up-voter reputation.
+        :param D_sum: Sum of down-voter reputation.
+
+        v = u + d
+        R = U_sum + D_sum
+        return (u + (float(U_sum) / R if R > 0 else 0.0) * (t - v)) / t if v else 0
+
+        """
+        u = self.votes_up_count
+        d = self.votes_down_count
+        t = User.query.count()
+        U_sum = self.votes_up_sum
+        D_sum = self.votes_down_sum
+
+        v = u + d
+        R = U_sum + D_sum
+        return (u + (float(U_sum) / R if R > 0 else 0.0) * (t - v)) / t if v else 0
+
+    def get_user_vote(self, current_user):
+        user_vote = self.votes.filter_by(user_id=current_user.id).first()
+        return user_vote.vote if user_vote else 0
 
     @property
     def alt_definitions_count(self):
@@ -115,6 +179,12 @@ class Term(db.Model):
         else:
             vote.vote = 0
         vote.save()
+
+    def remove_vote(self, current_user):
+        vote_to_remove = self.votes.filter_by(user_id=current_user.id).first()
+        if not vote_to_remove is None:
+            db.session.delete(vote_to_remove)
+            db.session.commit()
 
 
 class Comment(db.Model):

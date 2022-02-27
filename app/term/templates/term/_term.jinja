@@ -17,7 +17,7 @@
             <div class="row">
                 <div class="col text-center p-3">
                     {% if my_vote == 1 %}
-                    <form action="{{ url_for('term.vote_zero', concept_id=selected_term.concept_id) }}" method="post">
+                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id) }}" method="post">
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-primary btn-sm" title="remove vote">
                             <i class="fas fa-arrow-up"></i>
@@ -31,9 +31,9 @@
                         </button>
                     </form>
                     {% endif %}
-                    <h4>{{ selected_term.vote_total }}</h4>
+                    <h4>{{ selected_term.score }}</h4>
                     {% if my_vote == -1 %}
-                    <form action="{{ url_for('term.vote_zero', concept_id=selected_term.concept_id) }}" method="post">
+                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id) }}" method="post">
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-primary btn-sm" title="remove vote">
                             <i class="fas fa-arrow-down"></i>

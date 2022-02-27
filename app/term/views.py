@@ -5,7 +5,7 @@ from app.term.models import *
 from app.utilities import *
 from flask import current_app, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-
+from sqlalchemy import asc, desc, cast, Integer
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
@@ -112,9 +112,6 @@ def create_term():
             t_stable=datetime.datetime.now(),
         )
         new_term.save()
-
-        new_term.persistent_id = "https://n2t.net/ark:/99152/" + new_term.concept_id
-        new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
     return render_template("term/create_term.jinja", form=form)
@@ -173,6 +170,14 @@ def list_alphabetical():
     )
 
 
+@term.route("/list/score")
+def list_score():
+    terms = db.session.query(Term).order_by(desc(Term.score_sum_sql))
+    # terms = Term.query.order_by(Term.score_sum.as_scalar()
+
+    return render_template("term/test.jinja", terms=terms)
+
+
 @term.route("track/<concept_id>", methods=["POST"])
 @login_required
 def track_term(concept_id):
@@ -220,6 +225,16 @@ def vote_zero(concept_id):
     if form.validate_on_submit():
         selected_term = Term.query.filter_by(concept_id=concept_id).first()
         selected_term.zero_vote(current_user)
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+
+
+@term.route("/vote/remove/<concept_id>", methods=["POST"])
+@login_required
+def remove_vote(concept_id):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        selected_term = Term.query.filter_by(concept_id=concept_id).first()
+        selected_term.remove_vote(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
