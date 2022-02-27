@@ -4,7 +4,7 @@ from app.user.models import User
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select
+from sqlalchemy import select, case
 
 DB_SCHEMA = "si"
 
@@ -47,6 +47,27 @@ class Term(db.Model):
 
     comments = db.relationship("Comment", backref="term", lazy="dynamic")
 
+    @hybrid_property
+    def term_vote(self):
+        # return sum(self.votes.vote)
+        vote_sum = 0
+        for user_vote in self.votes:
+            vote_sum += user_vote.vote
+        return vote_sum
+
+    @term_vote.expression
+    def term_vote(cls):
+        return case(
+            [
+                (
+                    select([db.func.sum(Vote.vote)]).where(Vote.term_id == cls.id)
+                    != None,
+                    select([db.func.sum(Vote.vote)]).where(Vote.term_id == cls.id),
+                ),
+            ],
+            else_=0,
+        )
+
     @property
     def display_score_sum(self):
         stm = select([db.func.sum(Vote.vote)]).where(Vote.term_id == self.id)
@@ -61,10 +82,9 @@ class Term(db.Model):
 
     @property
     def vote_total(self):
-        # can the db do this?
-        user_votes = self.votes
+        # return sum(self.votes.vote)
         vote_sum = 0
-        for user_vote in user_votes:
+        for user_vote in self.votes:
             vote_sum += user_vote.vote
         return vote_sum
 

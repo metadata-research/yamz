@@ -1,10 +1,6 @@
 {% extends './base.jinja' %}
 
-{% if sort_order == 'ascending' %}
-{% set sort_order = 'descending'  %}
-{% elif sort_order== 'descending'%}
-{% set sort_order = 'ascending'  %}
-{% endif %}
+
 
 
 {% block title %}
@@ -20,7 +16,7 @@ Browse terms - {{ sort_type }}
 <table class="table table-borderless table-sm">
     <thead>
         <tr>
-            <th><a href="{{ url_for('term.list_alphabetical', page=pager.page, order=sort_order)}}">Term</a></th>
+            <th>Term</th>
             <th>Score</th>
             <th>Consensus</th>
             <th>Class</th>
@@ -53,7 +49,5 @@ Browse terms - {{ sort_type }}
     </tbody>
     {% endfor %}
 </table>
-
-{% include 'term/_pager.jinja' %}
 
 {% endblock content%}

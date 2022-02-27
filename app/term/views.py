@@ -172,10 +172,25 @@ def list_alphabetical():
 
 @term.route("/list/score")
 def list_score():
-    terms = db.session.query(Term).order_by(desc(Term.score_sum_sql))
-    # terms = Term.query.order_by(Term.score_sum.as_scalar()
+    term_list = (
+        db.session.query(Term)
+        .filter(Term.term_vote != 0)
+        .order_by(desc(Term.term_vote), Term.term_string)
+        .limit(current_app.config["TERMS_PER_PAGE"])
+    )
+    return render_template(
+        "term/top_terms.jinja", term_list=term_list, sort_type="high score"
+    )
 
-    return render_template("term/test.jinja", terms=terms)
+
+@term.route("/list/recent")
+def list_recent():
+    term_list = Term.query.order_by(Term.modified.desc()).limit(
+        current_app.config["TERMS_PER_PAGE"]
+    )
+    return render_template(
+        "term/top_terms.jinja", term_list=term_list, sort_type="recent"
+    )
 
 
 @term.route("track/<concept_id>", methods=["POST"])

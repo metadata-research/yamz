@@ -1,3 +1,7 @@
 {% for term in terms  %}
-{{ term.term_string }} | {{term.display_score_sum}} | {{term.score}} <br>
+<p>
+    {{ term.term_vote}} |
+    {{ term.vote_total}}
+</p>
+
 {% endfor %}
