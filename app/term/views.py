@@ -143,14 +143,19 @@ def search(term_string):
 
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
-
+    sort_type = "search"
     term_list = Term.query.filter(Term.tsv.match(term_string)).paginate(
         page, per_page, False
     )
 
-    pager = Pager(term_list, page, per_page, Term.query.count())
+    pager = Pager(term_list, page, per_page, len(term_list.items))
 
-    return render_template("term/test.jinja", term_list=term_list.items)
+    return render_template(
+        "term/list_terms.jinja",
+        term_list=term_list.items,
+        sort_type=sort_type,
+        pager=pager,
+    )
 
 
 @term.route("/list")
