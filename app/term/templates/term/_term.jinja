@@ -1,5 +1,8 @@
 <hr>
+{% if current_user.is_authenticated %}
+
 {% set my_vote = selected_term.get_user_vote(current_user) %}
+{% endif %}
 
 <div class="container">
     <div class="row bg-light p-2 mb-1">
