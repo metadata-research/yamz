@@ -9,8 +9,12 @@ from app.term.forms import SearchForm
 @main.route("/")
 def index():
     search_form = SearchForm()
-    my_terms = current_user.terms.all()
-    tracked_terms = Track.query.filter_by(user_id=current_user.id).all()
+    if current_user.is_authenticated:
+        my_terms = current_user.terms.all()
+        tracked_terms = Track.query.filter_by(user_id=current_user.id).all()
+    else:
+        my_terms = []
+        tracked_terms = []
     return render_template(
         "main/index.jinja",
         my_terms=my_terms,
