@@ -54,6 +54,8 @@ Browse terms - {{ sort_type }}
     {% endfor %}
 </table>
 
+{% if pager %}
 {% include 'term/_pager.jinja' %}
+{% endif %}
 
 {% endblock content%}
