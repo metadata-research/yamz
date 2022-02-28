@@ -18,3 +18,4 @@ localhost.pem
 localhost.crt
 localhost.key
 config.py
+__pycache__/
