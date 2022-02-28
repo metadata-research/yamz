@@ -59,9 +59,10 @@ def display_term(concept_id):
     )
 
 
-@term.route("/search", methods=["GET", "POST"])
-def search():
-    return "search"
+@term.route("/search/<term_string>", methods=["GET", "POST"])
+def search(term_string):
+    results = Term.query.filter(Term.tsv.match(term_string)).all()
+    return render_template("term/test.jinja", results=results)
 
 
 @term.route("/id/<term_id>")  # change concelpt id to ark

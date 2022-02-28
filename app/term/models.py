@@ -17,10 +17,6 @@ class si_class(enum.Enum):
     deprecated = (3, "deprecated")
 
 
-class TSVector(sqlalchemy.types.TypeDecorator):
-    impl = TSVECTOR
-
-
 class Term(db.Model):
     __tablename__ = "terms"
     __table_args__ = {"schema": DB_SCHEMA}
@@ -42,7 +38,7 @@ class Term(db.Model):
     d_sum = db.Column(db.Integer, default=0)
     t_last = db.Column(db.DateTime)
     t_stable = db.Column(db.DateTime)
-
+    tsv = db.Column(TSVECTOR)
     # relationships
     tracks = db.relationship("Track", backref="term", lazy="dynamic")
 
