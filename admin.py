@@ -15,6 +15,7 @@ def cli():
 
 @click.command()
 def initdb():
+    db.create_all()
     click.echo("Initialized the database")
 
 

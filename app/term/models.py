@@ -17,7 +17,6 @@ class si_class(enum.Enum):
     deprecated = (3, "deprecated")
 
 
-"""
 class Relationship(db.Model):
     __tablename__ = "relationships"
     __table_args__ = {"schema": DB_SCHEMA}
@@ -25,7 +24,6 @@ class Relationship(db.Model):
     child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     predicate = db.Column(db.String(64), default="instanceOf")
     timestamp = db.Column(db.DateTime, default=db.func.now())
-"""
 
 
 class Term(db.Model):
