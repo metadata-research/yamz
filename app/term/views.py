@@ -59,12 +59,6 @@ def display_term(concept_id):
     )
 
 
-@term.route("/search/<term_string>", methods=["GET", "POST"])
-def search(term_string):
-    results = Term.query.filter(Term.tsv.match(term_string)).all()
-    return render_template("term/test.jinja", results=results)
-
-
 @term.route("/id/<term_id>")  # change concelpt id to ark
 def display_term_by_id(term_id):
     form = EmptyForm()
@@ -142,6 +136,21 @@ def add_comment(term_id):
 
         return redirect(url_for("term.display_term_by_id", term_id=term_id))
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
+
+
+@term.route("/search/<term_string>", methods=["GET", "POST"])
+def search(term_string):
+
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
+
+    term_list = Term.query.filter(Term.tsv.match(term_string)).paginate(
+        page, per_page, False
+    )
+
+    pager = Pager(term_list, page, per_page, Term.query.count())
+
+    return render_template("term/test.jinja", term_list=term_list.items)
 
 
 @term.route("/list")
