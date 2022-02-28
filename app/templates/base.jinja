@@ -72,9 +72,13 @@
                     {% endblock headline %}
                 </h1>
             </div>
-            {% if not request.url_rule.endpoint == "main.index" %}
+            {% if g.search_form %}
             <div class="col-auto align-self-end pb-4">
-                <form><input class="form-control" type="text" placeholder="search for a term" size="40"></form>
+                <form method="get" action="{{ url_for('term.search') }}">
+                    <div class="form-group">
+                        {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text)}}
+                    </div>
+                </form>
             </div>
             {% endif %}
         </div>

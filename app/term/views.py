@@ -144,13 +144,12 @@ def add_comment(term_id):
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
 
-@term.route("/search/<term_string>", methods=["GET", "POST"])
-def search(term_string):
-
+@term.route("/search")
+def search():
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
     sort_type = "search"
-    term_list = Term.query.filter(Term.tsv.match(term_string)).paginate(
+    term_list = Term.query.filter(Term.tsv.match(g.search_form.q.data)).paginate(
         page, per_page, False
     )
 

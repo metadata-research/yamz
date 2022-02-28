@@ -21,7 +21,7 @@ class EmptyForm(FlaskForm):
 
 
 class SearchForm(FlaskForm):
-    q = StringField("Search", validators=[DataRequired()])
+    q = StringField("Search for a term", validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
         if "formdata" not in kwargs:

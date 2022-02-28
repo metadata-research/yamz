@@ -10,12 +10,11 @@ YAMZ Metadata Dictionary
 {% block content %}
 
 <div>
-    <form action="/search" method="post">
+    <form action="{{ url_for('term.search') }}" method="get">
         <div class="control-group"><label class="control-label"></label>
             <div class="controls">
-                <input name="term_string" type="text" class="input-lg search-query form-control"
-                    placeholder="Search for a term"></div>
-        </div>
+                {{ search_form.q(size=40, class='form-control', placeholder=search_form.q.label.text)}}
+            </div>
     </form>
     {% if current_user.is_authenticated %}
     <br />
