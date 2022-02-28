@@ -5,9 +5,8 @@
 *.log
 *.aux
 *.out
+*.ini
 _build
-.seaice_auth
-.seaice
 env
 venv
 settings.json
