@@ -1,10 +1,12 @@
 import enum
+
+import sqlalchemy
 from app.user.models import User
 
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select, case
+from sqlalchemy import select, case, desc, Index
 
 DB_SCHEMA = "si"
 
@@ -13,6 +15,10 @@ class si_class(enum.Enum):
     vernacular = (1, "vernacular")
     canonical = (2, "canonical")
     deprecated = (3, "deprecated")
+
+
+class TSVector(sqlalchemy.types.TypeDecorator):
+    impl = TSVECTOR
 
 
 class Term(db.Model):
@@ -36,7 +42,6 @@ class Term(db.Model):
     d_sum = db.Column(db.Integer, default=0)
     t_last = db.Column(db.DateTime)
     t_stable = db.Column(db.DateTime)
-    tsv = db.Column(TSVECTOR)
 
     # relationships
     tracks = db.relationship("Track", backref="term", lazy="dynamic")
