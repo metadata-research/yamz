@@ -17,6 +17,17 @@ class si_class(enum.Enum):
     deprecated = (3, "deprecated")
 
 
+"""
+class Relationship(db.Model):
+    __tablename__ = "relationships"
+    __table_args__ = {"schema": DB_SCHEMA}
+    parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    predicate = db.Column(db.String(64), default="instanceOf")
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+"""
+
+
 class Term(db.Model):
     __tablename__ = "terms"
     __table_args__ = {"schema": DB_SCHEMA}
@@ -40,6 +51,23 @@ class Term(db.Model):
     t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
     # relationships
+
+    """ 
+    children = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.parent_id],
+        backref=db.backref("parent", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+    parents = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.child_id],
+        backref=db.backref("child", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+    """
     tracks = db.relationship("Track", backref="term", lazy="dynamic")
 
     votes = db.relationship(
