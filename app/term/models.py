@@ -1,6 +1,5 @@
 import enum
 
-import sqlalchemy
 from app.user.models import User
 
 from app import db
@@ -17,18 +16,6 @@ class si_class(enum.Enum):
     deprecated = (3, "deprecated")
 
 
-<<<<<<< HEAD
-class Relationship(db.Model):
-    __tablename__ = "relationships"
-    __table_args__ = {"schema": DB_SCHEMA}
-    parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
-    child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
-    predicate = db.Column(db.String(64), default="instanceOf")
-    timestamp = db.Column(db.DateTime, default=db.func.now())
-
-
-=======
->>>>>>> parent of c3bae07... add relationship and admin module
 class Term(db.Model):
     __tablename__ = "terms"
     __table_args__ = {"schema": DB_SCHEMA}
