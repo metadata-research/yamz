@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from app import app
 import click
 
@@ -35,3 +36,5 @@ cli.add_command(transfer_votes)
 
 if __name__ == "__main__":
     cli()
+=======
+>>>>>>> parent of c3bae07... add relationship and admin module
