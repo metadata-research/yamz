@@ -44,7 +44,7 @@ def format_score(score):
 SHOULDER = "h"
 
 
-@term.route("/<concept_id>")  # change concelpt id to ark
+@term.route("/ark/<concept_id>")  # change concelpt id to ark
 def display_term(concept_id):
     form = EmptyForm()
     comment_form = CommentForm()
@@ -57,6 +57,11 @@ def display_term(concept_id):
         comments=comments,
         comment_form=comment_form,
     )
+
+
+@term.route("/search", methods=["GET", "POST"])
+def search():
+    return "search"
 
 
 @term.route("/id/<term_id>")  # change concelpt id to ark
