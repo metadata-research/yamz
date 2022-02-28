@@ -3,9 +3,15 @@ from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
-from flask import current_app, redirect, render_template, request, url_for
+from flask import current_app, redirect, render_template, request, url_for, g
 from flask_login import current_user, login_required
 from sqlalchemy import asc, desc, cast, Integer
+
+
+@term.before_request
+def before_request():
+    g.search_form = SearchForm()
+
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
 @term.app_template_filter("convert_line_breaks")
