@@ -21,11 +21,6 @@ def create_app(config_class=TestConfig):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    from app.auth import views
-    from app.main import views
-    from app.term import views
-    from app.user import views
-
     from app.main import main_blueprint as main_bp
     from app.auth import auth_blueprint as auth_bp
     from app.term import term_blueprint as term_bp
@@ -35,9 +30,5 @@ def create_app(config_class=TestConfig):
     app.register_blueprint(auth_bp, url_prefix="/")
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
-
-    @app.template_filter("format_date")
-    def format_date(date):
-        return date.strftime("%Y.%m.%d")
 
     return app

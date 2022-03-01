@@ -1,11 +1,12 @@
 import datetime
+
 from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
-from flask import current_app, redirect, render_template, request, url_for, g
+from flask import current_app, g, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import asc, desc, cast, Integer
+from sqlalchemy import desc
 
 
 @term.before_request
@@ -42,12 +43,14 @@ def as_link(contributor):
         )
 
 
+@term.app_template_filter("format_date")
+def format_date(date):
+    return date.strftime("%Y.%m.%d")
+
+
 @term.app_template_filter("format_score")
 def format_score(score):
     pass
-
-
-SHOULDER = "h"
 
 
 @term.route("/ark/<concept_id>")  # change concelpt id to ark
@@ -89,14 +92,14 @@ def show_alternate_terms(term_string):
 def create_term():
     form = CreateTermForm()
     if form.validate_on_submit():
-
+        shoulder = current_app.config["SHOULDER"]
         last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
         ark_id = int(last_ark_id) + 1
         term_string = form.term_string.data.strip()
         owner_id = current_user.id
         definition = form.definition.data
         examples = form.examples.data
-        concept_id = SHOULDER + str(ark_id)
+        concept_id = shoulder + str(ark_id)
         persistent_id = "https://n2t.net/ark:/99152/" + concept_id
         # this doesn't need to be 3 columns
 
