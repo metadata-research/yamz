@@ -1,12 +1,14 @@
-<<<<<<< HEAD
 from app import app
 import click
 
+from app.user.models import User
+from app.term.models import Term
+
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import update
+
 
 db = SQLAlchemy(app)
-
-from app.term.models import Term
 
 
 @click.group()
@@ -26,15 +28,22 @@ def dropdb():
 
 
 @click.command()
-def transfer_votes():
+def transfer():
     click.echo("Transfer votes")
+
+
+@click.command()
+def zeroorcids():
+    users = User.query.filter(User.orcid == "nil").all()
+
+    stmt = update(users).where(users.orcid == "nil").values(orcid="")
+    db.session.execute(stmt)
 
 
 cli.add_command(initdb)
 cli.add_command(dropdb)
-cli.add_command(transfer_votes)
+cli.add_command(transfer)
+cli.add_command(zeroorcids)
 
 if __name__ == "__main__":
     cli()
-=======
->>>>>>> parent of c3bae07... add relationship and admin module

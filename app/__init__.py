@@ -2,11 +2,14 @@ from flask import Flask
 from config import Config, TestConfig
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
+
 
 app = Flask(__name__)
 app.config.from_object(TestConfig)
 
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
 from app.user.models import User, AnonymousUser
 
@@ -35,15 +38,6 @@ app.register_blueprint(main_bp, url_prefix="/")
 app.register_blueprint(auth_bp, url_prefix="/")
 app.register_blueprint(term_bp, url_prefix="/term")
 app.register_blueprint(user_bp, url_prefix="/user")
-
-
-@app.cli.command()
-def test():
-    """Run the unit tests."""
-    import unittest
-
-    tests = unittest.TestLoader().discover("tests")
-    unittest.TextTestRunner(verbosity=2).run(tests)
 
 
 @app.template_filter("format_date")
