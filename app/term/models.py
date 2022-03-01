@@ -1,5 +1,7 @@
 import enum
 
+import sqlalchemy
+
 from app.user.models import User
 
 from app import db
@@ -8,6 +10,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select, case, desc, Index
 
 DB_SCHEMA = "si"
+
+
+class TSVector(sqlalchemy.types.TypeDecorator):
+    impl = TSVECTOR
 
 
 class si_class(enum.Enum):
