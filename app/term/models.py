@@ -1,6 +1,5 @@
 import enum
 
-import sqlalchemy
 from app.user.models import User
 
 from app import db
@@ -15,6 +14,15 @@ class si_class(enum.Enum):
     vernacular = (1, "vernacular")
     canonical = (2, "canonical")
     deprecated = (3, "deprecated")
+
+
+class Relationship(db.Model):
+    __tablename__ = "relationships"
+    __table_args__ = {"schema": DB_SCHEMA}
+    parent_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    child_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    predicate = db.Column(db.String(64), default="instanceOf")
+    timestamp = db.Column(db.DateTime, default=db.func.now())
 
 
 class Term(db.Model):
@@ -47,6 +55,21 @@ class Term(db.Model):
     )
 
     comments = db.relationship("Comment", backref="term", lazy="dynamic")
+
+    children = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.parent_id],
+        backref=db.backref("parent", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
+    parents = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.child_id],
+        backref=db.backref("child", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
 
     @hybrid_property
     def term_vote(self):

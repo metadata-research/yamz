@@ -2,50 +2,42 @@ from flask import Flask
 from config import Config, TestConfig
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
 
-app = Flask(__name__)
-app.config.from_object(TestConfig)
+db = SQLAlchemy()
+migrate = Migrate()
 
-db = SQLAlchemy(app)
-
-from app.user.models import User, AnonymousUser
-
-login_manager = LoginManager(app)
+login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access this page."
-login_manager.anonymous_user = AnonymousUser
 
 
-@login_manager.user_loader
-def load_user(id):
-    return User.query.get(int(id))
+def create_app(config_class=TestConfig):
 
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-from app.auth import views
-from app.main import views
-from app.term import views
-from app.user import views
+    db.init_app(app)
+    migrate.init_app(app, db)
+    login_manager.init_app(app)
 
-from app.main import main_blueprint as main_bp
-from app.auth import auth_blueprint as auth_bp
-from app.term import term_blueprint as term_bp
-from app.user import user_blueprint as user_bp
+    from app.auth import views
+    from app.main import views
+    from app.term import views
+    from app.user import views
 
-app.register_blueprint(main_bp, url_prefix="/")
-app.register_blueprint(auth_bp, url_prefix="/")
-app.register_blueprint(term_bp, url_prefix="/term")
-app.register_blueprint(user_bp, url_prefix="/user")
+    from app.main import main_blueprint as main_bp
+    from app.auth import auth_blueprint as auth_bp
+    from app.term import term_blueprint as term_bp
+    from app.user import user_blueprint as user_bp
 
+    app.register_blueprint(main_bp, url_prefix="/")
+    app.register_blueprint(auth_bp, url_prefix="/")
+    app.register_blueprint(term_bp, url_prefix="/term")
+    app.register_blueprint(user_bp, url_prefix="/user")
 
-@app.cli.command()
-def test():
-    """Run the unit tests."""
-    import unittest
+    @app.template_filter("format_date")
+    def format_date(date):
+        return date.strftime("%Y.%m.%d")
 
-    tests = unittest.TestLoader().discover("tests")
-    unittest.TextTestRunner(verbosity=2).run(tests)
-
-
-@app.template_filter("format_date")
-def format_date(date):
-    return date.strftime("%Y.%m.%d")
+    return app
