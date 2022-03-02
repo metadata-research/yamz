@@ -93,7 +93,10 @@ def create_term():
     form = CreateTermForm()
     if form.validate_on_submit():
         shoulder = current_app.config["SHOULDER"]
-        last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
+        if db.session.query(Term.ark_id).first() is None:
+            last_ark_id = 0
+        else:
+            last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
         ark_id = int(last_ark_id) + 1
         term_string = form.term_string.data.strip()
         owner_id = current_user.id
