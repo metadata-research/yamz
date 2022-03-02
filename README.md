@@ -54,13 +54,12 @@ source env/bin/activate
 pip install -r requirements.txt
 
 
-9.  create a config.py file in the root directory using the example in the /stubs directory
+10.  create a config.py file in the root directory using the example in the /stubs directory
 
-10. set the FLASK_APP variable
-
+11. set the FLASK_APP variable
 export FLASK_APP = yamz.py
 
-11. On the first run create the db
+12. On the first run create the db
 
 flask db init
 flask db migrate
