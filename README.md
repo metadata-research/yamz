@@ -9,6 +9,7 @@ The current application requires the use of a postgres database to support full 
 
 The following is an example configuration. You can substitute your own db names and users
 
+## Install
 
 1. Install postgres. Installation instructions may vary depending on the platform.
 
@@ -80,3 +81,10 @@ export FLASK_RUN_PORT=xxxx
 flask run
 
 Note that when working in dev mode, the google authorized urls must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  Orcid authentication similarly will only work if the url is pre-authorized.
+
+
+## Import legacy entries
+
+1. import users
+
+python admin.py addusers

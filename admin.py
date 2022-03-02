@@ -6,7 +6,7 @@ from app import create_app
 from app.term.models import Term
 from app.user.models import User
 
-from app.admin.data_io import print_users
+from app.admin.data_io import add_users
 
 
 app = create_app()
@@ -47,15 +47,15 @@ def zeroorcids():
 
 
 @click.command()
-def printusers():
-    print_users()
+def addusers():
+    add_users()
 
 
 cli.add_command(initdb)
 cli.add_command(dropdb)
 cli.add_command(transfer)
 cli.add_command(zeroorcids)
-cli.add_command(printusers)
+cli.add_command(addusers)
 
 if __name__ == "__main__":
     cli()
