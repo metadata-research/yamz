@@ -19,3 +19,5 @@ localhost.crt
 localhost.key
 config.py
 __pycache__/
+migrations/
+.vscode/

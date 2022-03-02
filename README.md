@@ -3,9 +3,7 @@
 
 This is the README for the YAMZ metadictionary and includes instructions for
 deploying on a local machine for testing and on a Linux based environment for a
-scalable production version. These assume a Ubuntu GNU/Linux environment, but
-should be easily adaptable to any system; YAMZ is written in Python and uses
-only cross-platform packages.
+scalable production version (coming soon). 
 
 The current application requires the use of a postgres database to support full text search. 
 
@@ -57,6 +55,9 @@ pip install -r requirements.txt
 
 
 10.  create a config.py file in the root directory using the example in the /stubs directory
+
+Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
+
 
 11. set the FLASK_APP variable
 
