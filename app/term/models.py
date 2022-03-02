@@ -1,5 +1,7 @@
 import enum
 
+import sqlalchemy
+
 from app.user.models import User
 
 from app import db
@@ -7,7 +9,12 @@ from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select, case, desc, Index
 
+
 DB_SCHEMA = "si"
+
+
+class TSVector(sqlalchemy.types.TypeDecorator):
+    impl = TSVECTOR
 
 
 class si_class(enum.Enum):
@@ -48,7 +55,12 @@ class Term(db.Model):
     t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
     # relationships
-    tracks = db.relationship("Track", backref="term", lazy="dynamic")
+
+    contributor = db.relationship("User", back_populates="terms")
+
+    tracks = db.relationship(
+        "Track", back_populates="term", cascade="all, delete-orphan", uselist=False
+    )
 
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
@@ -185,14 +197,31 @@ class Term(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def is_tracked_by(self, current_user):
+        if self.tracks is None:
+            return False
+        else:
+            return (
+                self.tracks.query.filter_by(
+                    term_id=self.id, user_id=current_user.id
+                ).first()
+                is not None
+            )
+
+        # return user.id in [track.user.id for track in self.tracks]
+
     def track(self, current_user):
-        if not self.tracks.filter_by(user_id=current_user.id).first():
+        if self.is_tracked_by(current_user):
+            return False
+        else:
             track = Track(user_id=current_user.id, term_id=self.id)
             track.save()
 
     def untrack(self, current_user):
-        if self.tracks.filter_by(user_id=current_user.id).first():
-            untrack = self.tracks.filter_by(user_id=current_user.id).first()
+        if self.is_tracked_by(current_user):
+            untrack = self.tracks.query.filter_by(
+                term_id=self.id, user_id=current_user.id
+            ).first()
             db.session.delete(untrack)
             db.session.commit()
 
@@ -256,9 +285,15 @@ class Track(db.Model):
     vote = db.Column(db.Integer, default=0)
     star = db.Column(db.Boolean, default=False)
 
+    term = db.relationship("Term", back_populates="tracks", order_by="Term.term_string")
+    user = db.relationship("User", back_populates="tracking")
+
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    def __repr__(self) -> str:
+        return self.user.last_name + ": " + self.term.term_string
 
 
 class Vote(db.Model):

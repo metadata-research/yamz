@@ -55,7 +55,7 @@
             {% if current_user.is_authenticated %}
             <div class="row">
                 <div class="col mt-2 text-center">
-                    {% if current_user.is_tracking(selected_term) %}
+                    {% if selected_term.is_tracked_by(current_user) %}
                     <form action="{{ url_for('term.untrack_term', concept_id=selected_term.concept_id) }}"
                         method="post">
                         {{ form.hidden_tag() }}

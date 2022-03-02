@@ -8,9 +8,12 @@ def load_user(id):
     return User.query.get(int(id))
 
 
+DB_SCHEMA = "si"
+
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
-    __table_args__ = {"schema": "si"}
+    __table_args__ = {"schema": DB_SCHEMA}
     # TODO: sequence
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     authority = db.Column(db.String(64), nullable=False)
@@ -24,20 +27,19 @@ class User(UserMixin, db.Model):
     super_user = db.Column(db.Boolean, default=False)
 
     # relationships
-    terms = db.relationship("Term", backref="contributor", lazy="dynamic")
+
+    terms = db.relationship(
+        "Term", back_populates="contributor", order_by="Term.term_string"
+    )
+    # terms = db.relationship("Term", backref="contributor", lazy="dynamic")
 
     tracking = db.relationship(
-        "Track", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+        "Track", back_populates="user", cascade="all, delete-orphan"
     )
 
     def save(self):
         db.session.add(self)
         db.session.commit()
-
-    def is_tracking(self, term):
-        if term.id is None:
-            return False
-        return self.tracking.filter_by(term_id=term.id).first() is not None
 
     @property
     def is_administrator(self):
