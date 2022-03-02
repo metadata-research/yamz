@@ -25,19 +25,19 @@ class si_class(enum.Enum):
 
 class Relationship(db.Model):
     __tablename__ = "relationships"
-    __table_args__ = {"schema": DB_SCHEMA}
-    parent_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
-    child_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    # __table_args__ = {"schema": DB_SCHEMA}
+    parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     predicate = db.Column(db.String(64), default="instanceOf")
     timestamp = db.Column(db.DateTime, default=db.func.now())
 
 
 class Term(db.Model):
     __tablename__ = "terms"
-    __table_args__ = {"schema": DB_SCHEMA}
+    # __table_args__ = {"schema": DB_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ark_id = db.Column(db.Integer, unique=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"))
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     created = db.Column(db.DateTime, default=db.func.now())
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     term_string = db.Column(db.Text)
@@ -262,10 +262,10 @@ class Term(db.Model):
 
 class Comment(db.Model):
     __tablename__ = "comments"
-    __table_args__ = {"schema": DB_SCHEMA}
+    # __table_args__ = {"schema": DB_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    owner_id = db.Column(db.Integer, db.ForeignKey("si.users.id"))
-    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"))
+    owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
     created = db.Column(db.DateTime, default=db.func.now())
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     comment_string = db.Column(db.Text)
@@ -279,9 +279,9 @@ class Comment(db.Model):
 
 class Track(db.Model):
     __tablename__ = "tracking"
-    __table_args__ = {"schema": DB_SCHEMA}
-    user_id = db.Column(db.Integer, db.ForeignKey("si.users.id"), primary_key=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    # __table_args__ = {"schema": DB_SCHEMA}
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0)
     star = db.Column(db.Boolean, default=False)
 
@@ -298,9 +298,9 @@ class Track(db.Model):
 
 class Vote(db.Model):
     __tablename__ = "votes"
-    __table_args__ = {"schema": DB_SCHEMA}
-    user_id = db.Column(db.Integer, db.ForeignKey("si.users.id"), primary_key=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
+    # __table_args__ = {"schema": DB_SCHEMA}
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0, nullable=False)
 
     def save(self):

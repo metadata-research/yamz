@@ -23,28 +23,16 @@ The following is an example configuration. You can substitute your own db names 
 
 (the installation should create a unix user postgres so something like sudo -u postgres psql)
 
-postgres=# CREATE DATABASE yamz;
+postgres=# create database yamz;
 
 3. Create a postgres user. You can name it anything you like.
 
-postgres=# CREATE USER contributor WITH ENCRYPTED PASSWORD 'PASS';
+postgres=# create user contributor with encrypted password 'PASS';
 
 
 4. Grant priveleges to that user
 
-postgres=# grant all privileges on database <dbname> to <username> ;
-
-
-5. Switch to that db
-
-postgres=# \c yamz;
-
-
-4. Create a user/role
-
-[create user/role doc](https://www.postgresql.org/docs/current/sql-createuser.html)
-
-
+postgres=# grant all privileges on database yamz to contributor;
 
 
 5. Clone the repository

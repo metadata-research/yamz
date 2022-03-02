@@ -13,7 +13,7 @@ DB_SCHEMA = "si"
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
-    __table_args__ = {"schema": DB_SCHEMA}
+    # __table_args__ = {"schema": DB_SCHEMA}
     # TODO: sequence
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     authority = db.Column(db.String(64), nullable=False)
