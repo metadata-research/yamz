@@ -14,13 +14,14 @@ The following is an example configuration. You can substitute your own db names 
 
 1. Install postgres. Installation instructions may vary depending on the platform.
 
-[mac](https://www.postgresql.org/download/macosx/)
+[postgres downloads](https://www.postgresql.org/download/)
 
-[ubuntu] https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart
 
 2. Create a database in psql
-   
-postgres=# create database yamz with owner postgres;
+
+[create database doc](https://www.postgresql.org/docs/current/sql-createdatabase.html)
+
+postgres=# CREATE DATABASE yamz with owner postgres;
 
 
 3. Switch to that db
@@ -28,9 +29,11 @@ postgres=# create database yamz with owner postgres;
 postgres=# \c yamz;
 
 
-4. Create a user
-   
-yamz=# create user contributor with encrypted password 'PASS';
+4. Create a user/role
+
+[create user/role doc](https://www.postgresql.org/docs/current/sql-createuser.html)
+
+yamz=# CREATE USER contributor WITH ENCRYPTED PASSWORD 'PASS';
 
 
 5. Clone the repository
@@ -57,14 +60,15 @@ pip install -r requirements.txt
 10.  create a config.py file in the root directory using the example in the /stubs directory
 
 11. set the FLASK_APP variable
+
 export FLASK_APP = yamz.py
 
-12. On the first run create the db
+12.  On the first run create the db
 
 flask db init
 flask db migrate
 flask db upgrade
 
-12. Run the app
+13. Run the app
 
 flask run
