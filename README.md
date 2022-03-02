@@ -21,10 +21,21 @@ The following is an example configuration. You can substitute your own db names 
 
 [create database doc](https://www.postgresql.org/docs/current/sql-createdatabase.html)
 
-postgres=# CREATE DATABASE yamz with owner postgres;
+(the installation should create a unix user postgres so something like sudo -u postgres psql)
+
+postgres=# CREATE DATABASE yamz;
+
+3. Create a postgres user. You can name it anything you like.
+
+postgres=# CREATE USER contributor WITH ENCRYPTED PASSWORD 'PASS';
 
 
-3. Switch to that db
+4. Grant priveleges to that user
+
+postgres=# grant all privileges on database <dbname> to <username> ;
+
+
+5. Switch to that db
 
 postgres=# \c yamz;
 
@@ -33,7 +44,7 @@ postgres=# \c yamz;
 
 [create user/role doc](https://www.postgresql.org/docs/current/sql-createuser.html)
 
-yamz=# CREATE USER contributor WITH ENCRYPTED PASSWORD 'PASS';
+
 
 
 5. Clone the repository
