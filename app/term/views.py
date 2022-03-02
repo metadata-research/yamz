@@ -111,14 +111,6 @@ def create_term():
             term_string=term_string,
             definition=definition,
             examples=examples,
-            up=0,
-            down=0,
-            consensus=0,
-            term_class="vernacular",
-            u_sum=0,
-            d_sum=0,
-            t_last=datetime.datetime.now(),
-            t_stable=datetime.datetime.now(),
         )
         new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
