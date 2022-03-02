@@ -77,3 +77,5 @@ if you want to use a different port for the dev server
 export FLASK_RUN_PORT=xxxx
 
 flask run
+
+Note that when working in dev mode, the google authorized urls must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  Orcid authentication similarly will only work if the url is pre-authorized.
