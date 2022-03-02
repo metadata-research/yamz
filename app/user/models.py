@@ -24,7 +24,11 @@ class User(UserMixin, db.Model):
     super_user = db.Column(db.Boolean, default=False)
 
     # relationships
-    terms = db.relationship("Term", backref="contributor", lazy="dynamic")
+
+    terms = db.relationship(
+        "Term", back_populates="contributor", order_by="Term.term_string"
+    )
+    # terms = db.relationship("Term", backref="contributor", lazy="dynamic")
 
     tracking = db.relationship(
         "Track", backref="user", lazy="dynamic", cascade="all, delete-orphan"

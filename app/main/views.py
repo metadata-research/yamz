@@ -10,7 +10,7 @@ from app.term.forms import SearchForm
 def index():
     search_form = SearchForm()
     if current_user.is_authenticated:
-        my_terms = current_user.terms.all()
+        my_terms = current_user.terms
         tracked_terms = Track.query.filter_by(user_id=current_user.id).all()
     else:
         my_terms = []

@@ -54,6 +54,9 @@ class Term(db.Model):
     t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
     # relationships
+
+    contributor = db.relationship("User", back_populates="terms")
+
     tracks = db.relationship("Track", backref="term", lazy="dynamic")
 
     votes = db.relationship(
