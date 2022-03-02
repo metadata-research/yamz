@@ -57,7 +57,7 @@ class Term(db.Model):
 
     contributor = db.relationship("User", back_populates="terms")
 
-    tracks = db.relationship("Track", backref="term", lazy="dynamic")
+    tracks = db.relationship("Track", back_populates="term")
 
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
@@ -264,6 +264,9 @@ class Track(db.Model):
     term_id = db.Column(db.Integer, db.ForeignKey("si.terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0)
     star = db.Column(db.Boolean, default=False)
+
+    term = db.relationship("Term", back_populates="tracks")
+    user = db.relationship("User", back_populates="tracking")
 
     def save(self):
         db.session.add(self)

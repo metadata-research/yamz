@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
     # terms = db.relationship("Term", backref="contributor", lazy="dynamic")
 
     tracking = db.relationship(
-        "Track", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+        "Track", back_populates="user", cascade="all, delete-orphan"
     )
 
     def save(self):
