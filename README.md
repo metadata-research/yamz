@@ -65,9 +65,15 @@ export FLASK_APP = yamz.py
 12.  On the first run create the db
 
 flask db init
+
 flask db migrate
+
 flask db upgrade
 
 13. Run the app
+
+if you want to use a different port for the dev server
+
+export FLASK_RUN_PORT=xxxx
 
 flask run
