@@ -38,11 +38,6 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def is_tracking(self, term):
-        if term.id is None:
-            return False
-        return self.tracking.filter_by(term_id=term.id).first() is not None
-
     @property
     def is_administrator(self):
         return self.super_user
