@@ -122,7 +122,7 @@
                         {{ selected_term.contributor.last_name }}</span>
                 </div>
             </div>
-            {% if not selected_term.contributor.orcid  == "nil" or None %}
+            {% if selected_term.contributor.orcid %}
             <div class="row">
                 <div class="col">
                     ORCID: <span class="fst-normal"><i class="fab fa-orcid">

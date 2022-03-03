@@ -84,6 +84,14 @@ class Term(db.Model):
         cascade="all, delete-orphan",
     )
 
+    @property
+    def persistent_id(self):
+        return ("https://n2t.net/{}/{}{}").format(
+            self.naan,
+            self.shoulder,
+            self.ark_id,
+        )
+
     @hybrid_property
     def term_vote(self):
         # return sum(self.votes.vote)
