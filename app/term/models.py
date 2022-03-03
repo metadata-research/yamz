@@ -277,6 +277,17 @@ class Comment(db.Model):
         db.session.commit()
 
 
+class Tag(db.Model):
+    __tablename__ = "tags"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
+    tag_string = db.Column(db.Text)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+
 class Track(db.Model):
     __tablename__ = "tracking"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
