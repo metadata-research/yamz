@@ -110,6 +110,14 @@ Note that when working in dev mode, the google authorized urls must allow access
 
 ## Import legacy entries
 
-1. import users
+python admin.py addall
+
+for just users
 
 python admin.py addusers
+
+for just terms
+
+python admin.py addterms
+
+you must add users before terms to preserve the pk based relationships
