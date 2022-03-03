@@ -1,6 +1,6 @@
 import json, os, sys
 from app.user.models import User
-from app.term.models import Term
+from app.term.models import Term, Track, Vote
 from app import db
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
@@ -59,3 +59,33 @@ def add_terms():
                 print(term)
             else:
                 print("Term already exists")
+
+
+def transfer_tracking():
+    file_path = os.path.join(base_dir, "json/tracking.json")
+    with open(file_path, "r") as read_file:
+        import_tracks = json.load(read_file)
+        for track in import_tracks:
+            track_user_id = track["user_id"]
+            track_term_id = track["term_id"]
+            vote = track["vote"]
+
+            if not Track.query.filter_by(
+                term_id=track_term_id, user_id=track_user_id
+            ).first():
+                # tracking
+                if vote == track_user_id:
+                    new_track = Track(term_id=track_term_id, user_id=track_user_id)
+                    db.session.add(new_track)
+                    db.session.commit()
+                    print(new_track + "track added")
+                # voting
+                else:
+                    new_vote = Vote(
+                        term_id=track_term_id, user_id=track_user_id, vote=vote
+                    )
+                    db.session.add(new_vote)
+                    db.session.commit()
+                    print(new_vote + "vote  added")
+            else:
+                print("Track already exists")
