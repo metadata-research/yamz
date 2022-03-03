@@ -59,8 +59,3 @@ def add_terms():
                 print(term)
             else:
                 print("Term already exists")
-        # if not db.session.query(Term.ark_id).first() is None:
-        #    last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
-        #    sql = "ALTER SEQUENCE Terms_ark_id_seq RESTART WITH " + str(last_ark_id + 1)
-        #    db.session.execute(sql)
-        #    db.session.commit()

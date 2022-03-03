@@ -39,14 +39,6 @@ def transfer():
 
 
 @click.command()
-def zeroorcids():
-    users = User.query.filter(User.orcid == "nil").all()
-
-    stmt = update(users).where(users.orcid == "nil").values(orcid="")
-    db.session.execute(stmt)
-
-
-@click.command()
 def addusers():
     add_users()
 
@@ -56,12 +48,18 @@ def addterms():
     add_terms()
 
 
+@click.command()
+def addall():
+    add_users()
+    add_terms()
+
+
 cli.add_command(initdb)
 cli.add_command(dropdb)
 cli.add_command(transfer)
-cli.add_command(zeroorcids)
 cli.add_command(addusers)
 cli.add_command(addterms)
+cli.add_command(addall)
 
 if __name__ == "__main__":
     cli()
