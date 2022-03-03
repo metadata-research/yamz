@@ -20,19 +20,23 @@ The following is an example configuration. You can substitute your own db names 
 
 [create database doc](https://www.postgresql.org/docs/current/sql-createdatabase.html)
 
-(the installation should create a unix user postgres so something like sudo -u postgres psql)
+(the installation should create a unix user postgres so something like sudo -u postgres psql). On a mac psql -U postgres -c 'create database yamz'
 
 postgres=# create database yamz;
+
 
 3. Create a postgres user. You can name it anything you like.
 
 postgres=# create user contributor with encrypted password 'PASS';
+
+On a mac psql -c "create user contributor with encrypted password 'PASS'
 
 
 4. Grant priveleges to that user
 
 postgres=# grant all privileges on database yamz to contributor;
 
+mac: psql -c "grant all priveleges on database yamz to contributor"
 
 5. Clone the repository
 
