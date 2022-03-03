@@ -85,29 +85,33 @@ From the config.py file:
         or "postgresql://contributor:PASS@localhost/yamz"
     )
 
-1.  set the FLASK_APP variable
+11.  set the FLASK_APP variable
 
-export FLASK_APP=yamz.py
+    export FLASK_APP=yamz.py
 
 12.  On the first run create the db
 
-flask db init
+    flask db init
 
-flask db migrate
+    flask db migrate
 
-flask db upgrade
+(an error had come up here sometimes and the workaround for now is
+    
+    flask db revision --rev-id 81da3bfcf1d8)
+
+    flask db upgrade
 
 13. Run the app
 
 if you want to use a different port for the dev server
 
-export FLASK_RUN_PORT=xxxx
+    export FLASK_RUN_PORT=xxxx
 
 If you want to run in development mode
 
-export FLASK_ENVIRONMENT=development
+    export FLASK_ENVIRONMENT=development
 
-flask run
+    flask run
 
 Note that when working in dev mode, the google authorized urls must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  Orcid authentication similarly will only work if the url is pre-authorized.
 
@@ -115,14 +119,14 @@ Note that when working in dev mode, the google authorized urls must allow access
 
 ## Import legacy entries
 
-python admin.py addall
+    python admin.py addall
 
 for just users
 
-python admin.py addusers
+    python admin.py addusers
 
 for just terms
 
-python admin.py addterms
+    python admin.py addterms
 
 you must add users before terms to preserve the pk based relationships
