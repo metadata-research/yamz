@@ -53,6 +53,8 @@ cd yamz
 
 virtualenv env
 
+[on a mac](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3) external
+
 8. Activate
 
 source env/bin/activate
@@ -97,7 +99,7 @@ From the config.py file:
 
 (an error had come up here sometimes and the workaround for now is
     
-    flask db revision --rev-id 81da3bfcf1d8)
+    flask db revision --rev-id xxxxxxxxxx
 
     flask db upgrade
 
