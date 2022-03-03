@@ -63,6 +63,22 @@ pip install -r requirements.txt
 
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
+From the config.py file:
+    OAUTH_CREDENTIALS = {
+        "google": {
+            "id": "<your-client-id>",
+            "secret": "<your-client-secret>",
+        },
+        "orcid": {
+            "id": "<your-client-id>",
+            "secret": "<your-client-secret>",
+        },
+    }
+
+    SQLALCHEMY_DATABASE_URI = (
+        os.environ.get("SQL_ALCHEMY_DATABASE_URI")
+        or "postgresql://contributor:PASS@localhost/yamz"
+    )
 
 11. set the FLASK_APP variable
 
@@ -82,9 +98,14 @@ if you want to use a different port for the dev server
 
 export FLASK_RUN_PORT=xxxx
 
+If you want to run in development mode
+
+export FLASK_ENVIRONMENT=development
+
 flask run
 
 Note that when working in dev mode, the google authorized urls must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  Orcid authentication similarly will only work if the url is pre-authorized.
+
 
 
 ## Import legacy entries
