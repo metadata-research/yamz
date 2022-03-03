@@ -16,27 +16,30 @@ The following is an example configuration. You can substitute your own db names 
 [postgres downloads](https://www.postgresql.org/download/)
 
 
-2. Create a database in psql
+2. Edit a postgres user.
 
-[create database doc](https://www.postgresql.org/docs/current/sql-createdatabase.html)
+    sudo -u postgres psql template1
 
-(the installation should create a unix user postgres so something like sudo -u postgres psql). On a mac psql -U postgres -c 'create database yamz'
+    postgres=# alter user postgres with encrypted password 'PASS';
 
-postgres=# create database yamz;
+On a mac
+    createuser -d postgres
+    psql -c "alter user contributor with encrypted password 'PASS'"
 
 
-3. Create a postgres user. You can name it anything you like.
+3. Create a database in psql
 
-postgres=# create user contributor with encrypted password 'PASS';
+(the installation should create a unix user postgres so something like sudo -u postgres psql). On a mac psql -U postgres -c 'create database yamz with owner postgres'
 
-On a mac psql -c "create user contributor with encrypted password 'PASS'
+postgres=# create database yamz with owner postgres;
 
 
 4. Grant priveleges to that user
 
-postgres=# grant all privileges on database yamz to contributor;
+postgres=# grant all privileges on database yamz to postgres;
 
-mac: psql -c "grant all priveleges on database yamz to contributor"
+mac: psql -c "grant all priveleges on database yamz to postgres"
+
 
 5. Clone the repository
 
@@ -61,6 +64,8 @@ pip install -r requirements.txt
 
 10.  create a config.py file in the root directory using the example in the /stubs directory
 
+cp stubs/_config.py config.py
+
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
 From the config.py file:
@@ -80,9 +85,9 @@ From the config.py file:
         or "postgresql://contributor:PASS@localhost/yamz"
     )
 
-11. set the FLASK_APP variable
+1.  set the FLASK_APP variable
 
-export FLASK_APP = yamz.py
+export FLASK_APP=yamz.py
 
 12.  On the first run create the db
 
