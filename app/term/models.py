@@ -1,3 +1,4 @@
+from email.policy import default
 import enum
 
 import sqlalchemy
@@ -7,17 +8,18 @@ from app.user.models import User
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select, case, desc, Index
+from sqlalchemy import select, case, desc, Index, Computed
 
 
-DB_SCHEMA = "si"
+SHOULDER = "h"
+NAAN = "99152"
 
 
 class TSVector(sqlalchemy.types.TypeDecorator):
     impl = TSVECTOR
 
 
-class si_class(enum.Enum):
+class term_class(enum.Enum):
     vernacular = (1, "vernacular")
     canonical = (2, "canonical")
     deprecated = (3, "deprecated")
@@ -25,7 +27,6 @@ class si_class(enum.Enum):
 
 class Relationship(db.Model):
     __tablename__ = "relationships"
-    # __table_args__ = {"schema": DB_SCHEMA}
     parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     predicate = db.Column(db.String(64), default="instanceOf")
@@ -34,9 +35,10 @@ class Relationship(db.Model):
 
 class Term(db.Model):
     __tablename__ = "terms"
-    # __table_args__ = {"schema": DB_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ark_id = db.Column(db.Integer, unique=True, autoincrement=True)
+    shoulder = db.Column(db.String(64), default=SHOULDER)
+    naan = db.Column(db.String(64), default=NAAN)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     created = db.Column(db.DateTime, default=db.func.now())
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
@@ -44,18 +46,17 @@ class Term(db.Model):
     definition = db.Column(db.Text)
     examples = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
-    persistent_id = db.Column(db.Text)  # make this always computed
-    up = db.Column(db.Integer, default=0)
-    down = db.Column(db.Integer, default=0)
-    consensus = db.Column(db.Float, default=0)
-    term_class = db.Column("class", db.Enum(si_class), default=si_class.vernacular)
-    u_sum = db.Column(db.Integer, default=0)
-    d_sum = db.Column(db.Integer, default=0)
-    t_last = db.Column(db.DateTime)
-    t_stable = db.Column(db.DateTime)
+    term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
+    # up = db.Column(db.Integer, default=0)
+    # down = db.Column(db.Integer, default=0)
+    # consensus = db.Column(db.Float, default=0)
+    # u_sum = db.Column(db.Integer, default=0)
+    # d_sum = db.Column(db.Integer, default=0)
+    # t_last = db.Column(db.DateTime)
+    # t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
-    # relationships
 
+    # relationships
     contributor = db.relationship("User", back_populates="terms")
 
     tracks = db.relationship(
@@ -262,7 +263,6 @@ class Term(db.Model):
 
 class Comment(db.Model):
     __tablename__ = "comments"
-    # __table_args__ = {"schema": DB_SCHEMA}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
@@ -279,7 +279,6 @@ class Comment(db.Model):
 
 class Track(db.Model):
     __tablename__ = "tracking"
-    # __table_args__ = {"schema": DB_SCHEMA}
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0)
@@ -298,7 +297,6 @@ class Track(db.Model):
 
 class Vote(db.Model):
     __tablename__ = "votes"
-    # __table_args__ = {"schema": DB_SCHEMA}
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0, nullable=False)

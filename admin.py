@@ -6,7 +6,7 @@ from app import create_app
 from app.term.models import Term
 from app.user.models import User
 
-from app.admin.data_io import add_users
+from app.admin.data_io import *
 
 
 app = create_app()
@@ -51,11 +51,17 @@ def addusers():
     add_users()
 
 
+@click.command()
+def addterms():
+    add_terms()
+
+
 cli.add_command(initdb)
 cli.add_command(dropdb)
 cli.add_command(transfer)
 cli.add_command(zeroorcids)
 cli.add_command(addusers)
+cli.add_command(addterms)
 
 if __name__ == "__main__":
     cli()
