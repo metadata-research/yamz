@@ -55,6 +55,11 @@ virtualenv env
 
 [on a mac](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3) external
 
+    $ brew install python3
+
+    $ pip3 install virtualenv
+
+
 8. Activate
 
 source env/bin/activate
