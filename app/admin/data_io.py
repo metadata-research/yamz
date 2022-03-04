@@ -64,28 +64,16 @@ def add_terms():
 def transfer_tracking():
     file_path = os.path.join(base_dir, "json/tracking.json")
     with open(file_path, "r") as read_file:
-        import_tracks = json.load(read_file)
-        for track in import_tracks:
-            track_user_id = track["user_id"]
-            track_term_id = track["term_id"]
-            vote = track["vote"]
+        import_votes = json.load(read_file)
+        for vote in import_votes:
+            vote_user_id = vote["user_id"]
+            vote_term_id = vote["term_id"]
+            vote = vote["vote"]
 
-            if not Track.query.filter_by(
-                term_id=track_term_id, user_id=track_user_id
-            ).first():
-                # tracking
-                if vote == track_user_id:
-                    new_track = Track(term_id=track_term_id, user_id=track_user_id)
-                    db.session.add(new_track)
-                    db.session.commit()
-                    print(new_track + "track added")
-                # voting
-                else:
-                    new_vote = Vote(
-                        term_id=track_term_id, user_id=track_user_id, vote=vote
-                    )
-                    db.session.add(new_vote)
-                    db.session.commit()
-                    print(new_vote + "vote  added")
+            if vote_user_id == vote or vote == 0:
+                print("This is a track, not a vote.")
             else:
-                print("Track already exists")
+                new_vote = Vote(term_id=vote_term_id, user_id=vote_user_id, vote=vote)
+                db.session.add(new_vote)
+                db.session.commit()
+                print(str(new_vote.user_id) + "vote  added")

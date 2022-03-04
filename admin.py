@@ -47,12 +47,18 @@ def addall():
     add_terms()
 
 
+@click.command()
+def transfertracking():
+    transfer_tracking()
+
+
 cli.add_command(initdb)
 cli.add_command(dropdb)
 cli.add_command(transfer)
 cli.add_command(addusers)
 cli.add_command(addterms)
 cli.add_command(addall)
+cli.add_command(transfertracking)
 
 if __name__ == "__main__":
     cli()
