@@ -53,7 +53,7 @@ def format_score(score):
     pass
 
 
-@term.route("/ark/<concept_id>")  # change concelpt id to ark
+@term.route("/ark/<concept_id>")
 def display_term(concept_id):
     form = EmptyForm()
     comment_form = CommentForm()

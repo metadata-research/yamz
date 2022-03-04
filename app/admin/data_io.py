@@ -7,7 +7,7 @@ base_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 def add_users():
-    # adds users with enotify as fals (default)
+    # adds users with enotify as false (default)
     file_path = os.path.join(base_dir, "json/users.json")
     with open(file_path, "r") as read_file:
         import_users = json.load(read_file)

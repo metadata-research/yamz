@@ -1,20 +1,13 @@
 import click
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import update
 
 from app import create_app
-from app.term.models import Term
-from app.user.models import User
-
 from app.admin.data_io import *
-
 
 app = create_app()
 app.app_context().push()
 
 db = SQLAlchemy(app)
-
-create_app()
 
 
 @click.group()
