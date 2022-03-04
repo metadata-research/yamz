@@ -29,3 +29,9 @@ class SearchForm(FlaskForm):
         if "csrf_enabled" not in kwargs:
             kwargs["csrf_enabled"] = False
         super(SearchForm, self).__init__(*args, **kwargs)
+
+
+class TagForm(FlaskForm):
+    tag_name = StringField("Name", validators=[DataRequired()], default="community")
+    tag_value = StringField("Value", validators=[DataRequired()])
+    submit = SubmitField("Save")

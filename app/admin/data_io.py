@@ -3,6 +3,7 @@ from app.user.models import User
 from app.term.models import Term, Track, Vote
 from app import db
 
+
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -61,7 +62,7 @@ def add_terms():
                 print("Term already exists")
 
 
-def transfer_tracking():
+def transfer_votes():
     file_path = os.path.join(base_dir, "json/tracking.json")
     with open(file_path, "r") as read_file:
         import_votes = json.load(read_file)
@@ -77,3 +78,26 @@ def transfer_tracking():
                 db.session.add(new_vote)
                 db.session.commit()
                 print(str(new_vote.user_id) + "vote  added")
+
+
+def transfer_tracking():
+    file_path = os.path.join(base_dir, "json/tracking.json")
+    with open(file_path, "r") as read_file:
+        import_tracks = json.load(read_file)
+        for track in import_tracks:
+            track_user_id = track["user_id"]
+            track_term_id = track["term_id"]
+            track = track["vote"]
+
+            if track_user_id == track:
+                new_track = Track(term_id=track_term_id, user_id=track_user_id)
+                db.session.add(new_track)
+                db.session.commit()
+                print(str(new_track.user_id) + "track  added")
+
+
+def transfer_tags():
+    terms = Term.query.all()
+    for term in terms:
+        term_definition = term.definition
+        print(term_definition)

@@ -4,7 +4,7 @@ from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
-from flask import current_app, g, redirect, render_template, request, url_for
+from flask import current_app, g, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
 from sqlalchemy import desc
 
@@ -214,6 +214,31 @@ def list_recent():
     return render_template(
         "term/top_terms.jinja", term_list=term_list, sort_type="recent"
     )
+
+
+@term.route("/tag/create", methods=["GET", "POST"])
+def create_tag():
+    form = TagForm()
+    if form.validate_on_submit():
+        tag_name = form.data["tag_name"]
+        tag_value = form.data["tag_value"]
+
+        if Tag.query.filter_by(name=tag_name, value=tag_value).first() is None:
+            new_tag = Tag(name=tag_name, value=tag_value)
+            new_tag.save()
+            return redirect(url_for("term.list_tags"))
+        else:
+            # flash("Tag already exists")
+            return redirect(url_for("term.create_tag"))
+
+    else:
+        return render_template("tag/create_tag.jinja", form=form)
+
+
+@term.route("tag/list")
+def list_tags():
+    tags = Tag.query.all()
+    return render_template("tag/list_tags.jinja", tags=tags)
 
 
 @term.route("track/<concept_id>", methods=["POST"])

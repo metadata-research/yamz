@@ -1,0 +1,9 @@
+{% extends './base.jinja' %}
+
+{% block content %}
+
+{% for tag in  tags%}
+name :{{tag.name}} value: {{tag.value}}
+{% endfor %}
+
+{% endblock content %}

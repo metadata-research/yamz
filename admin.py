@@ -52,6 +52,16 @@ def transfertracking():
     transfer_tracking()
 
 
+@click.command()
+def transfervotes():
+    transfer_votes
+
+
+@click.command()
+def transfertags():
+    transfer_tags()
+
+
 cli.add_command(initdb)
 cli.add_command(dropdb)
 cli.add_command(transfer)
@@ -59,6 +69,8 @@ cli.add_command(addusers)
 cli.add_command(addterms)
 cli.add_command(addall)
 cli.add_command(transfertracking)
+cli.add_command(transfervotes)
+cli.add_command(transfertags)
 
 if __name__ == "__main__":
     cli()

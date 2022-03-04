@@ -289,7 +289,8 @@ class Tag(db.Model):
     __tablename__ = "tags"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
-    tag_string = db.Column(db.Text)
+    name = db.Column(db.Text)
+    value = db.Column(db.Text)
 
     def save(self):
         db.session.add(self)
@@ -300,8 +301,6 @@ class Track(db.Model):
     __tablename__ = "tracking"
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
-    vote = db.Column(db.Integer, default=0)
-    star = db.Column(db.Boolean, default=False)
 
     term = db.relationship("Term", back_populates="tracks", order_by="Term.term_string")
     user = db.relationship("User", back_populates="tracking")
