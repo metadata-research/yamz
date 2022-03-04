@@ -1,6 +1,6 @@
 import json, os, sys
 from app.user.models import User
-from app.term.models import Term, Track, Vote
+from app.term.models import Term, Track, Vote, Tag
 from app import db
 
 
@@ -96,8 +96,23 @@ def transfer_tracking():
                 print(str(new_track.user_id) + "track  added")
 
 
+import re
+
+
+ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+ixuniq = "xq"
+ixqlen = len(ixuniq)
+tagstart = "#{g: "  # note: final space is important
+
+
 def transfer_tags():
-    terms = Term.query.all()
+    terms = Term.query.filter(Term.term_string.startswith("#"))
+    count = 1
     for term in terms:
-        term_definition = term.definition
-        print(term_definition)
+        start = term.term_string.find(ixuniq) + ixqlen
+        end = term.term_string.rindex("|")
+        term = term.term_string
+        term = term[start:end]
+        tag = Tag(name="community", value=term)
+        tag.save()
+        print(term)

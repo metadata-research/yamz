@@ -288,9 +288,12 @@ class Comment(db.Model):
 class Tag(db.Model):
     __tablename__ = "tags"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
+    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
     name = db.Column(db.Text)
     value = db.Column(db.Text)
+    # ref = db.Column(db.Text, unique=True)
 
     def save(self):
         db.session.add(self)
