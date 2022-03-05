@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
 from app.admin.data_io import *
+from app.admin.user import *
 
 app = create_app()
 app.app_context().push()
@@ -13,22 +14,6 @@ db = SQLAlchemy(app)
 @click.group()
 def cli():
     pass
-
-
-@click.command()
-def initdb():
-    db.create_all()
-    click.echo("Initialized the database")
-
-
-@click.command()
-def dropdb():
-    click.echo("Dropped the database")
-
-
-@click.command()
-def transfer():
-    click.echo("Transfer votes")
 
 
 @click.command()
@@ -62,15 +47,19 @@ def transfertags():
     transfer_tags()
 
 
-cli.add_command(initdb)
-cli.add_command(dropdb)
-cli.add_command(transfer)
+@click.command()
+@click.argument("email")
+def setsuperuser(email):
+    set_superuser(email)
+
+
 cli.add_command(addusers)
 cli.add_command(addterms)
 cli.add_command(addall)
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
 cli.add_command(transfertags)
+cli.add_command(setsuperuser)
 
 if __name__ == "__main__":
     cli()

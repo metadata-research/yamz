@@ -4,19 +4,25 @@
 
 
 <div class="card">
-    <div class="card-body" style="width: 22rem;">
+    <div class="card-body" style="width: 40rem;">
         <ul class="list-group">
             <h5 class="card-title">Tag list</h5>
             {% for tag in  tags%}
             <li class="list-group-item">
-                {{ tag.value }}({{ tag.category }})
-                {% if current_user.is_administrator %}
-                <br>
-                <small>[<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}">edit</a>]
-                    [<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}"
-                        onclick="return confirm('Are you sure?')">delete</a>]</small>
+                <p>
+                    {{ tag.value }}({{ tag.category }})
+                </p>
+                <p>
+                    {{ tag.description }}
 
-                {% endif %}
+                    {% if current_user.is_administrator %}
+                    <br>
+                    <small>[<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}">edit</a>]
+                        [<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}"
+                            onclick="return confirm('Are you sure?')">delete</a>]</small>
+
+                    {% endif %}
+                </p>
             </li>
             {% endfor %}
         </ul>

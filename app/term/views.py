@@ -218,33 +218,36 @@ def list_recent():
 
 @term.route("/tag/create", methods=["GET", "POST"])
 def create_tag():
-    form = TagForm()
-    if form.validate_on_submit():
-        tag_name = form.data["tag_name"]
-        tag_value = form.data["tag_value"]
+    tag_form = TagForm()
+    if tag_form.validate_on_submit():
+        tag_category = tag_form.category.data
+        tag_value = tag_form.value.data
+        tag_description = tag_form.description.data
 
-        if Tag.query.filter_by(name=tag_name, value=tag_value).first() is None:
-            new_tag = Tag(name=tag_name, value=tag_value)
+        tag = Tag.query.filter_by(name=tag_category, value=tag_value).first()
+        if tag is None:
+            new_tag = Tag(
+                name=tag_category, value=tag_value, description=tag_description
+            )
             new_tag.save()
             return redirect(url_for("term.list_tags"))
         else:
             flash("Tag already exists")
-            return redirect(url_for("term.create_tag"))
+            return redirect(url_for("term.edit_tag, tag_id=tag.id"))
 
     else:
-        return render_template("tag/create_tag.jinja", form=form)
+        return render_template("tag/create_tag.jinja", form=tag_form)
 
 
 @term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
 @login_required
 def edit_tag(tag_id):
-    form = TagForm()
-    tag = Tag.query.get(tag_id)
-    if form.validate_on_submit():
-        tag_name = form.data["tag_name"]
-        tag_value = form.data["tag_value"]
-        tag.category = tag_name
-        tag.value = tag_value
+    tag_form = TagForm()
+    tag = Tag.query.get_or_404(tag_id)
+    if tag_form.validate_on_submit():
+        tag.category = tag_form.category.data
+        tag.value = tag_form.value.data
+        tag.description = tag_form.description.data
         tag.save()
         flash(
             'Tag updated.  <small>[<a href="'
@@ -252,9 +255,10 @@ def edit_tag(tag_id):
             + '">Return to list]</a></small>'
         )
         return redirect(url_for("term.edit_tag", tag_id=tag_id))
-    form.tag_name.data = tag.category
-    form.tag_value.data = tag.value
-    return render_template("tag/edit_tag.jinja", form=form)
+    tag_form.category.data = tag.category
+    tag_form.value.data = tag.value
+    tag_form.description.data = tag.description
+    return render_template("tag/edit_tag.jinja", form=tag_form)
 
 
 @term.route("/tag/delete/<int:tag_id>", methods=["GET", "POST"])

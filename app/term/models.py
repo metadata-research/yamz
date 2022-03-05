@@ -1,18 +1,20 @@
-from email.policy import default
 import enum
+import re
+from email.policy import default
 
 import sqlalchemy
-
-from app.user.models import User
-
 from app import db
+from app.user.models import User
+from sqlalchemy import Computed, Index, case, desc, select
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select, case, desc, Index, Computed
-
 
 SHOULDER = "h"
 NAAN = "99152"
+
+
+def normalize_tag(reference):
+    return re.sub("[^\w]+", "-", reference).lower()
 
 
 class TSVector(sqlalchemy.types.TypeDecorator):
@@ -291,9 +293,10 @@ class Tag(db.Model):
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     timestamp = db.Column(db.DateTime, default=db.func.now())
-    category = db.Column(db.Text)
+    category = db.Column(db.Text, default="user")
     value = db.Column(db.Text)
-    # ref = db.Column(db.Text, unique=True)
+    description = db.Column(db.Text)
+    # reference = db.Column(db.Text, unique=True)
 
     def save(self):
         db.session.add(self)
@@ -302,6 +305,13 @@ class Tag(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+    #    def __init__(self, *args, **kwargs):
+    #        super(Tag, self).__init__(*args, **kwargs)
+    #        self.reference = normalize_tag(self.name + "#" + self.value)
+
+    def __repr__(self):
+        return "<Tag %s %s>" % self.category, self.value
 
 
 class Track(db.Model):
