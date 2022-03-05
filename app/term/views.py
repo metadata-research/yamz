@@ -246,10 +246,23 @@ def edit_tag(tag_id):
         tag.category = tag_name
         tag.value = tag_value
         tag.save()
-        return redirect(url_for("term.list_tags"))
+        flash(
+            'Tag updated.  <small>[<a href="'
+            + url_for("term.list_tags")
+            + '">Return to list]</a></small>'
+        )
+        return redirect(url_for("term.edit_tag", tag_id=tag_id))
     form.tag_name.data = tag.category
     form.tag_value.data = tag.value
     return render_template("tag/edit_tag.jinja", form=form)
+
+
+@term.route("/tag/delete/<int:tag_id>", methods=["GET", "POST"])
+@login_required
+def delete_tag(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    tag.delete()
+    return redirect(url_for("term.list_tags"))
 
 
 @term.route("tag/list")

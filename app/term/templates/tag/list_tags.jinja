@@ -12,7 +12,9 @@
                 {{ tag.value }}({{ tag.category }})
                 {% if current_user.is_administrator %}
                 <br>
-                <small><a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}">[edit]</a> [delete]</small>
+                <small>[<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}">edit</a>]
+                    [<a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}"
+                        onclick="return confirm('Are you sure?')">delete</a>]</small>
 
                 {% endif %}
             </li>
