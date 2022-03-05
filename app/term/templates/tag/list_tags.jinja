@@ -2,8 +2,12 @@
 
 {% block content %}
 
-{% for tag in  tags%}
-name :{{tag.name}} value: {{tag.value}}
-{% endfor %}
-
+<ul class="list-group">
+    {% for tag in  tags%}
+    <li class="list-group-item">
+        <a href="{{ url_for('tag', tag=tag.name) }}">{{ tag.name }}</a>
+        name :{{tag.name}} value: {{tag.value}}
+    </li>
+    {% endfor %}
+</ul>
 {% endblock content %}

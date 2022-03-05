@@ -235,6 +235,24 @@ def create_tag():
         return render_template("tag/create_tag.jinja", form=form)
 
 
+@term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
+def edit_tag():
+    form = TagForm()
+    if form.validate_on_submit():
+        tag_name = form.data["tag_name"]
+        tag_value = form.data["tag_value"]
+        tag_id = form.data["tag_id"]
+        tag = Tag.query.get(tag_id)
+        tag.name = tag_name
+        tag.value = tag_value
+        tag.save()
+        return redirect(url_for("term.list_tags"))
+    return render_template("tag/edit_tag.jinja", form=form)
+
+    else:
+        return render_template("tag/create_tag.jinja", form=form)
+
+
 @term.route("tag/list")
 def list_tags():
     tags = Tag.query.all()
