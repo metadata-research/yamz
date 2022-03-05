@@ -95,6 +95,7 @@
                     {{ selected_term.definition | convert_line_breaks | format_tags }}
                 </div>
             </div>
+            {% if selected_term.examples %}
             <div class="row mt-4">
                 <div class="col-md-1 fst-italic">
                     Examples:
@@ -103,6 +104,8 @@
                     {{ selected_term.examples | convert_line_breaks | format_tags }}
                 </div>
             </div>
+            {% endif %}
+            {% include 'tag/_term_tags.jinja' %}
         </div>
 
         <div class="col-md-3 fst-italic">
