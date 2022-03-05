@@ -3,6 +3,7 @@ from flask_login import current_user, login_required
 from app.term.models import Term
 
 from app.admin import admin_blueprint as admin
+from app.admin.term import *
 
 
 @admin.route("/console")
@@ -12,5 +13,5 @@ def index():
 
 @admin.route("/split")
 def split():
-    terms = Term.query.filter(Term.definition.contains("#{g: xqGCW | h1619}"))
+    terms = findGCW()  # find all terms with the tag #{g: xqGCW | h1619}
     return render_template("admin/split_terms.jinja", terms=terms)

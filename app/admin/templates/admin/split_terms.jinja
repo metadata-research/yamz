@@ -1,7 +1,12 @@
 {% for term in terms  %}
 <p>
     {{ term.term_string }}<br>
-    {{ term.definition }}
+
+    <hr>
+    tags<br>
+    {% for tag in term.tags %}
+    {{ tag.value }}<br>
+    {% endfor %}
     <hr>
 </p>
 {% endfor %}

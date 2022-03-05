@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from app import create_app
 from app.admin.data_io import *
 from app.admin.user import *
+from app.admin.term import *
 
 app = create_app()
 app.app_context().push()
@@ -53,6 +54,11 @@ def setsuperuser(email):
     set_superuser(email)
 
 
+@click.command()
+def taggcw():
+    tagGCW()
+
+
 cli.add_command(addusers)
 cli.add_command(addterms)
 cli.add_command(addall)
@@ -60,6 +66,8 @@ cli.add_command(transfertracking)
 cli.add_command(transfervotes)
 cli.add_command(transfertags)
 cli.add_command(setsuperuser)
+
+cli.add_command(taggcw)
 
 if __name__ == "__main__":
     cli()

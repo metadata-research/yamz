@@ -1,13 +1,16 @@
+from email.policy import default
 import enum
 import re
-from email.policy import default
 
 import sqlalchemy
-from app import db
+
 from app.user.models import User
-from sqlalchemy import Computed, Index, case, desc, select
+
+from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import select, case, desc, Index, Computed
+
 
 SHOULDER = "h"
 NAAN = "99152"
@@ -29,10 +32,20 @@ class term_class(enum.Enum):
 
 class Relationship(db.Model):
     __tablename__ = "relationships"
-    parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
-    child_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
+    child_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
     predicate = db.Column(db.String(64), default="instanceOf")
     timestamp = db.Column(db.DateTime, default=db.func.now())
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def __repr__(self):
+        return "<Relationship {} {} {}>".format(
+            self.parent_id, self.predicate, self.child_id
+        )
 
 
 class Term(db.Model):
@@ -49,16 +62,12 @@ class Term(db.Model):
     examples = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
-    # up = db.Column(db.Integer, default=0)
-    # down = db.Column(db.Integer, default=0)
-    # consensus = db.Column(db.Float, default=0)
-    # u_sum = db.Column(db.Integer, default=0)
-    # d_sum = db.Column(db.Integer, default=0)
-    # t_last = db.Column(db.DateTime)
-    # t_stable = db.Column(db.DateTime)
     tsv = db.Column(TSVECTOR)
 
     # relationships
+
+    tags = db.relationship("Tag", secondary="term_tags", backref="term")
+
     contributor = db.relationship("User", back_populates="terms")
 
     tracks = db.relationship(
@@ -70,21 +79,6 @@ class Term(db.Model):
     )
 
     comments = db.relationship("Comment", backref="term", lazy="dynamic")
-
-    children = db.relationship(
-        "Relationship",
-        foreign_keys=[Relationship.parent_id],
-        backref=db.backref("parent", lazy="joined"),
-        lazy="dynamic",
-        cascade="all, delete-orphan",
-    )
-    parents = db.relationship(
-        "Relationship",
-        foreign_keys=[Relationship.child_id],
-        backref=db.backref("child", lazy="joined"),
-        lazy="dynamic",
-        cascade="all, delete-orphan",
-    )
 
     @property
     def persistent_id(self):
@@ -290,7 +284,6 @@ class Comment(db.Model):
 class Tag(db.Model):
     __tablename__ = "tags"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     timestamp = db.Column(db.DateTime, default=db.func.now())
     category = db.Column(db.Text, default="user")
@@ -311,7 +304,7 @@ class Tag(db.Model):
     #        self.reference = normalize_tag(self.name + "#" + self.value)
 
     def __repr__(self):
-        return "<Tag %s %s>" % self.category, self.value
+        return "<Tag {} {}>".format(self.category, self.value)
 
 
 class Track(db.Model):
@@ -339,3 +332,11 @@ class Vote(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+
+tag_table = db.Table(
+    "term_tags",
+    db.Model.metadata,
+    db.Column("tag_id", db.Integer, db.ForeignKey("tags.id")),
+    db.Column("term_id", db.Integer, db.ForeignKey("terms.id")),
+)
