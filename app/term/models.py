@@ -291,7 +291,7 @@ class Tag(db.Model):
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     timestamp = db.Column(db.DateTime, default=db.func.now())
-    name = db.Column(db.Text)
+    category = db.Column(db.Text)
     value = db.Column(db.Text)
     # ref = db.Column(db.Text, unique=True)
 

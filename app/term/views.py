@@ -228,7 +228,7 @@ def create_tag():
             new_tag.save()
             return redirect(url_for("term.list_tags"))
         else:
-            # flash("Tag already exists")
+            flash("Tag already exists")
             return redirect(url_for("term.create_tag"))
 
     else:
@@ -236,26 +236,25 @@ def create_tag():
 
 
 @term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
-def edit_tag():
+@login_required
+def edit_tag(tag_id):
     form = TagForm()
+    tag = Tag.query.get(tag_id)
     if form.validate_on_submit():
         tag_name = form.data["tag_name"]
         tag_value = form.data["tag_value"]
-        tag_id = form.data["tag_id"]
-        tag = Tag.query.get(tag_id)
-        tag.name = tag_name
+        tag.category = tag_name
         tag.value = tag_value
         tag.save()
         return redirect(url_for("term.list_tags"))
+    form.tag_name.data = tag.category
+    form.tag_value.data = tag.value
     return render_template("tag/edit_tag.jinja", form=form)
-
-    else:
-        return render_template("tag/create_tag.jinja", form=form)
 
 
 @term.route("tag/list")
 def list_tags():
-    tags = Tag.query.all()
+    tags = Tag.query.order_by(Tag.value)
     return render_template("tag/list_tags.jinja", tags=tags)
 
 
@@ -267,6 +266,7 @@ def track_term(concept_id):
         tracked_term = Term.query.filter_by(concept_id=concept_id).first()
         tracked_term.track(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
+    return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
 @term.route("untrack/<concept_id>", methods=["POST"])

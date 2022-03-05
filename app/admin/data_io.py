@@ -110,9 +110,10 @@ def transfer_tags():
     count = 1
     for term in terms:
         start = term.term_string.find(ixuniq) + ixqlen
-        end = term.term_string.rindex("|")
+        end = term.term_string.rindex("|") - 1
         term = term.term_string
         term = term[start:end]
         tag = Tag(name="community", value=term)
         tag.save()
+
         print(term)

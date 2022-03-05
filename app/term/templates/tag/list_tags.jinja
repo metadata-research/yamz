@@ -2,12 +2,23 @@
 
 {% block content %}
 
-<ul class="list-group">
-    {% for tag in  tags%}
-    <li class="list-group-item">
-        <a href="{{ url_for('tag', tag=tag.name) }}">{{ tag.name }}</a>
-        name :{{tag.name}} value: {{tag.value}}
-    </li>
-    {% endfor %}
-</ul>
+
+<div class="card" style="width: 22rem;">
+    <div class="card-body" style="width: 22rem;">
+        <ul class="list-group">
+            <h5 class="card-title">Tag list</h5>
+            {% for tag in  tags%}
+            <li class="list-group-item">
+                {{ tag.value }}({{ tag.category }})
+                {% if current_user.is_administrator %}
+                <br>
+                <small><a href="{{ url_for('term.edit_tag', tag_id=tag.id) }}">[edit]</a> [delete]</small>
+
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
 {% endblock content %}
