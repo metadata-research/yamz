@@ -69,16 +69,27 @@ def splitterms():
     splitTerms()
 
 
-cli.add_command(addusers)
-cli.add_command(addterms)
 cli.add_command(addall)
+
+
+# first do:
+# flask db init
+# flask db migrate -m "initial migration"
+
+cli.add_command(addusers)  # 1
+cli.add_command(setsuperuser)  # 2
+cli.add_command(addterms)  # 3
+cli.add_command(transfertags)  # 4
+
+
+cli.add_command(printinner)  # test the split terms function for GCW terms
+cli.add_command(splitterms)  # actually split the terms
+
+# not used
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
-cli.add_command(transfertags)
-cli.add_command(setsuperuser)
-cli.add_command(printinner)
 cli.add_command(taggcw)
-cli.add_command(splitterms)
+
 
 if __name__ == "__main__":
     cli()

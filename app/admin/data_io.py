@@ -2,7 +2,7 @@ import json, os, sys
 from app.user.models import User
 from app.term.models import Term, Track, Vote, Tag
 from app import db
-
+from app.admin.user import set_superuser
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -29,12 +29,16 @@ def add_users():
                 print(user)
             else:
                 print("User already exists")
-        if not db.session.query(User.id).first() is None:
-            last_user_id = db.session.query(db.func.max(User.id)).scalar()
-            sql = "ALTER SEQUENCE Users_id_seq RESTART WITH " + str(last_user_id + 1)
-            db.session.execute(sql)
-            db.session.commit()
-            print("\nnext id:" + str(last_user_id + 1))
+    if not db.session.query(User.id).first() is None:
+        last_user_id = db.session.query(db.func.max(User.id)).scalar()
+        sql = "ALTER SEQUENCE Users_id_seq RESTART WITH " + str(last_user_id + 1)
+        db.session.execute(sql)
+        db.session.commit()
+        print("\nnext id:" + str(last_user_id + 1))
+        if not User.query.filter_by(email="christopher.b.rauch@gmail.com").first():
+            set_superuser("christopher.b.rauch@gmail.com")
+        else:
+            print("can't find christopher.b.rauch@gmail.com")
 
 
 def add_terms():
@@ -60,6 +64,12 @@ def add_terms():
                 print(term)
             else:
                 print("Term already exists")
+    if not db.session.query(Term.id).first() is None:
+        last_term_id = db.session.query(db.func.max(Term.id)).scalar()
+        sql = "ALTER SEQUENCE Terms_id_seq RESTART WITH " + str(last_term_id + 1)
+        db.session.execute(sql)
+        db.session.commit()
+        print("\nnext id:" + str(last_term_id + 1))
 
 
 def transfer_votes():
@@ -112,12 +122,11 @@ def transfer_tags():
         start = term.term_string.find(ixuniq) + ixqlen
         end = term.term_string.rindex("|") - 1
         definition = term.definition
-        term = term.term_string
-        term = term[start:end]
-        if not Tag.query.filter_by(term_id=term.id).first():
-            tag = Tag(category="community", value=term, description=definition)
+        new_tag = term.term_string
+        new_tag = new_tag[start:end]
+        if not Tag.query.filter_by(category="community", value=new_tag).first():
+            tag = Tag(category="community", value=new_tag, description=definition)
             tag.save()
+            print("tag for " + tag.value + " added")
         else:
             print("Tag already exists")
-
-        print(term)

@@ -59,12 +59,14 @@ def display_term(concept_id):
     comment_form = CommentForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
     comments = selected_term.comments.order_by(Comment.modified.desc()) or None
+    children = selected_term.children.order_by(Term.modified.desc()) or None
     return render_template(
         "term/display_term.jinja",
         selected_term=selected_term,
         form=form,
         comments=comments,
         comment_form=comment_form,
+        children=children,
     )
 
 

@@ -22,6 +22,13 @@ def tagGCW():
     print(terms.count())
 
 
+###############################add other tag start here
+g_regex = re.compile("#\{\s*(([g])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+ixuniq = "xq"
+ixqlen = len(ixuniq)
+tagstart = "#{g: "  # final space is important
+
+
 def printInner():
     terms = findGCW()
     start = 0
@@ -36,19 +43,14 @@ def printInner():
                 excerpt = definition[start:end]
                 excerpt = excerpt.replace("\n", "")
                 excerpt = excerpt.replace("\n\n", "")
-                print(term.term_string + "parent id " + str(term.id) + ":")
-                # print(tag)
+                # excerpt = excerpt[: excerpt.find(tag) - 1]
+                print(term.term_string + " parent id " + str(term.id) + ":")
+                print(tag)
                 if excerpt != "":
                     print(excerpt)
                     print("------------------------")
                 start = end
         start = 0
-
-
-g_regex = re.compile("#\{\s*(([g])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
-ixuniq = "xq"
-ixqlen = len(ixuniq)
-tagstart = "#{g: "  # note: final space is important
 
 
 def splitTerms():
@@ -84,5 +86,11 @@ def splitTerms():
                     concept_id=concept_id,
                 )
                 child_term.save()
+                print(child_term.term_string + " added")
+                db.session.refresh(child_term)
+                gcwTag = Tag.query.filter_by(value="GCW").first()
+                child_term.tags.append(gcwTag)
+                print("Added GCW tag")
             term.add_child_relationship(child_term, "extractedFrom")
+            db.session.commit()
         start = 0
