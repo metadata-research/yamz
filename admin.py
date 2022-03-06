@@ -59,6 +59,11 @@ def taggcw():
     tagGCW()
 
 
+@click.command()
+def printinner():
+    printInner()
+
+
 cli.add_command(addusers)
 cli.add_command(addterms)
 cli.add_command(addall)
@@ -66,6 +71,7 @@ cli.add_command(transfertracking)
 cli.add_command(transfervotes)
 cli.add_command(transfertags)
 cli.add_command(setsuperuser)
+cli.add_command(printinner)
 
 cli.add_command(taggcw)
 

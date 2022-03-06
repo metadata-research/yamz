@@ -65,20 +65,32 @@ class Term(db.Model):
     tsv = db.Column(TSVECTOR)
 
     # relationships
+    contributor = db.relationship("User", back_populates="terms")
 
     tags = db.relationship("Tag", secondary="term_tags", backref="term")
-
-    contributor = db.relationship("User", back_populates="terms")
 
     tracks = db.relationship(
         "Track", back_populates="term", cascade="all, delete-orphan", uselist=False
     )
-
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
     )
 
     comments = db.relationship("Comment", backref="term", lazy="dynamic")
+
+    children = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.parent_id],
+        backref=db.backref("parent", lazy="joined"),
+        lazy="dynamic",
+    )
+    parents = db.relationship(
+        "Relationship",
+        foreign_keys=[Relationship.child_id],
+        backref=db.backref("child", lazy="joined"),
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+    )
 
     @property
     def persistent_id(self):
