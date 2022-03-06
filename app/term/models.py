@@ -92,6 +92,10 @@ class Term(db.Model):
         cascade="all, delete-orphan",
     )
 
+    def add_child_relationship(self, child, predicate):
+        child = Relationship(parent_id=self.id, child_id=child.id, predicate=predicate)
+        child.save()
+
     @property
     def persistent_id(self):
         return ("https://n2t.net/{}/{}{}").format(

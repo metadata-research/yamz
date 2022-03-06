@@ -114,7 +114,10 @@ def transfer_tags():
         definition = term.definition
         term = term.term_string
         term = term[start:end]
-        tag = Tag(category="community", value=term, description=definition)
-        tag.save()
+        if not Tag.query.filter_by(term_id=term.id).first():
+            tag = Tag(category="community", value=term, description=definition)
+            tag.save()
+        else:
+            print("Tag already exists")
 
         print(term)

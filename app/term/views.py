@@ -84,6 +84,7 @@ def show_alternate_terms(term_string):
         selected_terms=selected_terms,
         form=form,
         alternatives_for_string=term_string,
+        headline="Alternate Definitions " + "for " + term_string,
     )
 
 
@@ -92,28 +93,28 @@ def show_alternate_terms(term_string):
 def create_term():
     form = CreateTermForm()
     if form.validate_on_submit():
-        shoulder = current_app.config["SHOULDER"]
         if db.session.query(Term.ark_id).first() is None:
             last_ark_id = 0
         else:
             last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
         ark_id = int(last_ark_id) + 1
+        shoulder = current_app.config["SHOULDER"]
+        naan = current_app.config["NAAN"]
         term_string = form.term_string.data.strip()
         owner_id = current_user.id
         definition = form.definition.data
         examples = form.examples.data
         concept_id = shoulder + str(ark_id)
-        persistent_id = "https://n2t.net/ark:/99152/" + concept_id
-        # this doesn't need to be 3 columns
 
         new_term = Term(
             ark_id=ark_id,
-            concept_id=concept_id,
-            persistent_id=persistent_id,
+            shoulder=shoulder,
+            naan=naan,
             owner_id=owner_id,
             term_string=term_string,
             definition=definition,
             examples=examples,
+            concept_id=concept_id,
         )
         new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))

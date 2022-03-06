@@ -5,16 +5,16 @@
 {% endif %}
 
 <div class="container">
+    {% if not "alternate_terms" in request.endpoint %}
     <div class="row bg-light p-2 mb-1">
         <div class="col">
-            {% if not "alternate_terms" in request.endpoint %}
             Alternative definitions (<a
                 href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
-            {% endif %}
             class:
             <mark>{{ selected_term.term_class.value[1] }}</mark> ({{ selected_term.consensus }})
         </div>
     </div>
+    {% endif %}
     <div class="row">
         <div class="col-md-1">
             <div class="row">
