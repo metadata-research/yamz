@@ -166,7 +166,7 @@ def search():
 
 @term.route("/list")
 def list_terms():
-    return redirect(url_for("term.list_alphabetical"))
+    return redirect(url_for("term.list_top_terms_alphabetical"))
 
 
 @term.route("/list/alphabetical")
@@ -198,12 +198,12 @@ def list_alphabetical():
 
 # @term.route("/list/alphabetical/<letter>")
 @term.route("/list/alphabetical/top")
-def list_top_terms():
+def list_top_terms_alphabetical():
     distinct_terms = (
         Term.query.with_entities(Term.term_string).distinct().order_by(Term.term_string)
     )
 
-    return render_template("term/test.jinja", term_list=distinct_terms)
+    return render_template("term/list_top_terms.jinja", term_list=distinct_terms)
 
 
 @term.route("/list/score")
