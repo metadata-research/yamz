@@ -1,8 +1,8 @@
     <div class="container px-4">
-        <div class="row">
+        <div class="row p-4">
             <div class="col">
                 {% for tag in selected_term.tags %}
-                {{ tag.value }}<br>
+                <a href="#" role="button" class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
                 {% endfor %}
             </div>
         </div>

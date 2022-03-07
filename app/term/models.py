@@ -30,6 +30,12 @@ class term_class(enum.Enum):
     deprecated = (3, "deprecated")
 
 
+class status(enum.Enum):
+    archived = (1, "archived")
+    published = (2, "published")
+    draft = (3, "draft")
+
+
 class Relationship(db.Model):
     __tablename__ = "relationships"
     id = db.Column(db.Integer, primary_key=True)
@@ -61,6 +67,7 @@ class Term(db.Model):
     definition = db.Column(db.Text)
     examples = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
+    status = db.Column("status", db.Enum(status), default=status.published)
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
     tsv = db.Column(TSVECTOR)
 

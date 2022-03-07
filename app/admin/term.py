@@ -1,4 +1,4 @@
-import re
+import re, enum
 from flask import render_template
 from app.term.models import Relationship, Term, Tag
 from app import db
@@ -37,6 +37,8 @@ def printInner():
         definition = term.definition
         term_g = g_regex.findall(term.definition)
         for tag in term_g:
+            new_tag = tag[2]
+            new_tag = new_tag[2:]
             tag = tagstart + tag[2] + tag[3] + "}"
             if not tag == "#{g: xqGCW | h1619}":
                 end = definition.find(tag) + len(tag)
@@ -46,6 +48,7 @@ def printInner():
                 # excerpt = excerpt[: excerpt.find(tag) - 1]
                 print(term.term_string + " parent id " + str(term.id) + ":")
                 print(tag)
+                print(new_tag)
                 if excerpt != "":
                     print(excerpt)
                     print("------------------------")
@@ -53,14 +56,24 @@ def printInner():
         start = 0
 
 
+class status(enum.Enum):
+    archived = (1, "archived")
+    published = (2, "published")
+    draft = (3, "draft")
+
+
 def splitTerms():
     terms = findGCW()
+    print("total gcw = " + str(terms.count()))
     start = 0
     end = 0
     for term in terms:
+        term.status = "archived"
         definition = term.definition
         term_g = g_regex.findall(term.definition)
         for tag in term_g:
+            new_tag = tag[2]
+            new_tag = new_tag[2:]
             tag = tagstart + tag[2] + tag[3] + "}"
             if not tag == "#{g: xqGCW | h1619}":
                 end = definition.find(tag) + len(tag)
@@ -89,8 +102,12 @@ def splitTerms():
                 print(child_term.term_string + " added")
                 db.session.refresh(child_term)
                 gcwTag = Tag.query.filter_by(value="GCW").first()
+                other_tag = Tag.query.filter_by(value=new_tag).first()
                 child_term.tags.append(gcwTag)
+                if other_tag:
+                    child_term.tags.append(other_tag)
                 print("Added GCW tag")
+                print("Added" + tag)
             term.add_child_relationship(child_term, "extractedFrom")
             db.session.commit()
         start = 0
