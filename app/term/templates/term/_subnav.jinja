@@ -1,16 +1,15 @@
 <div class="row p-2">
     <div class="col bg-light mb-2">
-        <a href=" {{ url_for('term.list_top_terms_alphabetical') }}">alphabetical</a> [
-                {% if 'alphabetical' in request.url_rule.endpoint  %}
+        <a href=" {{ url_for('term.list_top_terms_alphabetical') }}">alphabetical</a>
+        {% if 'alphabetical' in request.url_rule.endpoint  %}
         {% if 'list_top_terms' in request.url_rule.endpoint %}
-            <a href=" {{ url_for('term.list_alphabetical') }}">expand</a>
+        <a href=" {{ url_for('term.list_alphabetical') }}"><i class="bi bi-arrows-expand"></i></a>
         {% else%}
-            <a href=" {{ url_for('term.list_top_terms_alphabetical', sort='score') }}">collapse</a>
+        <a href=" {{ url_for('term.list_top_terms_alphabetical') }}"><i class="bi bi-arrows-collapse"></i></a>
         {% endif %}
-        {% endif %}        
-         ] |
+        {% endif %}
+        |
         <a href=" {{ url_for('term.list_score') }}">high score</a> |
         <a href=" {{ url_for('term.list_recent') }}">recent</a> | volatile | stable
     </div>
 </div>
-

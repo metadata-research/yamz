@@ -1,4 +1,18 @@
 {% extends './base.jinja' %}
+{% if sort_order == 'ascending' %}
+{% set sort_order = 'descending'  %}
+{% elif sort_order== 'descending'%}
+{% set sort_order = 'ascending'  %}
+{% endif %}
+
+
+{% block title %}
+Browse Terms - alphabetical
+{% endblock %}
+
+{% block headline %}
+Browse terms - alphabetical
+{% endblock headline %}
 
 {% block content %}
 {% include 'term/_subnav.jinja' %}

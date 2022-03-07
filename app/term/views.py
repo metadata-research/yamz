@@ -225,7 +225,7 @@ def list_recent():
         current_app.config["TERMS_PER_PAGE"]
     )
     return render_template(
-        "term/top_terms.jinja", term_list=term_list, sort_type="recent"
+        "term/highscore_terms.jinja", term_list=term_list, sort_type="recent"
     )
 
 
