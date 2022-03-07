@@ -3,9 +3,9 @@
 {% block content %}
 
 {% for term in term_list  %}
-{{term[0]}}<br>
-{% endfor %}
 
-xxx
+<a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a><br>
+
+{% endfor %}
 
 {% endblock content %}

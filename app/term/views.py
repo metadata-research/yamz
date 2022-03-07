@@ -215,7 +215,7 @@ def list_score():
         .limit(current_app.config["TERMS_PER_PAGE"])
     )
     return render_template(
-        "term/top_terms.jinja", term_list=term_list, sort_type="high score"
+        "term/highscore_terms.jinja", term_list=term_list, sort_type="high score"
     )
 
 

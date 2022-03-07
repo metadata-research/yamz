@@ -94,3 +94,11 @@ def splitTerms():
             term.add_child_relationship(child_term, "extractedFrom")
             db.session.commit()
         start = 0
+
+
+def removeTagTerms():
+    terms = Term.query.filter(Term.term_string.startswith("#{g: xq"))
+    for term in terms:
+        db.session.delete(term)
+        db.session.commit()
+        print(term.term_string)

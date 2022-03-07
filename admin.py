@@ -69,9 +69,12 @@ def splitterms():
     splitTerms()
 
 
+@click.command()
+def removetagterms():
+    removeTagTerms()
+
+
 cli.add_command(addall)
-
-
 # first do:
 # flask db init
 # flask db migrate -m "initial migration"
@@ -85,10 +88,10 @@ cli.add_command(transfertags)  # 4
 cli.add_command(printinner)  # test the split terms function for GCW terms
 cli.add_command(splitterms)  # actually split the terms
 
+cli.add_command(removetagterms)
 # not used
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
-cli.add_command(taggcw)
 
 
 if __name__ == "__main__":
