@@ -1,4 +1,6 @@
 import datetime
+from dis import dis
+from re import X
 
 from app.term import term_blueprint as term
 from app.term.forms import *
@@ -6,7 +8,7 @@ from app.term.models import *
 from app.utilities import *
 from flask import current_app, g, redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required
-from sqlalchemy import desc
+from sqlalchemy import desc, distinct, text, func
 
 
 @term.before_request
@@ -58,15 +60,13 @@ def display_term(concept_id):
     form = EmptyForm()
     comment_form = CommentForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
-    comments = selected_term.comments.order_by(Comment.modified.desc()) or None
-    children = selected_term.children.order_by(Term.modified.desc()) or None
+    comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
         "term/display_term.jinja",
         selected_term=selected_term,
         form=form,
         comments=comments,
         comment_form=comment_form,
-        children=children,
     )
 
 
@@ -194,6 +194,16 @@ def list_alphabetical():
         sort_order=sort_order,
         pager=pager,
     )
+
+
+# @term.route("/list/alphabetical/<letter>")
+@term.route("/list/alphabetical/top")
+def list_top_terms():
+    distinct_terms = (
+        Term.query.with_entities(Term.term_string).distinct().order_by(Term.term_string)
+    )
+
+    return render_template("term/test.jinja", term_list=distinct_terms)
 
 
 @term.route("/list/score")
