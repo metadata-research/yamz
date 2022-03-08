@@ -4,7 +4,7 @@
 {% include 'term/_subnav.jinja' %}
 
 {% for term in term_list  %}
-<a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a><br>
+{{ term.term_string }}
 {% endfor %}
 
 {% endblock content %}

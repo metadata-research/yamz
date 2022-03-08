@@ -2,7 +2,8 @@
         <div class="row p-4">
             <div class="col">
                 {% for tag in selected_term.tags %}
-                <a href="#" role="button" class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
+                <a href="{{ url_for('term.list_terms_by_tag', tag_id=tag.id) }}" role="button"
+                    class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
                 {% endfor %}
             </div>
         </div>

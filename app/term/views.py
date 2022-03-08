@@ -206,6 +206,16 @@ def list_top_terms_alphabetical():
     return render_template("term/list_top_terms.jinja", term_list=distinct_terms)
 
 
+# @term.route("/list/alphabetical/<letter>")
+
+
+@term.route("/list/tag/<int:tag_id>")
+def list_terms_by_tag(tag_id):
+    term_list = Tag.query.filter_by(id=tag_id).first().terms
+
+    return render_template("term/test.jinja", term_list=term_list)
+
+
 @term.route("/list/score")
 def list_score():
     term_list = (

@@ -74,7 +74,7 @@ class Term(db.Model):
     # relationships
     contributor = db.relationship("User", back_populates="terms")
 
-    tags = db.relationship("Tag", secondary="term_tags", backref="term")
+    tags = db.relationship("Tag", secondary="term_tags", back_populates="terms")
 
     tracks = db.relationship(
         "Track", back_populates="term", cascade="all, delete-orphan", uselist=False
@@ -312,6 +312,12 @@ class Tag(db.Model):
     category = db.Column(db.Text, default="user")
     value = db.Column(db.Text)
     description = db.Column(db.Text)
+
+    terms = db.relationship(
+        "Term",
+        secondary="term_tags",
+        back_populates="tags",
+    )
     # reference = db.Column(db.Text, unique=True)
 
     def save(self):
