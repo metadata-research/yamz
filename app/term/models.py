@@ -317,6 +317,7 @@ class Tag(db.Model):
         "Term",
         secondary="term_tags",
         back_populates="tags",
+        order_by="Term.term_string",
     )
     # reference = db.Column(db.Text, unique=True)
 
