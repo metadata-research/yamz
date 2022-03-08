@@ -80,7 +80,15 @@ def display_term_by_id(term_id):
 @term.route("/alternates/<term_string>")  # change concelpt id to ark
 def show_alternate_terms(term_string):
     form = EmptyForm()
-    selected_terms = Term.query.filter_by(term_string=term_string)
+    include = request.args.get("include", "published")
+    if "published" in include:
+        selected_terms = Term.query.filter_by(
+            term_string=term_string, status="published"
+        )
+    else:
+        selected_terms = Term.query.filter_by(term_string=term_string)
+    # selected_terms = published_terms.union(all_terms)
+
     return render_template(
         "term/display_terms.jinja",
         selected_terms=selected_terms,
@@ -201,12 +209,14 @@ def list_alphabetical():
 def list_top_terms_alphabetical():
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
-    distinct_terms = (
+    pager = (
         Term.query.with_entities(Term.term_string).distinct().order_by(Term.term_string)
     ).paginate(page, per_page, False)
-    term_list = distinct_terms.items
+    term_list = pager.items
 
-    return render_template("term/list_top_terms.jinja", term_list=term_list)
+    return render_template(
+        "term/list_top_terms.jinja", term_list=term_list, pager=pager
+    )
 
 
 # @term.route("/list/alphabetical/<letter>")
@@ -225,7 +235,7 @@ def list_terms_by_tag(tag_id):
     term_list = pager.items
 
     return render_template(
-        "term/test.jinja",
+        "term/terms_by_tag.jinja",
         term_list=term_list,
         pager=pager,
         tag_id=tag_id,

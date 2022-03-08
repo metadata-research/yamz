@@ -18,12 +18,15 @@ Browse terms - alphabetical
 {% include 'term/_subnav.jinja' %}
 
 {% for term in term_list  %}
-<div class="row py-1">
+<div class="row p-1">
     <div class="col">
         <a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a><br>
     </div>
 </div>
 {% endfor %}
-
-
+<div class="row py-2">
+    <div class="col">
+        {{ macros.render_pagination(pager, request.url_rule.endpoint) }}
+    </div>
+</div>
 {% endblock content %}
