@@ -5,6 +5,23 @@
 </li>
 {%- endmacro %}
 
+{% macro render_tag_pagination(pagination, endpoint, tag_id) %}
+<div class=pagination>
+    {%- for page in pagination.iter_pages() %}
+    {% if page %}
+    {% if page != pagination.page %}
+    <a href="{{ url_for(endpoint, page=page, tag_id=tag_id) }}">{{ page }}</a>&nbsp;
+    {% else %}
+    <strong>{{ page }}</strong>&nbsp;
+    {% endif %}
+    {% else %}
+    <span class=ellipsis>…</span>&nbsp;
+    {% endif %}
+    {%- endfor %}
+</div>
+{% endmacro %}
+
+
 {% macro render_pagination(pagination, endpoint, tag_id) %}
 <div class=pagination>
     {%- for page in pagination.iter_pages() %}

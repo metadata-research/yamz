@@ -16,7 +16,7 @@ Tag: {{ tag }}
         {% endfor %}
         <div class="row">
             <div class="col">
-                {{ macros.render_pagination(pager, request.url_rule.endpoint, tag_id) }}
+                {{ macros.render_tag_pagination(pager, request.url_rule.endpoint, tag_id) }}
             </div>
         </div>
         {% endblock content %}

@@ -199,11 +199,14 @@ def list_alphabetical():
 # @term.route("/list/alphabetical/<letter>")
 @term.route("/list/alphabetical/top")
 def list_top_terms_alphabetical():
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
     distinct_terms = (
         Term.query.with_entities(Term.term_string).distinct().order_by(Term.term_string)
-    )
+    ).paginate(page, per_page, False)
+    term_list = distinct_terms.items
 
-    return render_template("term/list_top_terms.jinja", term_list=distinct_terms)
+    return render_template("term/list_top_terms.jinja", term_list=term_list)
 
 
 # @term.route("/list/alphabetical/<letter>")
