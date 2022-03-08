@@ -1,10 +1,24 @@
 {% extends './base.jinja' %}
 
+{% import "_macros.jinja" as macros %}
+
+{% block headline%}
+Tag: {{ tag }}
+{% endblock headline%}
+
 {% block content %}
 {% include 'term/_subnav.jinja' %}
 
-{% for term in term_list  %}
-{{ term.term_string }}<br>
-{% endfor %}
-
-{% endblock content %}
+<div class="row p-4">
+    <div class="col">
+        {% for term in term_list  %}
+        {{ term.term_string }}<br>
+        {% endfor %}
+        <div class="row">
+            <div class="col">
+                {{ macros.render_pagination(pager, request.url_rule.endpoint, tag_id) }}
+            </div>
+        </div>
+        {% endblock content %}
+    </div>
+</div>

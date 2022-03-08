@@ -211,9 +211,23 @@ def list_top_terms_alphabetical():
 
 @term.route("/list/tag/<int:tag_id>")
 def list_terms_by_tag(tag_id):
-    term_list = Tag.query.filter_by(id=tag_id).first().terms
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
+    tag = Tag.query.get_or_404(tag_id)
+    pager = (
+        Term.query.filter(Term.tags.any(id=tag_id))
+        .order_by(Term.term_string)
+        .paginate(page, per_page, False)
+    )
+    term_list = pager.items
 
-    return render_template("term/test.jinja", term_list=term_list)
+    return render_template(
+        "term/test.jinja",
+        term_list=term_list,
+        pager=pager,
+        tag_id=tag_id,
+        tag=tag.value,
+    )
 
 
 @term.route("/list/score")
