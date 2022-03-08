@@ -70,8 +70,8 @@ def splitterms():
 
 
 @click.command()
-def removetagterms():
-    removeTagTerms()
+def tagotherterms():
+    tagOtherTerms()
 
 
 cli.add_command(addall)
@@ -86,10 +86,11 @@ cli.add_command(transfertags)  # 4
 
 
 cli.add_command(printinner)  # test the split terms function for GCW terms
-cli.add_command(splitterms)  # actually split the terms
+cli.add_command(splitterms)  # 5 actually split the terms
 
-cli.add_command(removetagterms)
-# not used
+cli.add_command(tagotherterms)
+
+# not used in initial migration
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
 

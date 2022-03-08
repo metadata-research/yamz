@@ -22,6 +22,8 @@ def tagGCW():
     print(terms.count())
 
 
+ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+
 ###############################add other tag start here
 g_regex = re.compile("#\{\s*(([g])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
 ixuniq = "xq"
@@ -114,8 +116,43 @@ def splitTerms():
 
 
 def removeTagTerms():
-    terms = Term.query.filter(Term.term_string.startswith("#{g: xq"))
+    pass
+    # terms = Term.query.filter(Term.term_string.startswith("#{g: xq"))
+    # for term in terms:
+    #    db.session.delete(term)
+    #    db.session.commit()
+    #    print(term.term_string)
+
+
+def tagOtherTerms():
+    terms = Term.query
     for term in terms:
-        db.session.delete(term)
-        db.session.commit()
-        print(term.term_string)
+        term_ref = g_regex.findall(term.definition)
+        for tag in term_ref:
+            new_tag = tag[2]
+            new_tag = new_tag[2:]
+            tag = tagstart + tag[2] + tag[3] + "}"
+            if not tag == "#{g: xqGCW | h1619}":
+                tag_row = Tag.query.filter_by(value=new_tag).first()
+                print("to be tagged with" + new_tag)
+                if not tag_row is None:
+                    if not term.status.value == status.archived.value:
+                        print(term.status)
+                        definition = term.definition.replace(tag, "")
+                        print(definition)
+                        if not Tag.query.filter_by(value=new_tag).first() in term.tags:
+                            term.tags.append(tag_row)
+                            term.definition = definition
+                            term.save()
+                            print("added tag")
+                        # term.tags.append(tag_row)
+                        # term.save()
+                        else:
+                            print("tag already exists")
+                    else:
+                        print("archived term not added")
+                        # term.tags.append(tag_row)
+                        # term.save()
+                    # print(definition)
+
+                    print("_______________________________________________")
