@@ -143,7 +143,7 @@ def tagOtherTerms():
                             term.save()
 
                             print("added tag " + new_tag)
-                            print(term.tag_string)
+                            print(term.term_string)
                             print(definition)
                             print("_______________________________________________")
                         # term.tags.append(tag_row)
