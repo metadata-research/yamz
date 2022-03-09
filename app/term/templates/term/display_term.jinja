@@ -11,7 +11,7 @@ YAMZ Term- {{ selected_term.term_string}}
 
 {% block content %}
 {% if current_user.is_administrator or current_user == selected_term.contributor %}
-{% include 'term/_edit_subnav.jina' %}
+{% include 'term/_edit_subnav.jinja' %}
 {% endif %}
 
 {% include 'term/_term.jinja' %}
