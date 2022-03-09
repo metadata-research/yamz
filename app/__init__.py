@@ -28,7 +28,7 @@ def create_app(config_class=TestConfig):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    admin.init_app(app, index_view=AppAdminIndexView())
+    admin.init_app(app, index_view=AppAdminIndexView(name="YAMZ Status"))
 
     from app.auth import auth_blueprint as auth_bp
     from app.main import main_blueprint as main_bp
