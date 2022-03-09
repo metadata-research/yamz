@@ -151,6 +151,17 @@ def edit_term(concept_id):
         return render_template("term/edit_term.jinja", form=form)
 
 
+@term.route("/contribute/delete/<concept_id>", methods=["POST"])
+@login_required
+def delete_term(concept_id):
+    selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    if selected_term.owner_id == current_user.id or current_user.is_administrator:
+        db.session.delete(selected_term)
+        db.session.commit()
+        flash("Term deleted.")
+        return redirect(url_for("term.list_terms"))
+
+
 # here we are using term id because the key is better as an integer and we don't have to look it up
 # we should probably decide if we are going to use the concept id or the term id
 # for now it has to be like this because of the seaice db schema

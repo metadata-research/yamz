@@ -77,7 +77,10 @@ class Term(db.Model):
     tags = db.relationship("Tag", secondary="term_tags", back_populates="terms")
 
     tracks = db.relationship(
-        "Track", back_populates="term", cascade="all, delete-orphan", uselist=False
+        "Track",
+        back_populates="term",
+        cascade="all, delete-orphan",
+        uselist=False,
     )
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"

@@ -8,9 +8,9 @@
         </form>
     </div>
     <div class="col p-1">
-        <form method="post" action="{{ url_for('term.edit_term', concept_id=selected_term.concept_id) }}">
+        <form method="post" action="{{ url_for('term.delete_term', concept_id=selected_term.concept_id) }}">
             {{ form.hidden_tag() }}
-            <button type="button" class="btn btn-dark btn-sm text-danger"
+            <button type="submit" class="btn btn-dark btn-sm text-danger"
                 onclick="confirm('Are you sure?')">Delete</button>
         </form>
     </div>

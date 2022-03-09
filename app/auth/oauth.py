@@ -91,9 +91,11 @@ class OrcidSignIn(OAuthSignIn):
             name="orcid",
             client_id=self.consumer_id,
             client_secret=self.consumer_secret,
-            authorize_url="https://sandbox.orcid.org/oauth/authorize",
-            access_token_url="https://sandbox.orcid.org/oauth/token",
-            base_url="https://api.sandbox.orcid.org/v3.0/",
+            authorize_url=current_app.config["OAUTH_URLS"]["orcid"]["authorize_url"],
+            access_token_url=current_app.config["OAUTH_URLS"]["orcid"][
+                "access_token_url"
+            ],
+            base_url=current_app.config["OAUTH_URLS"]["orcid"]["base_url"],
         )
 
     def authorize(self):
