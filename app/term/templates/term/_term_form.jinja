@@ -1,0 +1,26 @@
+<form action="" method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group row py-4">
+        {{ form.term_string.label(class="col-sm-2 col-form-label", for="term_string") }}
+        <div class="col-sm-7">
+            {{ form.term_string(class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        {{ form.definition.label(class="col-sm-2 col-form-label", for="definition") }}
+        <div class="col-sm-7">
+            {{ form.definition(class="form-control", rows="4", placeholder="A _class_ of thing, followed by distinguishing characteristics, such as (for 'water'): 'A _clear liquid_ made up of hydrogen and oxygen molecules.'") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        {{ form.examples.label(class="col-sm-2 col-form-label", for="examples") }}
+        <div class="col-sm-7">
+            {{ form.examples(class="form-control", rows="4", placeholder="Examples of usage or related concepts.") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        <div class="col-sm-7">
+            {{ form.submit(class="btn btn-dark") }}
+        </div>
+    </div>
+</form>

@@ -132,6 +132,25 @@ def create_term():
     return render_template("term/create_term.jinja", form=form)
 
 
+@term.route("/contribute/edit/<concept_id>", methods=["POST"])
+@login_required
+def edit_term(concept_id):
+    form = EditTermForm()
+    selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    if form.validate_on_submit():
+        selected_term.term_string = form.term_string.data.strip()
+        selected_term.definition = form.definition.data
+        selected_term.examples = form.examples.data
+        db.session.commit()
+        flash("Term updated.")
+        return redirect(url_for("term.display_term", concept_id=concept_id))
+    else:
+        form.term_string.data = selected_term.term_string
+        form.definition.data = selected_term.definition
+        form.examples.data = selected_term.examples
+        return render_template("term/edit_term.jinja", form=form)
+
+
 # here we are using term id because the key is better as an integer and we don't have to look it up
 # we should probably decide if we are going to use the concept id or the term id
 # for now it has to be like this because of the seaice db schema

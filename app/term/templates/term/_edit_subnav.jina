@@ -1,0 +1,18 @@
+{% if current_user.is_administrator or current_user == selected_term.contributor %}
+
+<div class="row">
+    <div class="col-auto">
+        <form method="post" action="{{ url_for('term.edit_term', concept_id=selected_term.concept_id) }}">
+            {{ form.hidden_tag() }}
+            <button type="submit" class="btn btn-dark btn-sm">Edit</button>
+        </form>
+    </div>
+    <div class="col">
+        <form method="post" action="{{ url_for('term.edit_term', concept_id=selected_term.concept_id) }}">
+            {{ form.hidden_tag() }}
+            <button type="button" class="btn btn-dark btn-sm text-danger"
+                onclick="confirm('Are you sure?')">Delete</button>
+        </form>
+    </div>
+</div>
+{% endif %}

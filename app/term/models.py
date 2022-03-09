@@ -10,7 +10,7 @@ from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import select, case, desc, Index, Computed
-
+from flask_login import current_user
 
 SHOULDER = "h"
 NAAN = "99152"
