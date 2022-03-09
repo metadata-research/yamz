@@ -5,10 +5,19 @@ Alternates for {{ alternatives_for_string }}
 {% endblock %}
 
 {% block headline %}
-Term
+{{ headline}}
 {% endblock headline %}
 
 {% block content %}
+{% if request.args.get('include') == "archived" %}
+<a href="{{ url_for('term.show_alternate_terms', term_string=alternatives_for_string) }}" role="button"
+    class="btn btn-secondary btn-sm">exclude
+    archived terms</a>
+{% else %}
+<a href="{{ url_for('term.show_alternate_terms', term_string=alternatives_for_string, include='archived') }}"
+    role="button" class="btn btn-light btn-sm">include
+    archived terms</a>
+{% endif %}
 
 {% for selected_term in selected_terms  %}
 

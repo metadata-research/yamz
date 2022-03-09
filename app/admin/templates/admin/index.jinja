@@ -1,1 +1,6 @@
-the index file
+{% extends './base.jinja' %}
+
+{% block content %}
+<a class="btn btn-primary" href="{{ url_for('term.list_tags') }}">Edit tags</a>
+<a class="btn btn-primary" href="{{ url_for('term.create_tag') }}">Create tag</a>
+{% endblock %}

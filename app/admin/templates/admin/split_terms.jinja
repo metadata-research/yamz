@@ -1,0 +1,13 @@
+{% for term in terms  %}
+<p>
+    <a href="{{ url_for('term.display_term', concept_id = term.concept_id) }}">{{ term.term_string }}</a>
+    {{ term.term_string }}<br>
+
+    <hr>
+    tags<br>
+    {% for tag in term.tags %}
+    {{ tag.value }}<br>
+    {% endfor %}
+    <hr>
+</p>
+{% endfor %}

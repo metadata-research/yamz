@@ -25,10 +25,12 @@ def create_app(config_class=TestConfig):
     from app.auth import auth_blueprint as auth_bp
     from app.term import term_blueprint as term_bp
     from app.user import user_blueprint as user_bp
+    from app.admin import admin_blueprint as admin_bp
 
     app.register_blueprint(main_bp, url_prefix="/")
     app.register_blueprint(auth_bp, url_prefix="/")
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
+    app.register_blueprint(admin_bp, url_prefix="/admin")
 
     return app

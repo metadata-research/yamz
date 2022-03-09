@@ -1,0 +1,32 @@
+<div class="card col-7">
+    <h5 class="card-header">Tag</h5>
+    <div class="card-body">
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group row py-2">
+                {{ form.category.label(class="col-2 col-form-label", for="tag_category") }}
+                <div class="col">
+                    {{ form.category(class="form-control", id="tag_category") }}
+                </div>
+            </div>
+            <div class="form-group row py-2">
+                {{ form.value.label(class="col-2 col-form-label", for="tag_value") }}
+                <div class="col">
+                    {{ form.value(class="form-control", id="tag_value") }}
+                </div>
+            </div>
+            <div class="form-group row py-2">
+                {{ form.description.label(class="col-2 col-form-label", for="tag_description") }}
+                <div class="col">
+                    {{ form.description(class="form-control", id="tag_description") }}
+                </div>
+            </div>
+            <div class="form-group row py-2">
+                <div class="col">
+                    {{ form.submit(class="btn btn-dark") }}
+                    <a href="{{ url_for('term.list_tags') }}" class="btn btn-dark">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

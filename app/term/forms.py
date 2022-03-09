@@ -11,6 +11,13 @@ class CreateTermForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+class EditTermForm(FlaskForm):
+    term_string = StringField("Term string", validators=[DataRequired()])
+    definition = TextAreaField("Definition")
+    examples = TextAreaField("Examples")
+    submit = SubmitField("Submit")
+
+
 class CommentForm(FlaskForm):
     comment_string = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("Comment")
@@ -29,3 +36,10 @@ class SearchForm(FlaskForm):
         if "csrf_enabled" not in kwargs:
             kwargs["csrf_enabled"] = False
         super(SearchForm, self).__init__(*args, **kwargs)
+
+
+class TagForm(FlaskForm):
+    category = StringField("Category", validators=[DataRequired()], default="community")
+    value = StringField("Value", validators=[DataRequired()])
+    description = TextAreaField("Description")
+    submit = SubmitField("Save")
