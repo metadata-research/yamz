@@ -133,25 +133,25 @@ def tagOtherTerms():
             tag = tagstart + tag[2] + tag[3] + "}"
             if not tag == "#{g: xqGCW | h1619}":
                 tag_row = Tag.query.filter_by(value=new_tag).first()
-                print("to be tagged with" + new_tag)
+                # print("to be tagged with" + new_tag)
                 if not tag_row is None:
                     if not term.status.value == status.archived.value:
-                        print(term.status)
-                        definition = term.definition.replace(tag, "")
-                        print(definition)
                         if not Tag.query.filter_by(value=new_tag).first() in term.tags:
+                            definition = term.definition.replace(tag, "")
                             term.tags.append(tag_row)
                             term.definition = definition
                             term.save()
-                            print("added tag")
-                        # term.tags.append(tag_row)
-                        # term.save()
-                        else:
-                            print("tag already exists")
-                    else:
-                        print("archived term not added")
-                        # term.tags.append(tag_row)
-                        # term.save()
-                    # print(definition)
 
-                    print("_______________________________________________")
+                            print("added tag " + new_tag)
+                            print(term.tag_string)
+                            print(definition)
+                            print("_______________________________________________")
+                        # term.tags.append(tag_row)
+                        # term.save()
+                        # else:
+                        #    print("tag already exists")
+                    # else:
+                    #   print("archived term not added")
+                    # term.tags.append(tag_row)
+                    # term.save()
+                    # print(definition)
