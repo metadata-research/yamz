@@ -115,13 +115,12 @@ def splitTerms():
         start = 0
 
 
-def removeTagTerms():
-    pass
-    # terms = Term.query.filter(Term.term_string.startswith("#{g: xq"))
-    # for term in terms:
-    #    db.session.delete(term)
-    #    db.session.commit()
-    #    print(term.term_string)
+def removeTagTerms_strings():
+    terms = Term.query.filter(Term.term_string.startswith("#{g: xq"))
+    for term in terms:
+        db.session.delete(term)
+        db.session.commit()
+        print(term.term_string)
 
 
 def tagOtherTerms():

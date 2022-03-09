@@ -74,6 +74,11 @@ def tagotherterms():
     tagOtherTerms()
 
 
+@click.command()
+def removetagterms():
+    removeTagTerms_strings()
+
+
 cli.add_command(addall)
 # first do:
 # flask db init
@@ -93,7 +98,7 @@ cli.add_command(tagotherterms)
 # not used in initial migration
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
-
+cli.add_command(removetagterms)
 
 if __name__ == "__main__":
     cli()
