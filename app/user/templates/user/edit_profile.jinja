@@ -65,7 +65,7 @@ Account
         <div class="col-sm-10">
             {% if current_user.orcid and "nil" not in current_user.orcid %}
             <i class="fab fa-orcid"></i> <a
-                href="{{ config["OAUTH_URLS"]["orcid"]["base_url"]}}/{{ current_user.orcid }}"
+                href="{{ config["OAUTH_URLS"]["orcid"]["base_url"]}}{{ current_user.orcid }}"
                 target="_blank">{{ current_user.orcid }}</a>
             {% else %}
             <a href="{{ url_for('auth.login') }}">
