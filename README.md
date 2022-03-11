@@ -145,3 +145,9 @@ you must add users before terms to preserve the pk based relationships
     python cli.py printinner # test the term splitting
 
     python cli.py splitterms # do the actual splitting
+
+    python cli.py removetagterms # remove the term_strings that have become tags
+
+non-critical data
+transfertracking
+transfervotes
