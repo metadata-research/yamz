@@ -34,11 +34,7 @@ On a mac
 postgres=# create database yamz with owner postgres;
 
 
-4. Grant priveleges to that user
-
-postgres=# grant all privileges on database yamz to postgres;
-
-mac: psql -c "grant all priveleges on database yamz to postgres"
+4. Placeholder
 
 
 5. Clone the repository
