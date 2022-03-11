@@ -24,7 +24,7 @@ The following is an example configuration. You can substitute your own db names 
 
 On a mac
     createuser -d postgres
-    psql -c "alter user contributor with encrypted password 'PASS'"
+    psql -c "alter user postgres with encrypted password 'PASS'"
 
 
 3. Create a database in psql
