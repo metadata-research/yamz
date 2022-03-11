@@ -126,14 +126,22 @@ Note that when working in dev mode, the google authorized urls must allow access
 
 ## Import legacy entries
 
-    python admin.py addall
+    python cli.py addall
 
 for just users
 
-    python admin.py addusers
+    python cli.py addusers
 
 for just terms
 
-    python admin.py addterms
+    python cli.py addterms
 
 you must add users before terms to preserve the pk based relationships
+
+    python cli.py setsuperuser 'email@somewhere.com' # your gmail if you are logging in with Google
+
+    python cli.py transfertags
+
+    python cli.py printinner # test the term splitting
+
+    python cli.py splitterms # do the actual splitting
