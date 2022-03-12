@@ -49,7 +49,7 @@ cd yamz
 
 virtualenv env
 
-[on a mac](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3) external
+to instal: [on a mac](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3) external
 
     $ brew install python3
 
@@ -98,11 +98,11 @@ From the config.py file:
 
     flask db migrate
 
-(an error had come up here sometimes and the workaround for now is
+        (an error had come up here sometimes and the workaround for now is
     
-    flask db revision --rev-id xxxxxxxxxx
+           flask db revision --rev-id xxxxxxxxxx
 
-    flask db upgrade
+           flask db upgrade
 
 13. Run the app
 
@@ -117,7 +117,6 @@ If you want to run in development mode
     flask run
 
 Note that when working in dev mode, the google authorized urls must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  Orcid authentication similarly will only work if the url is pre-authorized.
-
 
 
 ## Import legacy entries
