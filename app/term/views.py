@@ -239,9 +239,14 @@ def list_alphabetical():
 def list_top_terms_alphabetical():
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
-    pager = (
-        Term.query.with_entities(Term.term_string).distinct().order_by(Term.term_string)
-    ).paginate(page, per_page, False)
+
+    query_result = (
+        db.session.query(Term.term_string, db.func.count(Term.term_string))
+        .group_by(Term.term_string)
+        .order_by(Term.term_string.asc())
+    )
+
+    pager = query_result.paginate(page, per_page, False)
     term_list = pager.items
 
     return render_template(
