@@ -1,4 +1,5 @@
 import os
+from smtplib import SMTP_PORT
 
 
 class Config(object):
@@ -39,6 +40,11 @@ class Config(object):
             "user_info_url": "https://www.googleapis.com/oauth2/v2/userinfo",
         },
     }
+
+    SMTP_SERVER = "smtp.mailgun.org"
+    SMTP_PORT = 587
+    SMTP_USER = "<your-smtp-user>"
+    SMTP_PASSWORD = "<your-mailgun-api-key>"
 
     # misc
     SANDBOX = False

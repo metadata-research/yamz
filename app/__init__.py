@@ -7,6 +7,7 @@ from flask_admin.menu import MenuLink
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -29,7 +30,8 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     admin = Admin(app, index_view=AppAdminIndexView(name="YAMZ Status"))
-
+    mail = Mail(app)
+    
     from app.auth import auth_blueprint as auth_bp
     from app.main import main_blueprint as main_bp
     from app.term import term_blueprint as term_bp
