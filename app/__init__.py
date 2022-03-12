@@ -15,7 +15,7 @@ login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access this page."
 
-admin = Admin()
+# admin = Admin()
 
 
 def create_app(config_class=Config):
@@ -28,7 +28,7 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-    admin.init_app(app, index_view=AppAdminIndexView(name="YAMZ Status"))
+    admin = Admin(app, index_view=AppAdminIndexView(name="YAMZ Status"))
 
     from app.auth import auth_blueprint as auth_bp
     from app.main import main_blueprint as main_bp
