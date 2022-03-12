@@ -35,10 +35,6 @@ def add_users():
         db.session.execute(sql)
         db.session.commit()
         print("\nnext id:" + str(last_user_id + 1))
-        if not User.query.filter_by(email="christopher.b.rauch@gmail.com").first():
-            set_superuser("christopher.b.rauch@gmail.com")
-        else:
-            print("can't find christopher.b.rauch@gmail.com")
 
 
 def add_terms():
