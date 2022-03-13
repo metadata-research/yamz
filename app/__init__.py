@@ -1,6 +1,8 @@
-import logging, os
-from logging.handlers import SMTPHandler, RotatingFileHandler
-from config import Config, TestConfig
+import logging
+import os
+from logging.handlers import RotatingFileHandler, SMTPHandler
+
+from config import Config
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -46,8 +48,8 @@ def create_app(config_class=Config):
     app.register_blueprint(error_bp, url_prefix="/error")
     # app.register_blueprint(admin_bp, url_prefix="/admin")
 
-    from app.user.models import User
     from app.term.models import Tag, Term
+    from app.user.models import User
 
     admin.add_view(AdminModelView(User, db.session, endpoint="users"))
     admin.add_view(AdminModelView(Term, db.session, endpoint="terms"))
