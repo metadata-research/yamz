@@ -1,7 +1,3 @@
-import datetime
-from dis import dis
-from re import X
-
 from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
