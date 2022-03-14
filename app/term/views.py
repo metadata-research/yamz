@@ -2,7 +2,16 @@ from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
-from flask import current_app, g, redirect, render_template, request, url_for, flash
+from flask import (
+    current_app,
+    g,
+    redirect,
+    render_template,
+    request,
+    url_for,
+    flash,
+    abort,
+)
 from flask_login import current_user, login_required
 from sqlalchemy import desc, distinct, text, func
 
@@ -53,9 +62,11 @@ def format_score(score):
 
 @term.route("/ark/<concept_id>")
 def display_term(concept_id):
+    selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    if selected_term is None:
+        abort(404)
     form = EmptyForm()
     comment_form = CommentForm()
-    selected_term = Term.query.filter_by(concept_id=concept_id).first()
     comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
         "term/display_term.jinja",
