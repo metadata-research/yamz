@@ -195,9 +195,9 @@ def search():
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
     sort_type = "search"
-    term_list = Term.query.filter(Term.tsv.match(g.search_form.q.data)).paginate(
-        page, per_page, False
-    )
+    term_list = Term.query.filter(
+        Term.__ts_vector__.match(g.search_form.q.data)
+    ).paginate(page, per_page, False)
 
     pager = Pager(term_list, page, per_page, len(term_list.items))
 

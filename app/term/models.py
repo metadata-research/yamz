@@ -6,6 +6,7 @@ import sqlalchemy
 
 from app.user.models import User
 
+
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -18,10 +19,6 @@ NAAN = "99152"
 
 def normalize_tag(reference):
     return re.sub("[^\w]+", "-", reference).lower()
-
-
-class TSVector(sqlalchemy.types.TypeDecorator):
-    impl = TSVECTOR
 
 
 class term_class(enum.Enum):
@@ -69,7 +66,18 @@ class Term(db.Model):
     concept_id = db.Column(db.String(64))
     status = db.Column("status", db.Enum(status), default=status.published)
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
-    tsv = db.Column(TSVECTOR)
+
+    __ts_vector__ = db.Column(
+        TSVECTOR,
+        db.Computed(
+            "to_tsvector('english', term_string || ' ' || definition || ' ' || examples)",
+            persisted=True,
+        ),
+    )
+
+    __table_args__ = (
+        Index("ix_term___ts_vector__", __ts_vector__, postgresql_using="gin"),
+    )
 
     # relationships
     contributor = db.relationship("User", back_populates="terms")
