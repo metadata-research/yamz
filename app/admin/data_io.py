@@ -53,11 +53,11 @@ def add_terms():
                     term_string=term["term_string"],
                     definition=term["definition"],
                     examples=term["examples"],
-                    tsv=term["tsv"],
+                    # tsv=term["tsv"],
                 )
                 db.session.add(new_term)
                 db.session.commit()
-                print(term)
+                print(new_term)
             else:
                 print("Term already exists")
     if not db.session.query(Term.id).first() is None:
