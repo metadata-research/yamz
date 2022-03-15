@@ -162,11 +162,14 @@ def edit_term(concept_id):
 @login_required
 def delete_term(concept_id):
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    if selected_term is None:
+        abort(500)
     if selected_term.owner_id == current_user.id or current_user.is_administrator:
-        db.session.delete(selected_term)
-        db.session.commit()
+        selected_term.delete()
         flash("Term deleted.")
-        return redirect(url_for("term.list_terms"))
+    else:
+        flash("You are not authorized to delete this term.")
+    return redirect(url_for("term.list_terms"))
 
 
 # here we are using term id because the key is better as an integer and we don't have to look it up

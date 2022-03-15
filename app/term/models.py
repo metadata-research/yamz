@@ -311,6 +311,11 @@ class Term(db.Model):
         db.session.commit()
         term_saved.send(self)
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+        term_deleted.send(self)
+
     def __repr__(self):
         return "<Term {} |{}>".format(self.term_string, self.concept_id)
 
