@@ -148,8 +148,8 @@ def edit_term(concept_id):
         selected_term.term_string = form.term_string.data.strip()
         selected_term.definition = form.definition.data
         selected_term.examples = form.examples.data
-        db.session.commit()
-        flash("Term updated.")
+        selected_term.update()
+        # flash("Term updated.")
         return redirect(url_for("term.display_term", concept_id=concept_id))
     else:
         form.term_string.data = selected_term.term_string

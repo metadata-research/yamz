@@ -1,8 +1,6 @@
-from email.policy import default
 import enum
 import re
-
-import sqlalchemy
+from blinker import Namespace
 
 from app.user.models import User
 
@@ -10,8 +8,8 @@ from app.user.models import User
 from app import db
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select, case, desc, Index, Computed
-from flask_login import current_user
+from sqlalchemy import select, case, Index
+
 
 SHOULDER = "h"
 NAAN = "99152"
@@ -49,6 +47,16 @@ class Relationship(db.Model):
         return "<Relationship {} {} {}>".format(
             self.parent_id, self.predicate, self.child_id
         )
+
+
+term_signals = Namespace()
+
+term_saved = term_signals.signal("term_saved")
+term_deleted = term_signals.signal("term_deleted")
+term_updated = term_signals.signal("term_updated")
+term_commented = term_signals.signal("term_commented")
+term_tracked = term_signals.signal("term_tracked")
+term_voted = term_signals.signal("term_voted")
 
 
 class Term(db.Model):
@@ -232,10 +240,6 @@ class Term(db.Model):
             .scalar()
         )
 
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
     def is_tracked_by(self, current_user):
         if self.tracks is None:
             return False
@@ -297,6 +301,18 @@ class Term(db.Model):
         if not vote_to_remove is None:
             db.session.delete(vote_to_remove)
             db.session.commit()
+
+    def update(self):
+        db.session.commit()
+        term_saved.send(self)
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        term_saved.send(self)
+
+    def __repr__(self):
+        return "<Term {} |{}>".format(self.term_string, self.concept_id)
 
 
 class Comment(db.Model):
