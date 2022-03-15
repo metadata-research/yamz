@@ -3,7 +3,7 @@ from flask import flash
 
 
 def term_updated_notify(term, **kwargs):
-    flash("Term updated <signal>")
+    flash("Term updated!")
 
 
 def term_saved_notify(term, **kwargs):

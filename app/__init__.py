@@ -41,14 +41,16 @@ def create_app(config_class=Config):
     from app.auth import auth_blueprint as auth_bp
     from app.error import error_blueprint as error_bp
     from app.main import main_blueprint as main_bp
+    from app.notify import notify_blueprint as notify_bp
     from app.term import term_blueprint as term_bp
     from app.user import user_blueprint as user_bp
 
-    app.register_blueprint(main_bp, url_prefix="/")
     app.register_blueprint(auth_bp, url_prefix="/")
+    app.register_blueprint(error_bp, url_prefix="/error")
+    app.register_blueprint(main_bp, url_prefix="/")
+    app.register_blueprint(notify_bp, url_prefix="/notify")
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
-    app.register_blueprint(error_bp, url_prefix="/error")
 
     from app.term.models import Tag, Term
     from app.user.models import User

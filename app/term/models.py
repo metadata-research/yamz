@@ -1,15 +1,12 @@
 import enum
 import re
-from blinker import Namespace
-
-from app.user.models import User
-
 
 from app import db
+from app.user.models import User
+from blinker import Namespace
+from sqlalchemy import Index, case, select
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy import select, case, Index
-
 
 SHOULDER = "h"
 NAAN = "99152"
