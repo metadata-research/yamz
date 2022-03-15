@@ -304,7 +304,7 @@ class Term(db.Model):
 
     def update(self):
         db.session.commit()
-        term_saved.send(self)
+        term_updated.send(self)
 
     def save(self):
         db.session.add(self)

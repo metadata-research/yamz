@@ -7,7 +7,7 @@ def term_updated_notify(term, **kwargs):
 
 
 def term_saved_notify(term, **kwargs):
-    flash("Term updated <signal>")
+    flash("Term saved <signal>")
 
 
 def connect_handlers():
