@@ -3,6 +3,7 @@ from app import db
 
 
 class Message(db.Model):
+    __tablename__ = "messages"
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -14,6 +15,7 @@ class Message(db.Model):
 
 
 class Notification(db.Model):
+    __tablename__ = "notifications"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))

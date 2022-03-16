@@ -1,8 +1,4 @@
-import json
-from datetime import datetime
-
 from app import db, login_manager
-from app.notify.models import Message, Notification
 from flask_login import AnonymousUserMixin, UserMixin
 
 
@@ -46,20 +42,6 @@ class User(UserMixin, db.Model):
 
     notifications = db.relationship("Notification", backref="user", lazy="dynamic")
 
-    def new_messages(self):
-        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
-        return (
-            Message.query.filter_by(recipient=self)
-            .filter(Message.timestamp > last_read_time)
-            .count()
-        )
-
-    def add_notification(self, name, data):
-        self.notifications.filter_by(name=name).delete()
-        n = Notification(name=name, payload_json=json.dumps(data), user=self)
-        db.session.add(n)
-        return n
-
     @property
     def is_administrator(self):
         return self.super_user
@@ -78,4 +60,7 @@ class User(UserMixin, db.Model):
 
 class AnonymousUser(AnonymousUserMixin):
     def is_administrator(self):
+        return False
+
+    def is_authenticated(self):
         return False
