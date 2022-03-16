@@ -21,3 +21,12 @@ def send_message(recipient_id):
     return render_template(
         "notify/send_message.jinja", title="Send Message", form=form, recipient=user
     )
+
+
+@notify.route("/messages")
+@login_required
+def messages():
+    current_user.last_message_read_time = db.func.now()
+    db.session.commit()
+    messages = current_user.messages_received.order_by(Message.timestamp.desc())
+    return render_template("notify/display_messages.jinja", messages=messages)

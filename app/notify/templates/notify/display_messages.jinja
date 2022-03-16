@@ -1,0 +1,26 @@
+{% extends "./base.jinja" %}
+
+{% block title%}
+Messages for {{ current_user.full_name }}
+{% endblock title %}
+
+{% block headline %}
+Messages for {{ current_user.full_name }}
+{% endblock headline %}
+
+
+{% block content %}
+<div class="container py-2">
+    {% for message in messages %}
+    <div class=" card" style="width: 40rem;">
+        <div class="card-body">
+            <h5 class="card-title">Re: Term</h5>
+            <h6 class="card-subtitle mb-2 text-muted">From: {{ message.author.full_name }}</h6>
+            <p class="card-text">{{ message.body }}</p>
+            <a href="#" class="card-link">Reply</a>
+            <a href="#" class="card-link">Delete</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

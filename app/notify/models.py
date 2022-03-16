@@ -10,6 +10,19 @@ class Message(db.Model):
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=db.func.now())
 
+    author = db.relationship(
+        "User",
+        back_populates="messages_sent",
+        foreign_keys=[sender_id],
+        lazy="joined",
+    )
+    recipient = db.relationship(
+        "User",
+        back_populates="messages_received",
+        foreign_keys=[recipient_id],
+        lazy="joined",
+    )
+
     def __repr__(self):
         return "<Message {}>".format(self.body)
 

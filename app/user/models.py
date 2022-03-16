@@ -31,12 +31,15 @@ class User(UserMixin, db.Model):
     )
 
     messages_sent = db.relationship(
-        "Message", foreign_keys="Message.sender_id", backref="author", lazy="dynamic"
+        "Message",
+        foreign_keys="Message.sender_id",
+        back_populates="author",
+        lazy="dynamic",
     )
     messages_received = db.relationship(
         "Message",
         foreign_keys="Message.recipient_id",
-        backref="recipient",
+        back_populates="recipient",
         lazy="dynamic",
     )
 

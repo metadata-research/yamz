@@ -52,6 +52,10 @@
                     <li class="nav-item">
                         {{ macros.nav_link('user.edit_profile', 'Profile') }}
                     </li>
+                    <li class="nav-item">
+                        {{ macros.nav_link('notify.messages', 'Messages') }}
+                    </li>
+
                     {% if current_user.is_administrator%}
                     <li class="nav-item">
                         {{ macros.nav_link('admin.index', 'Admin') }}
