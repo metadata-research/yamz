@@ -1,7 +1,7 @@
 from app import db
 from app.notify import notify_blueprint as notify
 from app.notify.forms import MessageForm
-from app.notify.models import Message
+from app.user.models import Message
 from app.user.models import User
 from flask import flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
@@ -28,5 +28,9 @@ def send_message(recipient_id):
 def messages():
     current_user.last_message_read_time = db.func.now()
     db.session.commit()
-    messages = current_user.messages_received.order_by(Message.timestamp.desc())
-    return render_template("notify/display_messages.jinja", messages=messages)
+    messages_received = current_user.messages_received.order_by(
+        Message.timestamp.desc()
+    )
+    return render_template(
+        "notify/display_messages.jinja", messages_received=messages_received
+    )

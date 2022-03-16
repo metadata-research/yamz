@@ -53,7 +53,8 @@
                         {{ macros.nav_link('user.edit_profile', 'Profile') }}
                     </li>
                     <li class="nav-item">
-                        {{ macros.nav_link('notify.messages', 'Messages') }}
+                        {{ macros.nav_link('notify.messages', 'Messages (' + current_user.new_message_count + ')') }}
+
                     </li>
 
                     {% if current_user.is_administrator%}
@@ -99,7 +100,7 @@
 
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <div class="alert alert-success alert-dismissible fade show w-50 mt-2" role="alert">
+        <div class="alert alert-success alert-dismissible fade show w-40 mt-2" role="alert">
             {% for message in messages %}
             {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>

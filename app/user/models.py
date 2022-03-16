@@ -1,3 +1,6 @@
+import datetime
+import json
+
 from app import db, login_manager
 from flask_login import AnonymousUserMixin, UserMixin
 
@@ -43,7 +46,19 @@ class User(UserMixin, db.Model):
         lazy="dynamic",
     )
 
-    notifications = db.relationship("Notification", backref="user", lazy="dynamic")
+    notifications = db.relationship(
+        "Notification", back_populates="user", lazy="dynamic"
+    )
+
+    @property
+    def new_message_count(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        count = (
+            Message.query.filter_by(recipient=self)
+            .filter(Message.timestamp > last_read_time)
+            .count()
+        )
+        return str(count)
 
     @property
     def is_administrator(self):
@@ -67,3 +82,42 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_authenticated(self):
         return False
+
+
+class Message(db.Model):
+    __tablename__ = "messages"
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=db.func.now())
+
+    author = db.relationship(
+        "User",
+        back_populates="messages_sent",
+        foreign_keys=[sender_id],
+        lazy="joined",
+    )
+    recipient = db.relationship(
+        "User",
+        back_populates="messages_received",
+        foreign_keys=[recipient_id],
+        lazy="joined",
+    )
+
+    def __repr__(self):
+        return "<Message {}>".format(self.body)
+
+
+class Notification(db.Model):
+    __tablename__ = "notifications"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    timestamp = db.Column(db.Float, index=True, default=db.func.now())
+    payload_json = db.Column(db.Text)
+
+    user = db.relationship("User", back_populates="notifications", lazy="joined")
+
+    def get_data(self):
+        return json.loads(str(self.payload_json))
