@@ -91,6 +91,7 @@ class Message(db.Model):
     recipient_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=db.func.now())
+    sent = db.Column(db.Boolean, default=False)
 
     author = db.relationship(
         "User",
@@ -104,6 +105,14 @@ class Message(db.Model):
         foreign_keys=[recipient_id],
         lazy="joined",
     )
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
 
     def __repr__(self):
         return "<Message {}>".format(self.body)

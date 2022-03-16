@@ -17,8 +17,8 @@ Messages for {{ current_user.full_name }}
             <h5 class="card-title">Re: Term</h5>
             <h6 class="card-subtitle mb-2 text-muted">From: {{ message.author.full_name }}</h6>
             <p class="card-text">{{ message.body }}</p>
-            <a href="#" class="card-link">Reply</a>
-            <a href="#" class="card-link">Delete</a>
+            <a href="{{ url_for('notify.send_message', recipient_id=message.author.id) }}" class="card-link">Reply</a>
+            <a href="{{ url_for('notify.delete_message', message_id=message.id) }}" class="card-link">Delete</a>
         </div>
     </div>
     {% endfor %}

@@ -15,6 +15,7 @@ Send Message
 <div class="card col-7">
     <h5 class="card-header">Send a message</h5>
     <div class="card-body">
+        <h5 class="card-title">To: {{ recipient.full_name }}</h5>
         <form method="post">
             {{ form.hidden_tag() }}
             <div class="form-group row py-2">
