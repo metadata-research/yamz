@@ -50,6 +50,13 @@ class User(UserMixin, db.Model):
         "Notification", back_populates="user", lazy="dynamic"
     )
 
+    def add_notification(self, name, data):
+        # self.notifications.filter_by(name=name).delete()
+        n = Notification(name=name, payload_json=json.dumps(data), user=self)
+        db.session.add(n)
+        db.session.commit()
+        # return n
+
     @property
     def new_message_count(self):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
@@ -123,7 +130,7 @@ class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    timestamp = db.Column(db.Float, index=True, default=db.func.now())
+    timestamp = db.Column(db.DateTime, default=db.func.now())
     payload_json = db.Column(db.Text)
 
     user = db.relationship("User", back_populates="notifications", lazy="joined")

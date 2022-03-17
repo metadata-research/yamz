@@ -50,3 +50,12 @@ def messages():
     return render_template(
         "notify/display_messages.jinja", messages_received=messages_received
     )
+
+
+@notify.route("/notifications")
+@login_required
+def notifications():
+    notifications = current_user.notifications.order_by("timestamp").all()
+    return render_template(
+        "notify/display_notifications.jinja", notifications=notifications
+    )
