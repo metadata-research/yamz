@@ -3,7 +3,7 @@ from app.notify import notify_blueprint as notify
 from app.notify.forms import MessageForm
 from app.user.models import Message
 from app.user.models import User
-from flask import flash, redirect, render_template, url_for, abort
+from flask import flash, redirect, render_template, url_for, abort, jsonify
 from flask_login import current_user, login_required
 
 
@@ -56,6 +56,9 @@ def messages():
 @login_required
 def notifications():
     notifications = current_user.notifications.order_by("timestamp").all()
-    return render_template(
-        "notify/display_notifications.jinja", notifications=notifications
+    return jsonify(
+        [
+            {"name": n.name, "data": n.get_data(), "timestamp": n.timestamp}
+            for n in notifications
+        ]
     )

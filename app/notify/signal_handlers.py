@@ -17,7 +17,7 @@ def term_updated_notify(term, **kwargs):
         "term_updated",
         term_to_json(term),
     )
-    # db.session.commit()
+    db.session.commit()
 
     flash(user.full_name + term.term_string + " updated")
 
