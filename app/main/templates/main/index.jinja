@@ -34,8 +34,8 @@ YAMZ Metadata Dictionary
 </div>
 
 {% endif %}
-{% if current_user.is_authenticated %}
 
+{% if current_user.is_authenticated %}
 <div class="row marketing">
     <table width=100%>
         <tr>
@@ -44,11 +44,9 @@ YAMZ Metadata Dictionary
             <td rowspan=2 width=75% valign=top>
                 <br />
                 <h4>Notifications</h4>
-                {% if notify %}
-                {{ notify }}
-                {% else %}
-                <font color="#B8B8B8"><i>No new notifications.</i></font>
-                {% endif %}
+                <div id="notifications">
+                    <!-- this panel will be populated by javascript -->
+                </div>
             </td>
 
             <td valign=top>
@@ -64,7 +62,6 @@ YAMZ Metadata Dictionary
                 {% endif %}
                 <br>
             </td>
-
         <tr>
             <td valign=top>
                 <hr>
@@ -81,7 +78,33 @@ YAMZ Metadata Dictionary
             </td>
         </tr>
     </table>
-
     {% endif %}
 
     {% endblock%}
+
+    {% block body_scripts%}
+    {{ super() }}
+    {% if current_user.is_authenticated %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.getJSON({
+                url: "{{ url_for('notify.notifications') }}",
+                success: function (notification_data) {
+                    item_count = notification_data.length;
+                    if (item_count > 0) {
+                        for (var i = 0; i < item_count; i++) {
+                            $("#notifications").append(
+                                notification_data[i].name + ":" +
+                                notification_data[i].data.term + "<br />"
+                            );
+                        }
+                    } else {
+                        $("#notifications").html(
+                            "<font color='#B8B8B8'><i>No new notifications.</i></font>");
+                    }
+                }
+            });
+        });
+    </script>
+    {% endif %}
+    {% endblock body_scripts %}

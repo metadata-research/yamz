@@ -1,9 +1,9 @@
 from app import db
 from app.notify import notify_blueprint as notify
 from app.notify.forms import MessageForm
-from app.user.models import Message
+from app.user.models import Message, Notification
 from app.user.models import User
-from flask import flash, redirect, render_template, url_for, abort, jsonify
+from flask import flash, redirect, render_template, url_for, abort, jsonify, request
 from flask_login import current_user, login_required
 
 
@@ -55,6 +55,8 @@ def messages():
 @notify.route("/notifications")
 @login_required
 def notifications():
+    since = request.args.get("since", 0.0, type=float)
+    # notifications = current_user.notifications.filter(Notification.timestamp > since).order_by("timestamp").all()
     notifications = current_user.notifications.order_by("timestamp").all()
     return jsonify(
         [
