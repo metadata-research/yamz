@@ -94,7 +94,7 @@ class Term(db.Model):
         "Track",
         back_populates="term",
         cascade="all, delete-orphan",
-        uselist=False,
+
     )
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
@@ -243,10 +243,7 @@ class Term(db.Model):
             return False
         else:
             return (
-                self.tracks.query.filter_by(
-                    term_id=self.id, user_id=current_user.id
-                ).first()
-                is not None
+                current_user.id in [track.user.id for track in self.tracks]
             )
 
         # return user.id in [track.user.id for track in self.tracks]
@@ -261,11 +258,9 @@ class Term(db.Model):
 
     def untrack(self, current_user):
         if self.is_tracked_by(current_user):
-            untrack = self.tracks.query.filter_by(
-                term_id=self.id, user_id=current_user.id
-            ).first()
-            db.session.delete(untrack)
-            db.session.commit()
+            untrack = Track.query.filter_by(user_id=current_user.id, term_id=self.id).first()
+            untrack.delete()
+            
 
     def up_vote(self, current_user):
         vote = self.votes.filter_by(user_id=current_user.id).first()
@@ -379,9 +374,14 @@ class Track(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+        
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
     def __repr__(self) -> str:
         return self.user.last_name + ": " + self.term.term_string
+    
 
 
 class Vote(db.Model):

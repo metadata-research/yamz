@@ -442,6 +442,12 @@ def remove_vote(concept_id):
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
+@term.route("/test/<concept_id>")
+@login_required
+def test_term(concept_id):
+    term = Term.query.filter_by(concept_id=concept_id).first()
+    return render_template("term/test.jinja", term=term)
+
 def references_to_html(match):
     """Input a regular expression match and return the reference as Text.
 
