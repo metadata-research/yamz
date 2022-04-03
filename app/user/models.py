@@ -136,3 +136,7 @@ class Notification(db.Model):
 
     def get_data(self):
         return json.loads(str(self.payload_json))
+    
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()

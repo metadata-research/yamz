@@ -257,6 +257,7 @@ class Term(db.Model):
         else:
             track = Track(user_id=current_user.id, term_id=self.id)
             track.save()
+            term_tracked.send(self)
 
     def untrack(self, current_user):
         if self.is_tracked_by(current_user):

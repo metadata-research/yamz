@@ -60,7 +60,16 @@ def notifications():
     notifications = current_user.notifications.order_by("timestamp").all()
     return jsonify(
         [
-            {"name": n.name, "data": n.get_data(), "timestamp": n.timestamp}
+            {"name": n.name, "id": n.id, "data": n.get_data(), "timestamp": n.timestamp}
             for n in notifications
         ]
     )
+
+@notify.route("/notifications/delete/<int:notification_id>")
+@login_required
+def delete_notification(notification_id):
+    notification = Notification.query.filter_by(id=notification_id).first_or_404()
+    if notification.user != current_user:
+        abort(403)
+    notification.delete()
+    return redirect(url_for("main.index"))

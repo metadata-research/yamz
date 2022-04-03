@@ -94,8 +94,10 @@ YAMZ Metadata Dictionary
                     if (item_count > 0) {
                         for (var i = 0; i < item_count; i++) {
                             $("#notifications").append(
-                                notification_data[i].name + ":" +
-                                notification_data[i].data.term + "<br />"
+                                "<a href='/term/ark/" + notification_data[i].data.term_concept_id + "'>" +
+                                notification_data[i].data.term_string +
+                                "</a> <i>" + notification_data[i].name + "</i> " +
+                                "<a href='/notify/notifications/delete/" + notification_data[i].id + "'><small>[delete]</small></a><br />"
                             );
                         }
                     } else {
