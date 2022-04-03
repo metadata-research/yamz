@@ -11,12 +11,18 @@ def term_to_json(term):
     }
 
 
-def term_updated_notify(term, **kwargs):
+def notify_users(term):
     users_to_notify = []
     users_to_notify.append(term.contributor)
     
     for track in term.tracks:
-        users_to_notify.append(track.user)
+        if track.user not in users_to_notify:
+            users_to_notify.append(track.user)
+    
+    return users_to_notify
+
+def term_updated_notify(term, **kwargs):
+    users_to_notify = notify_users(term)
      
     for user in users_to_notify:
         user.add_notification(
@@ -25,23 +31,19 @@ def term_updated_notify(term, **kwargs):
         )
         db.session.commit()
 
-        flash(user.full_name + " " + term.term_string + " updated (from signal)")  
-    
-
-
 def term_saved_notify(term, **kwargs):
     flash("Term saved (from signal)")
 
 
 def term_tracked_notify(term, **kwargs):
-    user = term.contributor
-    user.add_notification(
-        "Term Watched",
-        term_to_json(term),
-    )
-    db.session.commit()
-
-    flash(user.full_name + " " + term.term_string + " tracked (from signal)")
+    users_to_notify = notify_users(term)
+     
+    for user in users_to_notify:
+        user.add_notification(
+            "Term Watched",
+            term_to_json(term),
+        )
+        db.session.commit()
 
 def connect_handlers():
     term_saved.connect(term_saved_notify)
