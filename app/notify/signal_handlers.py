@@ -19,11 +19,11 @@ def term_updated_notify(term, **kwargs):
     )
     db.session.commit()
 
-    flash(user.full_name + term.term_string + " updated")
+    flash(user.full_name + " " + term.term_string + " updated (from signal)")
 
 
 def term_saved_notify(term, **kwargs):
-    flash("Term saved <signal>")
+    flash("Term saved (from signal)")
 
 
 def connect_handlers():

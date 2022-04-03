@@ -26,6 +26,7 @@ class status(enum.Enum):
     archived = (1, "archived")
     published = (2, "published")
     draft = (3, "draft")
+    deleted = (4, "deleted")
 
 
 class Relationship(db.Model):

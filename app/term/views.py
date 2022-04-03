@@ -228,12 +228,16 @@ def list_alphabetical():
     per_page = current_app.config["TERMS_PER_PAGE"]
 
     if sort_order == "descending":
-        term_list = Term.query.order_by(Term.term_string.desc()).paginate(
-            page, per_page, False
+        term_list = (
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.desc())
+            .paginate(page, per_page, False)
         )
     else:
-        term_list = Term.query.order_by(Term.term_string.asc()).paginate(
-            page, per_page, False
+        term_list = (
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.asc())
+            .paginate(page, per_page, False)
         )
 
     pager = Pager(term_list, page, per_page, Term.query.count())
@@ -255,6 +259,7 @@ def list_top_terms_alphabetical():
 
     query_result = (
         db.session.query(Term.term_string, db.func.count(Term.term_string))
+        .filter_by(status="published")
         .group_by(Term.term_string)
         .order_by(Term.term_string.asc())
     )
