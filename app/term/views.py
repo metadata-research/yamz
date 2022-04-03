@@ -3,17 +3,17 @@ from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
 from flask import (
+    abort,
     current_app,
+    flash,
     g,
     redirect,
     render_template,
     request,
     url_for,
-    flash,
-    abort,
 )
 from flask_login import current_user, login_required
-from sqlalchemy import desc, distinct, text, func
+from sqlalchemy import desc
 
 
 @term.before_request
@@ -148,8 +148,8 @@ def edit_term(concept_id):
         selected_term.term_string = form.term_string.data.strip()
         selected_term.definition = form.definition.data
         selected_term.examples = form.examples.data
-        db.session.commit()
-        flash("Term updated.")
+        selected_term.update()
+        # flash("Term updated.")
         return redirect(url_for("term.display_term", concept_id=concept_id))
     else:
         form.term_string.data = selected_term.term_string
@@ -162,11 +162,14 @@ def edit_term(concept_id):
 @login_required
 def delete_term(concept_id):
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    if selected_term is None:
+        abort(500)
     if selected_term.owner_id == current_user.id or current_user.is_administrator:
-        db.session.delete(selected_term)
-        db.session.commit()
+        selected_term.delete()
         flash("Term deleted.")
-        return redirect(url_for("term.list_terms"))
+    else:
+        flash("You are not authorized to delete this term.")
+    return redirect(url_for("term.list_terms"))
 
 
 # here we are using term id because the key is better as an integer and we don't have to look it up
@@ -190,6 +193,7 @@ def add_comment(term_id):
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
 
+# TODO: filter by published status
 @term.route("/search")
 def search():
     page = request.args.get("page", 1, type=int)
@@ -198,8 +202,10 @@ def search():
     search_terms = g.search_form.q.data
     search_terms = " & ".join(search_terms.split(" "))
 
-    term_list = Term.query.filter(Term.__ts_vector__.match(search_terms)).paginate(
-        page, per_page, False
+    term_list = (
+        Term.query.filter(Term.__ts_vector__.match(search_terms))
+        # .filter(Term.status != status.deleted)
+        .paginate(page, per_page, False)
     )
 
     pager = Pager(term_list, page, per_page, len(term_list.items))
@@ -225,12 +231,16 @@ def list_alphabetical():
     per_page = current_app.config["TERMS_PER_PAGE"]
 
     if sort_order == "descending":
-        term_list = Term.query.order_by(Term.term_string.desc()).paginate(
-            page, per_page, False
+        term_list = (
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.desc())
+            .paginate(page, per_page, False)
         )
     else:
-        term_list = Term.query.order_by(Term.term_string.asc()).paginate(
-            page, per_page, False
+        term_list = (
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.asc())
+            .paginate(page, per_page, False)
         )
 
     pager = Pager(term_list, page, per_page, Term.query.count())
@@ -252,6 +262,7 @@ def list_top_terms_alphabetical():
 
     query_result = (
         db.session.query(Term.term_string, db.func.count(Term.term_string))
+        .filter_by(status="published")
         .group_by(Term.term_string)
         .order_by(Term.term_string.asc())
     )
@@ -430,6 +441,12 @@ def remove_vote(concept_id):
         selected_term.remove_vote(current_user)
         return redirect(url_for("term.display_term", concept_id=concept_id))
 
+
+@term.route("/test/<concept_id>")
+@login_required
+def test_term(concept_id):
+    term = Term.query.filter_by(concept_id=concept_id).first()
+    return render_template("term/test.jinja", term=term)
 
 def references_to_html(match):
     """Input a regular expression match and return the reference as Text.

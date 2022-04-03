@@ -1,0 +1,37 @@
+{% extends './base.jinja' %}
+
+
+{% block title %}
+Send Message
+{% endblock %}
+
+{% block headline %}
+
+{% endblock headline %}
+
+
+{% block content %}
+
+<div class="card col-7">
+    <h5 class="card-header">Send a message</h5>
+    <div class="card-body">
+        <h5 class="card-title">To: {{ recipient.full_name }}</h5>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group row py-2">
+                {{ form.message.label(class="col-2 col-form-label", for="message") }}
+                <div class="col">
+                    {{ form.message(class="form-control", id="message") }}
+                </div>
+            </div>
+            <div class="form-group row py-2">
+                <div class="col">
+                    {{ form.submit(class="btn btn-dark") }}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock content %}

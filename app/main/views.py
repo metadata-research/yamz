@@ -1,8 +1,7 @@
 from flask import render_template
-from flask_login import current_user, login_required
+from flask_login import current_user
 
 from app.main import main_blueprint as main
-from app.term.models import Term, Track
 from app.term.forms import SearchForm
 
 

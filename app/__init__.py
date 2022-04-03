@@ -25,28 +25,32 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    from app.auth.models import AdminModelView, AppAdminIndexView
-
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
+
+    from app.auth.models import AdminModelView, AppAdminIndexView
+
     admin = Admin(app, index_view=AppAdminIndexView(name="YAMZ Status"))
+
+    from app.notify.signal_handlers import connect_handlers
+
+    connect_handlers()
 
     from app.auth import auth_blueprint as auth_bp
     from app.error import error_blueprint as error_bp
     from app.main import main_blueprint as main_bp
+    from app.notify import notify_blueprint as notify_bp
     from app.term import term_blueprint as term_bp
     from app.user import user_blueprint as user_bp
 
-    # from app.admin import admin_blueprint as admin_bp
-
-    app.register_blueprint(main_bp, url_prefix="/")
     app.register_blueprint(auth_bp, url_prefix="/")
+    app.register_blueprint(error_bp, url_prefix="/error")
+    app.register_blueprint(main_bp, url_prefix="/")
+    app.register_blueprint(notify_bp, url_prefix="/notify")
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
-    app.register_blueprint(error_bp, url_prefix="/error")
-    # app.register_blueprint(admin_bp, url_prefix="/admin")
 
     from app.term.models import Tag, Term
     from app.user.models import User
