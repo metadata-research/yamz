@@ -3,17 +3,17 @@ from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
 from flask import (
+    abort,
     current_app,
+    flash,
     g,
     redirect,
     render_template,
     request,
     url_for,
-    flash,
-    abort,
 )
 from flask_login import current_user, login_required
-from sqlalchemy import desc, distinct, text, func
+from sqlalchemy import desc
 
 
 @term.before_request
@@ -193,6 +193,7 @@ def add_comment(term_id):
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
 
+# TODO: filter by published status
 @term.route("/search")
 def search():
     page = request.args.get("page", 1, type=int)
@@ -201,8 +202,10 @@ def search():
     search_terms = g.search_form.q.data
     search_terms = " & ".join(search_terms.split(" "))
 
-    term_list = Term.query.filter(Term.__ts_vector__.match(search_terms)).paginate(
-        page, per_page, False
+    term_list = (
+        Term.query.filter(Term.__ts_vector__.match(search_terms))
+        # .filter(Term.status != status.deleted)
+        .paginate(page, per_page, False)
     )
 
     pager = Pager(term_list, page, per_page, len(term_list.items))
