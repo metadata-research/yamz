@@ -174,4 +174,27 @@ def clean_tags():
                 
                     
                 
-    
+def convert_ambiguous():
+    terms = Term.query
+    for term in terms:
+        term_ref = g_regex.findall(term.definition)
+        for tag in term_ref:
+            tag_ref = tagstart + tag[2] + tag[3] + "}"
+            term_tag = tag[2].replace(ixuniq, "")
+            if "ambiguous" in tag_ref:
+                if term_tag in str(term.tags):
+                    print("already tagged with " + term_tag)
+                else:
+                    term_tag_clear = term_tag.replace("(ambiguous)", "")
+                    new_tag = Tag.query.filter_by(value=term_tag_clear).first()
+                    if not Tag.query.filter_by(value=new_tag.value).first() in term.tags:
+                        term.tags.append(new_tag)
+                        print(new_tag.value + " added to " + term.term_string)
+                        term.definition = term.definition.replace(tag_ref, "")
+                        print(term.definition)
+                        db.session.add(term)
+    db.session.commit()
+                    
+            
+            
+# don't forget about t: entries
