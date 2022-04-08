@@ -58,7 +58,7 @@ class User(UserMixin, db.Model):
 
     @property
     def new_message_count(self):
-        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        last_read_time = self.last_message_read_time or datetime.date(1900, 1, 1)
         count = (
             Message.query.filter_by(recipient=self)
             .filter(Message.timestamp > last_read_time)
