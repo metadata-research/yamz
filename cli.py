@@ -78,6 +78,10 @@ def tagotherterms():
 def removetagterms():
     removeTagTerms_strings()
 
+@click.command()
+def cleantags():
+    clean_tags()
+
 
 cli.add_command(addall)
 # first do:
@@ -99,6 +103,8 @@ cli.add_command(tagotherterms)
 cli.add_command(transfertracking)
 cli.add_command(transfervotes)
 cli.add_command(removetagterms)
+cli.add_command(cleantags)
+
 
 if __name__ == "__main__":
     cli()

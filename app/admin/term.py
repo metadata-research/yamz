@@ -155,3 +155,23 @@ def tagOtherTerms():
                     # term.tags.append(tag_row)
                     # term.save()
                     # print(definition)
+
+def clean_tags():
+    terms = Term.query
+    for term in terms:
+        term_ref = g_regex.findall(term.definition)
+        for tag in term_ref:
+            tag_ref = tagstart + tag[2] + tag[3] + "}"
+            term_tag = tag[2].replace("xq", "")
+            if not "ambiguous" in tag_ref:
+                if term_tag in str(term.tags):
+                    print("strip " + tag_ref)
+                    term.definition = term.definition.replace(tag_ref, "")
+                    print(term.definition)
+                    db.session.add(term)
+    db.session.commit()
+                    
+                
+                    
+                
+    
