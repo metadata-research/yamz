@@ -143,6 +143,104 @@ you must add users before terms to preserve the pk based relationships
 
     python cli.py removetagterms # remove the term_strings that have become tags
 
-non-critical data
-transfertracking
-transfervotes
+
+## Deploying to Production
+
+Create a `yamz.ini` file in the yamz directory. There is a template in the repository
+
+    [uwsgi]
+    module = ice:app
+
+    master = true
+    processes = 5
+
+    socket = yamz.sock
+    chmod-socket = 660
+    vacuum = true
+    
+    die-on-term = true
+
+Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _usr1_ is a standin for the username that is associated with the running instance of your webserver.
+  
+    [Unit]
+    Description=uWSGI instance to serve yamz
+    After=network.target
+    
+    [Service]
+    User=usr1 
+    Group=www-data
+    WorkingDirectory=/home/usr1/yamz
+    ExecStart=uwsgi --ini yamz.ini
+
+    [Install]
+    WantedBy=multi-user.target
+
+Start the service.
+
+`sudo systemctl start yamz`
+
+Enable it so it starts at boot.
+
+`sudo systemctl enable yamz`
+
+Check the status.
+
+`sudo systemctl status yamz`
+
+Yamz (ice) is now running, waiting for requests on the socket file
+
+## Configuring Nginx to Proxy Requests
+
+Create a new server block configuration file in Nginx's sites-available directory.
+
+For example ` sudo nano /etc/nginx/sites-available/yamz`
+
+    server {
+        listen 80;
+        server_name yamz.link www.yamz.link;
+        location / {
+            include uwsgi_params;
+            uwsgi_pass unix:/home/cr625/yamz/yamz.sock;
+        }
+    }
+
+
+Save and close the file when you’re finished.
+
+To enable the Nginx server block configuration, link the file to the sites-enabled directory:
+
+`sudo ln -s /etc/nginx/sites-available/yamz /etc/nginx/sites-enabled`
+
+
+Remove the default site or it will block the proxying.
+
+`sudo unlink /etc/nginx/sites-enabled/default`
+
+test for syntax errors
+
+`sudo nginx -t`
+
+The YAMZ prototype is currently hosted at http://yamz.link
+
+make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
+
+Restart nginx.
+
+`sudo systemctl restart nginx`
+
+## Secure the application
+
+You can do this anyway you like, but currently it is with Certbot and its Nginx plugin
+
+The Nginx plugin will take configure Nginx and reload the config when necessary. To use it
+
+`sudo certbot --nginx -d yamz.link -d www.yamz.link`
+
+Make sure there is a generic type a record and one for www for your domain.
+
+Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
+
+You no longer need the http entry exception in the firewall
+
+`sudo ufw delete allow 'Nginx HTTP'`
+
