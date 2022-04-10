@@ -143,7 +143,27 @@ you must add users before terms to preserve the pk based relationships
 
     python cli.py removetagterms # remove the term_strings that have become tags
 
+## OAuth Credentials and appkey
 
+YAMZ uses Google for third party authentication (OAuth-2.0) management of
+logins. Visit https://console.cloud.google.com to set this service up
+for your instance. Navigate to something like APIs and Services -> Credentials
+and select whatever lets you create a new OAuth client ID.  For local
+configuration, supply these answers:
+
+    Application type . . . . . . . . . . Web application
+
+    Authorized javascript origins  . . . http://localhost:5000
+                                         http://localhost
+                                         https://domain.name
+
+    Authorized redirect URI  . . . . . . http://localhost:5000/g_authorized
+                                         https://localhost/g_authorized
+                                         https://domain.name/g_authorized
+
+The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory
+
+`uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or os store.
 ## Deploying to Production
 
 Create a `yamz.ini` file in the yamz directory. There is a template in the repository
