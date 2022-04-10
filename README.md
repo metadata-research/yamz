@@ -169,7 +169,7 @@ The credentials minus the port is for when the proxy web server is set up and yo
 Create a `yamz.ini` file in the yamz directory. There is a template in the repository
 
     [uwsgi]
-    module = ice:app
+    module = yamz:app
 
     master = true
     processes = 5
@@ -207,7 +207,7 @@ Check the status.
 
 `sudo systemctl status yamz`
 
-Yamz (ice) is now running, waiting for requests on the socket file
+Yamz is now running, waiting for requests on the socket file
 
 ## Configuring Nginx to Proxy Requests
 
@@ -220,7 +220,7 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
         server_name yamz.link www.yamz.link;
         location / {
             include uwsgi_params;
-            uwsgi_pass unix:/home/cr625/yamz/yamz.sock;
+            uwsgi_pass unix:/home/usr1/yamz/yamz.sock;
         }
     }
 
@@ -259,8 +259,4 @@ The Nginx plugin will take configure Nginx and reload the config when necessary.
 Make sure there is a generic type a record and one for www for your domain.
 
 Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
-
-You no longer need the http entry exception in the firewall
-
-`sudo ufw delete allow 'Nginx HTTP'`
 
