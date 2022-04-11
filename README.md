@@ -161,9 +161,7 @@ configuration, supply these answers:
                                          https://localhost/g_authorized
                                          https://domain.name/g_authorized
 
-The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory
-
-`uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or os store.
+The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory `uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or os store.
 ## Deploying to Production
 
 Create a `yamz.ini` file in the yamz directory. There is a template in the repository
