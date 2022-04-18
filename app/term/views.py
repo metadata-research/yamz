@@ -208,13 +208,24 @@ def search():
         .paginate(page, per_page, False)
     )
 
-    pager = Pager(term_list, page, per_page, len(term_list.items))
-
+    # pager = Pager(term_list, page, per_page, len(term_list.items))
+    next_url = (
+        url_for("term.search", q=search_terms, page=term_list.next_num)
+        if term_list.has_next
+        else None
+    )
+    prev_url = (
+        url_for("term.search", q=search_terms, page=term_list.prev_num)
+        if term_list.has_prev
+        else None
+    )
     return render_template(
-        "term/list_terms.jinja",
+        "term/search_results.jinja",
         term_list=term_list.items,
         sort_type=sort_type,
-        pager=pager,
+        search_terms=search_terms,
+        next_url=next_url,
+        prev_url=prev_url,
     )
 
 
@@ -447,6 +458,7 @@ def remove_vote(concept_id):
 def test_term(concept_id):
     term = Term.query.filter_by(concept_id=concept_id).first()
     return render_template("term/test.jinja", term=term)
+
 
 def references_to_html(match):
     """Input a regular expression match and return the reference as Text.

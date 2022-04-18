@@ -1,0 +1,66 @@
+{% extends './base.jinja' %}
+
+{% if sort_order == 'ascending' %}
+{% set sort_order = 'descending'  %}
+{% elif sort_order== 'descending'%}
+{% set sort_order = 'ascending'  %}
+{% endif %}
+
+
+{% block title %}
+Browse Terms
+{% endblock %}
+
+{% block headline %}
+Browse terms - {{ sort_type }}
+{% endblock headline %}
+
+{% block content %}
+{% include 'term/_subnav.jinja' %}
+<table class="table table-borderless table-sm">
+    <thead>
+        <tr>
+            <th>Term</th>
+            <th>Score</th>
+            <th>Consensus</th>
+            <th>Class</th>
+            <th>Modified</th>
+            <th>Contributor</th>
+        <tr>
+    </thead>
+    {% for term in term_list %}
+    <tbody>
+        <tr>
+            <td>
+                <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
+            </td>
+            <td>
+                {{ term.score }}
+            </td>
+            <td>
+                {{ term.consensus}}
+            </td>
+            <td>
+                {{ term.term_class.value[1]}}
+            </td>
+            <td>
+                {{ term.modified | format_date}}
+            </td>
+            <td>
+                {{ term.contributor.full_name }}
+            </td>
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+
+{% if prev_url %}
+<a href="{{ prev_url }}">Prev</a>
+{% endif %}
+
+{% if next_url %}
+<a href="{{ next_url }}">Next</a>
+{% endif %}
+
+
+{% endblock content%}
