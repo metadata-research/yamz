@@ -19,7 +19,7 @@ Tag: {{ tag }}
 {% endfor %}
 <div class="row py-2">
     <div class="col">
-        {{ macros.render_tag_pagination(pager, request.url_rule.endpoint, tag_value) }}
+      <!-- pagination.links -->
     </div>
 </div>
 {% endblock content %}
