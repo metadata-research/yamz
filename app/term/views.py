@@ -282,8 +282,9 @@ def list_top_terms_alphabetical():
     pager = query_result.paginate(page, per_page, False)
     term_list = pager.items
 
+    tag_list = Tag.query.order_by(Tag.value.asc())
     return render_template(
-        "term/list_top_terms.jinja", term_list=term_list, pager=pager
+        "term/list_top_terms.jinja", term_list=term_list, pager=pager, tag_list=tag_list
     )
 
 
@@ -308,6 +309,23 @@ def list_terms_by_tag(tag_id):
         pager=pager,
         tag_id=tag_id,
         tag=tag.value,
+    )
+
+
+@term.route("/list/tag/value/<tag_value>")
+def terms_by_tag_value(tag_value):
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
+    tag = Tag.query.filter_by(value=tag_value).first()
+    term_list = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
+        Term.term_string
+    )
+    tag_list = Tag.query.order_by(Tag.value.asc())
+    return render_template(
+        "term/terms_by_tag_value.jinja",
+        term_list=term_list,
+        tag=tag.value,
+        tag_list=tag_list,
     )
 
 

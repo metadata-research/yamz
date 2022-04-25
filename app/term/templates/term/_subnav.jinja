@@ -10,6 +10,20 @@
         {% endif %}
         |
         <a href=" {{ url_for('term.list_score') }}">high score</a> |
-        <a href=" {{ url_for('term.list_recent') }}">recent</a> | volatile | stable
+        <a href=" {{ url_for('term.list_recent') }}">recent</a> | volatile | stable | filter: 
+        <select style="width:auto;" name="tags" id="tags">
+        {% for tag in tag_list  %}    
+            <option value="{{ tag.value }}">{{ tag.value }}</option>
+        {% endfor %}
+        </select>
+        <button type="button" class="btn btn-dark btn-sm" onclick="filter_by_tag()">go</button>
     </div>
 </div>
+<script>
+function filter_by_tag() {
+    //var selected_tag = document.getElementById("tags").value;
+    var selected_tag = $('#tags').val();
+    var url = '/term/list/tag/value/' + selected_tag;
+    document.location.href=url;
+}
+</script>
