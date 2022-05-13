@@ -96,13 +96,7 @@ From the config.py file:
 
     flask db init
 
-    flask db migrate
-
-        (an error had come up here sometimes and the workaround for now is
-    
-           flask db revision --rev-id xxxxxxxxxx
-
-           flask db upgrade
+    flask db migrate     
 
 13. Run the app
 
