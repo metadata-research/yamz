@@ -106,6 +106,15 @@ def show_alternate_terms(term_string):
     )
 
 
+@term.route("contribute/test", methods=["GET", "POST"])
+def index():
+    form = PageDownFormExample()
+    if form.validate_on_submit():
+        text = form.pagedown.data
+        # do something interesting with the Markdown text
+    return render_template("term/test.jinja", form=form)
+
+
 @term.route("/contribute/create", methods=["GET", "POST"])
 @login_required
 def create_term():
