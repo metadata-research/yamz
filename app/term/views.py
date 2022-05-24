@@ -110,7 +110,7 @@ def show_alternate_terms(term_string):
 def index():
     form = PageDownFormExample()
     if form.validate_on_submit():
-        text = form.pagedown.data
+        text = form.definition.data
         # do something interesting with the Markdown text
     return render_template("term/test.jinja", form=form)
 

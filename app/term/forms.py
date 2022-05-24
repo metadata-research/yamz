@@ -7,8 +7,8 @@ from flask_pagedown.fields import PageDownField
 
 class CreateTermForm(FlaskForm):
     term_string = StringField("Term string", validators=[DataRequired()])
-    definition = TextAreaField("Definition")
-    examples = TextAreaField("Examples")
+    definition = PageDownField("Definition")
+    examples = PageDownField("Examples")
     submit = SubmitField("Submit")
 
 
@@ -20,7 +20,8 @@ class EditTermForm(FlaskForm):
 
 
 class PageDownFormExample(FlaskForm):
-    pagedown = PageDownField("Enter your markdown")
+    definition = PageDownField("Definition")
+    examples = PageDownField("Examples")
     submit = SubmitField("Submit")
 
 

@@ -11,7 +11,9 @@
 {{ pagedown.include_pagedown() }}
     <form method="POST">
         {{ form.hidden_tag() }}
-        {{ form.pagedown(rows=10) }}
+        {{ form.definition(class="form-control", rows=10) }}
+
+        {{ form.examples(class="form-control", rows=10) }}
         {{ form.submit }}
     </form>
 {% endblock content %}
