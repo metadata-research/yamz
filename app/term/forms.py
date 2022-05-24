@@ -12,19 +12,6 @@ class CreateTermForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-class EditTermForm(FlaskForm):
-    term_string = StringField("Term string", validators=[DataRequired()])
-    definition = TextAreaField("Definition")
-    examples = TextAreaField("Examples")
-    submit = SubmitField("Submit")
-
-
-class PageDownFormExample(FlaskForm):
-    definition = PageDownField("Definition")
-    examples = PageDownField("Examples")
-    submit = SubmitField("Submit")
-
-
 class CommentForm(FlaskForm):
     comment_string = TextAreaField("Comment", validators=[DataRequired()])
     submit = SubmitField("Comment")

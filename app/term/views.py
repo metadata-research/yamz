@@ -152,7 +152,7 @@ def create_term():
 @term.route("/contribute/edit/<concept_id>", methods=["POST"])
 @login_required
 def edit_term(concept_id):
-    form = EditTermForm()
+    form = CreateTermForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
     if form.validate_on_submit():
         selected_term.term_string = form.term_string.data.strip()

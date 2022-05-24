@@ -92,7 +92,11 @@
                     Definition:
                 </div>
                 <div class="col mx-3">
-                    {{ selected_term.definition | convert_line_breaks | format_tags }}
+                    {% if selected_term.definition_html %}
+                        {{ selected_term.definition_html }}
+                    {% else %}
+                        {{ selected_term.definition | convert_line_breaks | format_tags }}    
+                    {% endif %}
                 </div>
             </div>
             {% if selected_term.examples %}
@@ -101,7 +105,11 @@
                     Examples:
                 </div>
                 <div class="col mx-3">
+                    {% if selected_term.examples_html %}
+                        {{ selected_term.examples_html | safe }}
+                    {% else%}
                     {{ selected_term.examples | convert_line_breaks | format_tags }}
+                    {% endif %}
                 </div>
             </div>
             {% endif %}
