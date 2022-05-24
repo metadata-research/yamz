@@ -2,13 +2,18 @@
 
 
 
+
 {% block headline%}
 
 {% endblock headline%}
 
 {% block content %}
-{% for track in term.tracks  %}
-    {{ track.user.full_name }}
-{% endfor %}
+{{ pagedown.include_pagedown() }}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.definition(class="form-control", rows=10) }}
 
+        {{ form.examples(class="form-control", rows=10) }}
+        {{ form.submit }}
+    </form>
 {% endblock content %}

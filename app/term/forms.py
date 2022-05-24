@@ -2,19 +2,13 @@ from flask import request
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, TextAreaField
 from wtforms.validators import DataRequired
+from flask_pagedown.fields import PageDownField
 
 
 class CreateTermForm(FlaskForm):
     term_string = StringField("Term string", validators=[DataRequired()])
-    definition = TextAreaField("Definition")
-    examples = TextAreaField("Examples")
-    submit = SubmitField("Submit")
-
-
-class EditTermForm(FlaskForm):
-    term_string = StringField("Term string", validators=[DataRequired()])
-    definition = TextAreaField("Definition")
-    examples = TextAreaField("Examples")
+    definition = PageDownField("Definition")
+    examples = PageDownField("Examples")
     submit = SubmitField("Submit")
 
 

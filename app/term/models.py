@@ -7,9 +7,31 @@ from blinker import Namespace
 from sqlalchemy import Index, case, select
 from sqlalchemy.dialects.postgresql import TSVECTOR
 from sqlalchemy.ext.hybrid import hybrid_property
+from markdown import markdown
+import bleach
 
 SHOULDER = "h"
 NAAN = "99152"
+
+allowed_tags = [
+    "a",
+    "abbr",
+    "acronym",
+    "b",
+    "blockquote",
+    "code",
+    "em",
+    "i",
+    "li",
+    "ol",
+    "pre",
+    "strong",
+    "ul",
+    "h1",
+    "h2",
+    "h3",
+    "p",
+]
 
 
 def normalize_tag(reference):
@@ -68,7 +90,9 @@ class Term(db.Model):
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     term_string = db.Column(db.Text)
     definition = db.Column(db.Text)
+    definition_html = db.Column(db.Text)
     examples = db.Column(db.Text)
+    examples_html = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
     status = db.Column("status", db.Enum(status), default=status.published)
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
@@ -94,7 +118,6 @@ class Term(db.Model):
         "Track",
         back_populates="term",
         cascade="all, delete-orphan",
-
     )
     votes = db.relationship(
         "Vote", backref="term", lazy="dynamic", cascade="all, delete-orphan"
@@ -115,6 +138,22 @@ class Term(db.Model):
         lazy="dynamic",
         cascade="all, delete-orphan",
     )
+
+    @staticmethod
+    def on_changed_definition(target, value, oldvalue, initiator):
+        target.definition_html = bleach.linkify(
+            bleach.clean(
+                markdown(value, output_format="html"), tags=allowed_tags, strip=True
+            )
+        )
+
+    @staticmethod
+    def on_changed_examples(target, value, oldvalue, initiator):
+        target.examples_html = bleach.linkify(
+            bleach.clean(
+                markdown(value, output_format="html"), tags=allowed_tags, strip=True
+            )
+        )
 
     def add_child_relationship(self, child, predicate):
         child = Relationship(parent_id=self.id, child_id=child.id, predicate=predicate)
@@ -242,9 +281,7 @@ class Term(db.Model):
         if self.tracks is None:
             return False
         else:
-            return (
-                current_user.id in [track.user.id for track in self.tracks]
-            )
+            return current_user.id in [track.user.id for track in self.tracks]
 
         # return user.id in [track.user.id for track in self.tracks]
 
@@ -258,9 +295,10 @@ class Term(db.Model):
 
     def untrack(self, current_user):
         if self.is_tracked_by(current_user):
-            untrack = Track.query.filter_by(user_id=current_user.id, term_id=self.id).first()
+            untrack = Track.query.filter_by(
+                user_id=current_user.id, term_id=self.id
+            ).first()
             untrack.delete()
-            
 
     def up_vote(self, current_user):
         vote = self.votes.filter_by(user_id=current_user.id).first()
@@ -374,14 +412,13 @@ class Track(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
-        
+
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
     def __repr__(self) -> str:
         return self.user.last_name + ": " + self.term.term_string
-    
 
 
 class Vote(db.Model):
@@ -401,3 +438,7 @@ tag_table = db.Table(
     db.Column("tag_id", db.Integer, db.ForeignKey("tags.id")),
     db.Column("term_id", db.Integer, db.ForeignKey("terms.id")),
 )
+
+
+db.event.listen(Term.definition, "set", Term.on_changed_definition)
+db.event.listen(Term.examples, "set", Term.on_changed_examples)

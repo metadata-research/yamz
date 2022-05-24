@@ -11,10 +11,12 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_pagedown import PageDown
 
 db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
+pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access this page."
@@ -29,6 +31,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
+    pagedown.init_app(app)
 
     from app.auth.models import AdminModelView, AppAdminIndexView
 
