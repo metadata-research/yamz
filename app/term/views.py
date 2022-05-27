@@ -2,6 +2,7 @@ from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
 from app.utilities import *
+from app.extras import pretty
 from flask import (
     abort,
     current_app,
@@ -19,6 +20,18 @@ from sqlalchemy import desc
 @term.before_request
 def before_request():
     g.search_form = SearchForm()
+
+
+@term.app_template_filter("process_tags_as_html")
+def process_tags(text):
+    """format a string for display. Convert tokens to links.
+
+    :param text: String to pretty-print.
+    :type text: str
+    :return: Pretty-printed string.
+    :rtype: str
+    """
+    return pretty.processTagsAsHTML(None, text, tagAsTerm=False)
 
 
 # these filters are to duplicate the functionality of seaice.pretty but might be replaced with a markdown editor
