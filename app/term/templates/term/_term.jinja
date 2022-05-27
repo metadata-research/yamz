@@ -93,9 +93,9 @@
                 </div>
                 <div class="col mx-3">
                     {% if selected_term.definition_html %}
-                        {{ selected_term.definition_html }}
+                        {{ selected_term.definition_html | process_tags_as_html }}
                     {% else %}
-                        {{ selected_term.definition | convert_line_breaks | format_tags }}    
+                        {{ selected_term.definition | process_tags_as_html }}
                     {% endif %}
                 </div>
             </div>
