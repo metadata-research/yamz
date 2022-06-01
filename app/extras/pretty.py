@@ -375,7 +375,7 @@ def printRefAsHTML(db_con, reftype, humstring, IDstring, tagAsTerm):
     #
     # term = db_con.getTermByConceptId(IDstring)
     term = Term.query.filter_by(concept_id=IDstring).first()
-    term_def = "Def: " + (term["definition"] if term else "(undefined)")
+    term_def = "Def: " + (term.definition if term else "(undefined)")
     # yyy can we improve poor search for '#tag' query?
     if reftype == "g":
         # yyy in theory don't need to check before removing uniquerifier string
