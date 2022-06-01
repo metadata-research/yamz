@@ -34,6 +34,8 @@ On a mac
 postgres=# create database yamz with owner postgres;
 
 
+\q to exit
+
 4. Placeholder
 
 
