@@ -360,8 +360,17 @@ class Comment(db.Model):
     created = db.Column(db.DateTime, default=db.func.now())
     modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
     comment_string = db.Column(db.Text)
+    comment_string_html = db.Column(db.Text)
 
     author = db.relationship("User", backref="author", lazy="joined")
+
+    @staticmethod
+    def on_changed_definition(target, value, oldvalue, initiator):
+        target.comment_string_html = bleach.linkify(
+            bleach.clean(
+                markdown(value, output_format="html"), tags=allowed_tags, strip=True
+            )
+        )
 
     def save(self):
         db.session.add(self)

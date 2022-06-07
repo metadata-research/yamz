@@ -1,0 +1,12 @@
+    <div class="container">
+    <hr>
+        <div class="row px-4">
+            <div class="col">
+                <form action="{{ url_for('term.add_tag', term_id=selected_term.id) }}" method="post">
+                    {{ tag_form.hidden_tag() }}
+                    {{ tag_form.tag_list() }}
+                    {{ tag_form.submit() }}
+                </form>
+            </div>
+        </div>
+    </div>

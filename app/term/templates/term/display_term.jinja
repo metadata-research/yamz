@@ -15,6 +15,9 @@ YAMZ Term- {{ selected_term.term_string}}
 {% endif %}
 
 {% include 'term/_term.jinja' %}
+{% if current_user.is_administrator or current_user == selected_term.contributor %}
+{% include 'tag/_add_tag_form.jinja' %}
+{% endif %}
 
 {% include 'term/_comments.jinja' %}
 

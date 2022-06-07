@@ -1,6 +1,6 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, TextAreaField
+from wtforms import SubmitField, StringField, TextAreaField, SelectField
 from wtforms.validators import DataRequired
 from flask_pagedown.fields import PageDownField
 
@@ -13,7 +13,7 @@ class CreateTermForm(FlaskForm):
 
 
 class CommentForm(FlaskForm):
-    comment_string = TextAreaField("Comment", validators=[DataRequired()])
+    comment_string = PageDownField("Comment", validators=[DataRequired()])
     submit = SubmitField("Comment")
 
 
@@ -37,3 +37,9 @@ class TagForm(FlaskForm):
     value = StringField("Value", validators=[DataRequired()])
     description = TextAreaField("Description")
     submit = SubmitField("Save")
+
+
+class AddTagForm(FlaskForm):
+    tag_list = SelectField("Tag", choices=["a", "b", "c"])
+
+    submit = SubmitField("Apply")

@@ -81,6 +81,9 @@ def display_term(concept_id):
         abort(404)
     form = EmptyForm()
     comment_form = CommentForm()
+    tag_form = AddTagForm()
+    tag_form.tag_list.choices = [t.value for t in Tag.query.order_by(Tag.value)]
+    test = [t.value for t in Tag.query.order_by(Tag.value)]
     comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
         "term/display_term.jinja",
@@ -88,6 +91,8 @@ def display_term(concept_id):
         form=form,
         comments=comments,
         comment_form=comment_form,
+        tag_form=tag_form,
+        test=test,
     )
 
 
@@ -114,6 +119,7 @@ def show_alternate_terms(term_string):
         "term/display_terms.jinja",
         selected_terms=selected_terms,
         form=form,
+        tag_form=form,
         alternatives_for_string=term_string,
         headline="Alternate Definitions " + "for " + term_string,
     )
@@ -391,7 +397,7 @@ def create_tag():
 @term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
 @login_required
 def edit_tag(tag_id):
-    tag_form = TagForm()
+    tag_form = AddTagForm()
     tag = Tag.query.get_or_404(tag_id)
     if tag_form.validate_on_submit():
         tag.category = tag_form.category.data
@@ -422,6 +428,18 @@ def delete_tag(tag_id):
 def list_tags():
     tags = Tag.query.order_by(Tag.value)
     return render_template("tag/list_tags.jinja", tags=tags)
+
+
+@term.route("/tag/add/<int:term_id>", methods=["GET", "POST"])
+@login_required
+def add_tag(term_id):
+    tag_form = AddTagForm()
+    term = Term.query.get_or_404(term_id)
+    concept_id = term.concept_id
+    tag = Tag.query.filter_by(value=tag_form.tag_list.data).first()
+    term.tags.append(tag)
+    term.save()
+    return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
 @term.route("track/<concept_id>", methods=["POST"])
