@@ -397,7 +397,7 @@ def create_tag():
 @term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
 @login_required
 def edit_tag(tag_id):
-    tag_form = AddTagForm()
+    tag_form = TagForm()
     tag = Tag.query.get_or_404(tag_id)
     if tag_form.validate_on_submit():
         tag.category = tag_form.category.data
