@@ -18,11 +18,13 @@ ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\
 
 def list_tagged_terms():
     # find all the terms that have to old style tags
-    yamz_tagged_terms = Term.query.filter(Term.definition.contains("#{"))
+    yamz_tagged_terms = Term.query.filter(Term.definition.contains("#{"), Term.status=="published")
 
     # print the definitions of the terms with the old style tags
     for term in yamz_tagged_terms:
+        print(term.term_string)
         print(term.definition)
+    print(yamz_tagged_terms.count())
 
 
 # add the commands to the cli
