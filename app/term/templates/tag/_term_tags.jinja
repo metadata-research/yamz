@@ -4,6 +4,10 @@
                 {% for tag in selected_term.tags %}
                 <a href="{{ url_for('term.terms_by_tag_value', tag_value=tag.value) }}" role="button"
                     class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
+                    {% if current_user.is_administrator or current_user == selected_term.contributor %}
+                    <a href="{{ url_for('term.remove_tag', term_id=selected_term.id, tag_id=tag.id) }}"
+                        role="button" class="btn btn-close btn-sm"></a>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

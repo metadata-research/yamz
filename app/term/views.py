@@ -442,6 +442,15 @@ def add_tag(term_id):
     return redirect(url_for("term.display_term", concept_id=concept_id))
 
 
+@term.route("/tag/remove/<int:term_id>/<int:tag_id>", methods=["GET", "POST"])
+def remove_tag(term_id, tag_id):
+    term = Term.query.get_or_404(term_id)
+    tag = Tag.query.get_or_404(tag_id)
+    term.tags.remove(tag)
+    term.save()
+    return redirect(url_for("term.display_term", concept_id=term.concept_id))
+
+
 @term.route("track/<concept_id>", methods=["POST"])
 @login_required
 def track_term(concept_id):
