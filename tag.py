@@ -33,7 +33,7 @@ def list_tags_in_definition():
         definition = term.definition
 
         # find all the tags in the definition
-        term_tags = ref_regex.findall(term.definition)
+        term_tags = ref_regex.findall(definition)
 
         # print the term and the tags
         print("term string: " + term.term_string)
@@ -51,11 +51,15 @@ def list_tags_in_definition():
             tag_to_replace = tagstart + tag[0] + " " + tag[2] + tag[3] + "}"
 
             # build the replacement URL
-            replacement_url = '<a href="https://n2t.net/99152/">' + term_id + "</a>"
+            replacement_url = '['+ tag_string + ']' + '(https://n2t.net/99152/' + term_id + ')'
 
             if tag_to_replace.startswith("#{t: "):
 
-                print("replace " + tag_to_replace + " with " + replacement_url)
+                #print("replace " + tag_to_replace + " with " + replacement_url)
+                definition = definition.replace(tag_to_replace, replacement_url)
+                term.definition = definition
+                print(term.definition)
+                
 
         print()
 
