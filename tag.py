@@ -20,20 +20,25 @@ tagstart = "#{"  # final space is important
 
 
 # find all the term definitions that contain the old style tags
-def get_tagged_terms():
-    return Term.query.filter(Term.definition.contains("#{"), Term.status == "published")
+def g_tagged_terms():
+    g_terms = Term.query.filter(Term.definition.contains("#{g"), Term.status == "published")
+    for term in g_terms:
+        print(term.term_string)
+        print (term.definition)
+        print("-----------")
+    print(g_terms.count())
 
 
 def list_tags_in_definition():
     # get all terms with the tag #{t
-    linked_terms = get_tagged_terms()
+    linked_terms = Term.query.filter(Term.definition.contains("#{"), Term.status == "published")
     start, end = 0, 0
     # iterate through all the defintions with each loop extracting the tags
     for term in linked_terms:
         definition = term.definition
 
         # find all the tags in the definition
-        term_tags = ref_regex.findall(term.definition)
+        term_tags = ref_regex.findall(definition)
 
         # print the term and the tags
         print("term string: " + term.term_string)
@@ -51,13 +56,18 @@ def list_tags_in_definition():
             tag_to_replace = tagstart + tag[0] + " " + tag[2] + tag[3] + "}"
 
             # build the replacement URL
-            replacement_url = '<a href="https://n2t.net/99152/">' + term_id + "</a>"
+            replacement_url = '['+ tag_string + ']' + '(https://n2t.net/99152/' + term_id + ')'
 
             if tag_to_replace.startswith("#{t: "):
 
-                print("replace " + tag_to_replace + " with " + replacement_url)
-
+                #print("replace " + tag_to_replace + " with " + replacement_url)
+                definition = definition.replace(tag_to_replace, replacement_url)
+        
         print()
+        print(definition)
+        term.definition = definition
+        
+        term.save()
 
     print("total found: {}".format(linked_terms.count()))
 
@@ -73,8 +83,13 @@ def tag():
 def listtags():
     list_tags_in_definition()
 
+@click.command()
+def gtags():
+    g_tagged_terms()
+
 
 tag.add_command(listtags)
+tag.add_command(gtags)
 
 if __name__ == "__main__":
     tag()
