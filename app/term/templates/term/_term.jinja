@@ -78,41 +78,48 @@
             {% endif %}
         </div>
         <div class=" col">
-            <div class="row">
-                <div class="col-md-1 fst-italic">
+            <div class="col">
+            <table cellpadding="2">
+                <tr>
+                <td class="fst-italic">
                     Term:
-                </div>
-                <div class="col mx-3">
+                </td>
+                <td>
                     <a class="fw-bold text-decoration-none"
                         href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-1 fst-italic">
+                </td>
+            </tr>
+            <tr>
+                <td class="fst-italic" valign="top">
                     Definition:
-                </div>
-                <div class="col mx-3">
+                </td>
+                <td>
                     {% if selected_term.definition_html %}
                         {{ selected_term.definition_html | process_tags_as_html }}
                     {% else %}
                         {{ selected_term.definition | process_tags_as_html }}
                     {% endif %}
-                </div>
-            </div>
+                </td>
+            </tr>
+
+            
             {% if selected_term.examples %}
-            <div class="row mt-4">
-                <div class="col-md-1 fst-italic">
+            <tr>
+                <td class="fst-italic" valign="top">
                     Examples:
-                </div>
-                <div class="col mx-3">
+                </td>
+                <td>
                     {% if selected_term.examples_html %}
                         {{ selected_term.examples_html | safe }}
                     {% else%}
                     {{ selected_term.examples | convert_line_breaks | format_tags }}
                     {% endif %}
-                </div>
-            </div>
+                </td>
+            </tr>
+            
             {% endif %}
+            </table>
+            </div>
             {% include 'tag/_term_tags.jinja' %}
         </div>
 
