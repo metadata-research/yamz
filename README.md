@@ -98,7 +98,9 @@ From the config.py file:
 
     flask db init
 
-    flask db migrate     
+    flask db migrate
+
+    flask db upgrade     
 
 13. Run the app
 
