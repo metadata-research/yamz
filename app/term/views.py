@@ -343,7 +343,7 @@ def terms_by_tag_value(tag_value):
     return render_template(
         "term/terms_by_tag_value.jinja",
         term_list=term_list,
-        tag=tag.value,
+        tag=tag,
         tag_list=tag_list,
     )
 

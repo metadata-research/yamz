@@ -3,12 +3,13 @@
 {% import "_macros.jinja" as macros %}
 
 {% block headline%}
-Tag: {{ tag }}
+Tag: {{ tag.value }}
 {% endblock headline%}
 
 {% block content %}
-{% include 'term/_subnav.jinja' %}
+Tag Description: {{ tag.description }}
 
+{% include 'term/_subnav.jinja' %}
 
 {% for term in term_list  %}
 <div class="row p-1">
