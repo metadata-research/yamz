@@ -126,3 +126,25 @@ def transfer_tags():
             print("tag for " + tag.value + " added")
         else:
             print("Tag already exists")
+
+
+def export_terms():
+    file_path = os.path.join(base_dir, "export/terms.json")
+    with open(file_path, "w") as write_file:
+        terms = Term.query.all()
+        export_terms = []
+        for term in terms:
+            export_terms.append(
+                {
+                    "id": term.id,
+                    "concept_id": term.concept_id,
+                    "owner_id": term.owner_id,
+                    "created": term.created,
+                    "modified": term.modified,
+                    "term_string": term.term_string,
+                    "definition": term.definition,
+                    "examples": term.examples,
+                    # "tsv": term.tsv,
+                }
+            )
+        json.dump(export_terms, write_file, indent=4, sort_keys=True, default=str)
