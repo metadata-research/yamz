@@ -128,17 +128,21 @@ def transfer_tags():
             print("Tag already exists")
 
 
+# python cli.py exportterms
 def export_terms():
     file_path = os.path.join(base_dir, "export/terms.json")
     with open(file_path, "w") as write_file:
         terms = Term.query.all()
         export_terms = []
         for term in terms:
+            owner_id = term.owner_id
+            owner = User.query.filter_by(id=owner_id).first()
             export_terms.append(
                 {
-                    "id": term.id,
+                    # "id": term.id,
                     "concept_id": term.concept_id,
-                    "owner_id": term.owner_id,
+                    "owner_id": owner_id,
+                    "owner": owner,
                     "created": term.created,
                     "modified": term.modified,
                     "term_string": term.term_string,

@@ -101,12 +101,13 @@ cli.add_command(addall)
 
 cli.add_command(addusers)  # 1
 cli.add_command(setsuperuser)  # 2
-cli.add_command(exportterms)  # 3
+cli.add_command(addterms)  # 3
 cli.add_command(transfertags)  # 4
 
-# use exportterms instead
-# cli.add_command(printinner)  # test the split terms function for GCW terms
-# cli.add_command(splitterms)  # 5 actually split the terms
+
+# we won't need this anymore
+cli.add_command(printinner)  # test the split terms function for GCW terms
+cli.add_command(splitterms)  # 5 actually split the terms
 
 cli.add_command(tagotherterms)
 
@@ -116,6 +117,8 @@ cli.add_command(transfervotes)
 cli.add_command(removetagterms)
 cli.add_command(cleantags)
 cli.add_command(convertambiguous)
+
+cli.add_command(exportterms)
 
 if __name__ == "__main__":
     cli()
