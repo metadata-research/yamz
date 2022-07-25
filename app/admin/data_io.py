@@ -128,6 +128,10 @@ def transfer_tags():
             print("Tag already exists")
 
 
+###
+###
+###
+# import and export functions
 # python cli.py exportterms
 def export_terms():
     file_path = os.path.join(base_dir, "export/terms.json")
@@ -152,3 +156,26 @@ def export_terms():
                 }
             )
         json.dump(export_terms, write_file, indent=4, sort_keys=True, default=str)
+
+
+def import_terms():
+    file_path = os.path.join(base_dir, "export/terms.json")
+    with open(file_path, "r") as read_file:
+        import_terms = json.load(read_file)
+        for term in import_terms:
+            if not Term.query.filter_by(concept_id=term["concept_id"]).first():
+                new_term = Term(
+                    concept_id=term["concept_id"],
+                    owner_id=term["owner_id"],
+                    created=term["created"],
+                    modified=term["modified"],
+                    term_string=term["term_string"],
+                    definition=term["definition"],
+                    examples=term["examples"],
+                    # tsv=term["tsv"],
+                )
+                db.session.add(new_term)
+                db.session.commit()
+                print(new_term)
+            else:
+                print("Term already exists")
