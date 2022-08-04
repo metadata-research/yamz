@@ -12,6 +12,8 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_pagedown import PageDown
+from flask_uploads import UploadSet, configure_uploads, IMAGES, DOCUMENTS
+
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -20,18 +22,21 @@ pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access this page."
+documents = UploadSet("documents", DOCUMENTS)
 
 
 def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+    app.config["UPLOADS_DEFAULT_DEST"] = "documents"
 
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
     pagedown.init_app(app)
+    configure_uploads(app, (documents,))
 
     from app.auth.models import AdminModelView, AppAdminIndexView
 
@@ -47,6 +52,7 @@ def create_app(config_class=Config):
     from app.notify import notify_blueprint as notify_bp
     from app.term import term_blueprint as term_bp
     from app.user import user_blueprint as user_bp
+    from app.io import io_blueprint as io_bp
 
     app.register_blueprint(auth_bp, url_prefix="/")
     app.register_blueprint(error_bp, url_prefix="/error")
@@ -54,6 +60,7 @@ def create_app(config_class=Config):
     app.register_blueprint(notify_bp, url_prefix="/notify")
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
+    app.register_blueprint(io_bp, url_prefix="/io")
 
     from app.term.models import Tag, Term
     from app.user.models import User
