@@ -1,18 +1,17 @@
-from flask import render_template
-
-
+from app import data
 from app.io import io_blueprint as io
-from flask import render_template
-from app.io.forms import FileUploadForm
-from app import documents
+from app.io.forms import DataFileUploadForm
+from flask import render_template, request
 
 
-@io.route("/import")
+@io.route("/upload", methods=["GET", "POST"])
 def import_document():
-    form = FileUploadForm()
+    form = DataFileUploadForm()
     if form.validate_on_submit():
-        document_filename = documents.save(form.document_file.data)
-        document_url = documents.url(document_filename)
-        return "<a href='{}'>{}</a>".format(document_url, document_filename)
-
+        upload_document = form.data_file.data
+        file_name = data.save(form.data_file.data)
+        return file_name
     return render_template("io/import_document.jinja", form=form)
+
+
+# return render_template("io/import_document.jinja", form=FileUploadForm())

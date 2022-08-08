@@ -12,7 +12,7 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_pagedown import PageDown
-from flask_uploads import UploadSet, configure_uploads, IMAGES, DOCUMENTS
+from flask_uploads import UploadSet, configure_uploads, DATA
 
 
 db = SQLAlchemy()
@@ -22,21 +22,22 @@ pagedown = PageDown()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
 login_manager.login_message = "Please log in to access this page."
-documents = UploadSet("documents", DOCUMENTS)
+data = UploadSet("data", DATA)
 
 
 def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
-    app.config["UPLOADS_DEFAULT_DEST"] = "documents"
+    app.config["UPLOADS_DEFAULT_DEST"] = "uploads"
+    app.config["UPLOADED_FILES_DEST"] = "uploads"
 
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
     mail.init_app(app)
     pagedown.init_app(app)
-    configure_uploads(app, (documents,))
+    configure_uploads(app, data)
 
     from app.auth.models import AdminModelView, AppAdminIndexView
 
