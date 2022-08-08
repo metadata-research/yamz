@@ -1,3 +1,4 @@
+from email.policy import default
 import enum
 import re
 
@@ -96,6 +97,7 @@ class Term(db.Model):
     concept_id = db.Column(db.String(64))
     status = db.Column("status", db.Enum(status), default=status.published)
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
+    source = db.Column(db.Text, default="form")
 
     __ts_vector__ = db.Column(
         TSVECTOR,
