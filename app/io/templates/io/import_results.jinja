@@ -1,0 +1,17 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Contribute to YAMZ
+{% endblock %}
+
+{% block headline %}
+Imported terms
+{% endblock headline %}
+
+{% block content %}
+{% for term in term_list %}
+    {{term.term}} {{term.definition}}
+{% endfor %}
+
+
+{% endblock content%}
