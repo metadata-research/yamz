@@ -15,6 +15,7 @@ def process_csv_upload(data_file):
 
 
 def import_term_dict(term_dict):
+    term_list = []
     for term in term_dict:
         term_string = term["term"]
         definition = term["definition"]
@@ -39,3 +40,5 @@ def import_term_dict(term_dict):
         db.session.add(new_term)
         db.session.commit()
         db.session.refresh(new_term)
+        term_list.append(new_term)
+    return term_list

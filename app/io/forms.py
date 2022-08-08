@@ -10,3 +10,7 @@ class DataFileUploadForm(FlaskForm):
         validators=[FileRequired(), FileAllowed(["csv"], "csv files only.")],
     )
     submit = SubmitField("Upload")
+
+
+class EmptyForm(FlaskForm):
+    submit = SubmitField("Submit")

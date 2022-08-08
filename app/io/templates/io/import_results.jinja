@@ -10,26 +10,9 @@ Imported terms
 
 {% block content %}
 
+{% for selected_term in selected_terms  %}
+{% include 'term/_term.jinja' %}
 
-{% for term in term_dict %}
-<hr>
-<dl class="row">
-  
-  
-  <dt class="col-sm-2">Term</dt>
-  <dd class="col-sm-10">{{ term.term }}</dd>
-
-  
-  <dt class="col-sm-2">Definition</dt>
-  <dd class="col-sm-10">{{ term.definition }}</dd>
-
-  <dt class="col-sm-2">Examples</dt>
-  <dd class="col-sm-10">
-    {{term.examples}}
-  </dd>
-
-  
-</dl>
 {% endfor %}
 
 
