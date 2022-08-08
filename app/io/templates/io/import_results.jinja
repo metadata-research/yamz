@@ -1,0 +1,19 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Contribute to YAMZ
+{% endblock %}
+
+{% block headline %}
+Imported terms
+{% endblock headline %}
+
+{% block content %}
+
+{% for selected_term in selected_terms  %}
+{% include 'term/_term.jinja' %}
+
+{% endfor %}
+
+
+{% endblock content%}

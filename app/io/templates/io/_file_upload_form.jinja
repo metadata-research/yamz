@@ -1,0 +1,6 @@
+
+<form action="{{ url_for('io.import_document')}}" method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.data_file }}
+    {{ form.submit }}
+</form>
