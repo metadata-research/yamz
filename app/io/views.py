@@ -2,10 +2,12 @@
 from app.io import io_blueprint as io
 from app.io.forms import DataFileUploadForm, EmptyForm
 from flask import render_template
+from flask_login import login_required
 
 from app.io.data import import_term_dict, process_csv_upload
 
 
+@login_required
 @io.route("/upload", methods=["GET", "POST"])
 def import_document():
 
