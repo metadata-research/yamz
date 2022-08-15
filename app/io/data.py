@@ -1,12 +1,15 @@
-import pandas
+import json
+import os
 
-from app.term.helpers import get_ark_id
+import pandas
 from app import db
-from flask import current_app
+from app.term.helpers import get_ark_id
 from app.term.models import Term
+from app.user.models import User
+from flask import current_app, make_response
 from flask_login import current_user
 
-# pandas is a little overkill but we'll use it more later
+base_dir = os.path.abspath(os.path.dirname(__file__))
 
 
 def process_csv_upload(data_file):
@@ -42,3 +45,54 @@ def import_term_dict(term_dict):
         db.session.refresh(new_term)
         term_list.append(new_term)
     return term_list
+
+
+def export_term_dict(term_list=None):
+    if term_list is None:
+        term_list = (
+            db.session.query(Term)
+            .with_entities(
+                Term.id,
+                Term.term_string,
+                Term.definition,
+                Term.examples,
+                Term.ark_id,
+                Term.owner_id,
+            )
+            .all()
+        )
+
+    df_export_terms = pandas.DataFrame.from_records(
+        term_list,
+        columns=["id", "term_string", "definition", "examples", "ark_id", "owner_id"],
+    )
+    csv_list = df_export_terms.to_csv(index=False, header=True)
+    output = make_response(csv_list)
+    output.headers["Content-Disposition"] = "attachment; filename=terms.csv"
+    output.headers["Content-Type"] = "text/csv"
+    return output
+
+
+def export_terms():
+    file_path = os.path.join(base_dir, "export/terms.json")
+    with open(file_path, "w") as write_file:
+        terms = Term.query.all()
+        export_terms = []
+        for term in terms:
+            owner_id = term.owner_id
+            owner = User.query.filter_by(id=owner_id).first()
+            export_terms.append(
+                {
+                    # "id": term.id,
+                    "concept_id": term.concept_id,
+                    "owner_id": owner_id,
+                    "owner": owner,
+                    "created": term.created,
+                    "modified": term.modified,
+                    "term_string": term.term_string,
+                    "definition": term.definition,
+                    "examples": term.examples,
+                    # "tsv": term.tsv,
+                }
+            )
+        json.dump(export_terms, write_file, indent=4, sort_keys=True, default=str)

@@ -1,0 +1,17 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+YAMZ Output
+{% endblock %}
+
+{% block headline %}
+Export YAMZ Lists and Terms
+{% endblock headline %}
+
+{% block content %}
+
+<a href="{{ url_for('io.export_term_results')}}">Export All Terms</a>
+
+
+
+{% endblock content%}

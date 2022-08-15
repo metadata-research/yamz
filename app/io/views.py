@@ -3,7 +3,11 @@ from app.io import io_blueprint as io
 from app.io.forms import DataFileUploadForm, EmptyForm
 from flask import render_template
 
-from app.io.data import import_term_dict, process_csv_upload
+from app.io.data import (
+    import_term_dict,
+    process_csv_upload,
+    export_term_dict,
+)
 
 
 @io.route("/upload", methods=["GET", "POST"])
@@ -19,3 +23,16 @@ def import_document():
         )
 
     return render_template("io/import_document.jinja", form=form)
+
+
+@io.route("/export", methods=["GET", "POST"])
+def export_page():
+    return render_template("io/export.jinja")
+
+
+@io.route("/export/terms", methods=["GET", "POST"])
+def export_term_results():
+    term_list = export_term_dict()
+    return term_list
+    #
+    # return render_template("io/export_terms.jinja", terms=term_list)
