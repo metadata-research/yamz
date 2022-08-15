@@ -28,6 +28,7 @@ Search Results for <i>{{ search_terms }}</i>
             <th>Contributor</th>
         <tr>
     </thead>
+    <a href="{{ url_for('io.export_term_results', search_terms=search_terms) }}">[Export Terms]</a>
     {% for term in term_list %}
     <tbody>
         <tr>

@@ -1,13 +1,15 @@
 import json
 import os
+from urllib import request
 
 import pandas
 from app import db
 from app.term.helpers import get_ark_id
 from app.term.models import Term
 from app.user.models import User
-from flask import current_app, make_response
+from flask import current_app, make_response, request
 from flask_login import current_user
+from app.term.models import Term
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -47,8 +49,8 @@ def import_term_dict(term_dict):
     return term_list
 
 
-def export_term_dict(term_list=None):
-    if term_list is None:
+def export_term_dict(search_terms=None):
+    if search_terms is None:
         term_list = (
             db.session.query(Term)
             .with_entities(
@@ -61,7 +63,20 @@ def export_term_dict(term_list=None):
             )
             .all()
         )
-
+    else:
+        term_list = (
+            db.session.query(Term)
+            .with_entities(
+                Term.id,
+                Term.term_string,
+                Term.definition,
+                Term.examples,
+                Term.ark_id,
+                Term.owner_id,
+            )
+            .filter(Term.__ts_vector__.match(search_terms))
+            .all()
+        )
     df_export_terms = pandas.DataFrame.from_records(
         term_list,
         columns=["id", "term_string", "definition", "examples", "ark_id", "owner_id"],
