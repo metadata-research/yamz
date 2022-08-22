@@ -35,7 +35,7 @@ def export_page():
 @io.route("/export/terms", methods=["GET", "POST"])
 def export_term_results():
     search_terms = request.args.get("search_terms")
-    term_list = export_term_dict(search_terms)
-    return term_list
+    response = export_term_dict(search_terms)
+    return response
     #
     # return render_template("io/export_terms.jinja", terms=term_list)

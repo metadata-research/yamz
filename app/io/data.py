@@ -7,7 +7,7 @@ from app import db
 from app.term.helpers import get_ark_id
 from app.term.models import Term
 from app.user.models import User
-from flask import current_app, make_response, request
+from flask import current_app, make_response, request, Response
 from flask_login import current_user
 from app.term.models import Term
 
@@ -49,7 +49,7 @@ def import_term_dict(term_dict):
     return term_list
 
 
-def export_term_dict(search_terms=None):
+def export_term_dict(search_terms=None) -> Response:
     if search_terms is None:
         term_list = (
             db.session.query(Term)
