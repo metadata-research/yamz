@@ -5,11 +5,10 @@ from urllib import request
 import pandas
 from app import db
 from app.term.helpers import get_ark_id
-from app.term.models import Term
+from app.term.models import Term, TermSet
 from app.user.models import User
-from flask import current_app, make_response, request, Response
+from flask import Response, current_app, make_response, request
 from flask_login import current_user
-from app.term.models import Term
 
 base_dir = os.path.abspath(os.path.dirname(__file__))
 
@@ -19,7 +18,7 @@ def process_csv_upload(data_file):
     return csv_dataframe.to_dict(orient="records")
 
 
-def import_term_dict(term_dict):
+def import_term_dict(term_dict, term_set):
     term_list = []
     for term in term_dict:
         term_string = term["term"]
@@ -46,6 +45,7 @@ def import_term_dict(term_dict):
         db.session.commit()
         db.session.refresh(new_term)
         term_list.append(new_term)
+        term_set.terms.append(new_term)
     return term_list
 
 
