@@ -430,6 +430,24 @@ def list_tags():
     return render_template("tag/list_tags.jinja", tags=tags)
 
 
+@term.route("/set/list")
+def list_term_sets():
+    term_sets = TermSet.query.order_by(TermSet.name)
+    return render_template("term/list_term_sets.jinja", term_sets=term_sets)
+
+
+@term.route("/set/display/<int:term_set_id>")
+def display_term_set(term_set_id):
+    term_set = TermSet.query.get_or_404(term_set_id)
+    term_list = term_set.terms
+    return render_template(
+        "term/display_term_set.jinja",
+        selected_terms=term_list,
+        term_set=term_set,
+        form=EmptyForm(),
+    )
+
+
 @term.route("/tag/add/<int:term_id>", methods=["GET", "POST"])
 @login_required
 def add_tag(term_id):

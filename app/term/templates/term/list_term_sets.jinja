@@ -1,0 +1,40 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+List Term Sets
+{% endblock %}
+
+{% block headline %}
+List Term Sets
+{% endblock headline %}
+
+{% block content %}
+<hr>
+<div class="row">
+    <div class="col-sm-2">
+        Name
+    </div>
+    <div class="col">
+        Description
+    </div>
+    <div class="col">
+        Created
+    </div>
+</div>
+
+
+{% for term_set in term_sets  %}
+<div class="row">
+    <div class="col-sm-2">
+        <a href="{{ url_for('term.display_term_set', term_set_id=term_set.id) }}">{{ term_set.name}}</a>
+    </div>
+    <div class="col">
+        {{ term_set.description }}
+    </div>
+    <div class="col">
+        {{ term_set.created }}
+    </div>
+</div>
+{% endfor%}
+
+{% endblock content %}

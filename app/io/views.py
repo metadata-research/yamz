@@ -34,7 +34,11 @@ def import_document():
         term_set = import_term_dict(term_dict, new_set)
         term_list = term_set.terms
         return render_template(
-            "io/import_results.jinja", selected_terms=term_list, form=EmptyForm()
+            "io/import_results.jinja",
+            selected_terms=term_list,
+            title=set_name,
+            description=set_description,
+            form=EmptyForm(),
         )
 
     return render_template("io/import_document.jinja", form=form)

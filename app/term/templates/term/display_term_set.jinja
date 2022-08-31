@@ -1,21 +1,24 @@
 {% extends './base.jinja' %}
 
 {% block title %}
-Contribute to YAMZ
+Term Set {{ term_set.name}}
 {% endblock %}
 
 {% block headline %}
-{{title}}
+Termset: {{ term_set.name}}
 {% endblock headline %}
 
 {% block content %}
 <p>
-    {{ description }}
+    {{ term_set.description }}
+    <br>
+    created {{ term_set.created }}
 </p>
+
 {% for selected_term in selected_terms  %}
+
 {% include 'term/_term.jinja' %}
 
 {% endfor %}
-
 
 {% endblock content%}
