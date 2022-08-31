@@ -1,6 +1,25 @@
-
 <form action="{{ url_for('io.import_document')}}" method="POST" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
-    {{ form.data_file }}
-    {{ form.submit }}
+    <div class="form-group row py-4">
+        {{ form.name.label(class="col-sm-2 col-form-label", for="name") }}
+        <div class="col-sm-7">
+            {{ form.name(class="form-control") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        {{ form.description.label(class="col-sm-2 col-form-label", for="description") }}
+        <div class="col-sm-7">
+            {{ form.description(class="form-control", rows="4") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        <div class="col-sm-7">
+            {{ form.data_file(class="btn btn-dark") }}
+        </div>
+    </div>
+    <div class="form-group row py-4">
+        <div class="col-sm-7">
+            {{ form.submit(class="btn btn-dark") }}
+        </div>
+    </div>
 </form>

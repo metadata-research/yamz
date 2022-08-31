@@ -10,7 +10,7 @@
             {% for tag in  tags%}
             <li class="list-group-item">
                 <p>
-                    <a href="{{ url_for('term.list_terms_by_tag', tag_id=tag.id) }}">{{ tag.value }}</a>
+                    <a href="{{ url_for('term.terms_by_tag_value', tag_value=tag.value) }}">{{ tag.value }}</a>
                     ({{ tag.category }})
                 </p>
                 <p>
