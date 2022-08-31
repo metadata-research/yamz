@@ -46,6 +46,7 @@ def import_term_dict(term_dict, term_set):
         db.session.refresh(new_term)
         term_list.append(new_term)
         term_set.terms.append(new_term)
+        term_set.save()
     return term_list
 
 

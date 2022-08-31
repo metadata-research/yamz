@@ -5,7 +5,6 @@ from app.io.data import (
     export_term_dict,
     import_term_dict,
     process_csv_upload,
-    create_term_set,
 )
 from app.io.forms import DataFileUploadForm, EmptyForm
 from app.term.models import TermSet
