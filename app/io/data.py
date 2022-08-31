@@ -44,10 +44,11 @@ def import_term_dict(term_dict, term_set):
         db.session.add(new_term)
         db.session.commit()
         db.session.refresh(new_term)
-        term_list.append(new_term)
+        # term_list.append(new_term)
         term_set.terms.append(new_term)
         term_set.save()
-    return term_list
+    return term_set
+    # return term_list
 
 
 def export_term_dict(search_terms=None) -> Response:

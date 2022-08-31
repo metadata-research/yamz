@@ -467,6 +467,7 @@ set_table = db.Table(
 class TermSet(db.Model):
     __tablename__ = "termsets"
     id = db.Column(db.Integer, primary_key=True)
+    ark = db.Column(db.Text, nullable=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     source = db.Column(db.Text)
     name = db.Column(db.Text)
