@@ -1,14 +1,16 @@
 # from app import data
+from app import db
 from app.io import io_blueprint as io
-from app.io.forms import DataFileUploadForm, EmptyForm
-from flask import render_template, request, send_file
-from flask_login import login_required
-
 from app.io.data import (
+    export_term_dict,
     import_term_dict,
     process_csv_upload,
-    export_term_dict,
+    create_term_set,
 )
+from app.io.forms import DataFileUploadForm, EmptyForm
+from app.term.models import TermSet
+from flask import render_template, request, send_file
+from flask_login import current_user, login_required
 
 
 @login_required
@@ -18,8 +20,19 @@ def import_document():
     form = DataFileUploadForm()
     if form.validate_on_submit():
         uploaded_file = form.data_file.data
+        set_name = form.name.data
+        set_description = form.description.data
+        contributor_id = current_user.id
+        new_set = TermSet(
+            user_id=contributor_id,
+            source="upload",
+            name=set_name,
+            description=set_description,
+        )
+        new_set.save()
+        db.session.refresh(new_set)
         term_dict = process_csv_upload(uploaded_file)
-        term_list = import_term_dict(term_dict)
+        term_list = import_term_dict(term_dict, new_set)
         return render_template(
             "io/import_results.jinja", selected_terms=term_list, form=EmptyForm()
         )

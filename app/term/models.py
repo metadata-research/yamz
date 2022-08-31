@@ -480,3 +480,7 @@ class TermSet(db.Model):
         back_populates="termsets",
         order_by="Term.term_string",
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
