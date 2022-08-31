@@ -112,7 +112,7 @@ class Term(db.Model):
 
     # relationships
 
-    termset = db.relationship("TermSet", primaryjoin="Term.term_set == TermSet.id")
+    termsets = db.relationship("TermSet", secondary="term_sets", back_populates="terms")
 
     contributor = db.relationship("User", back_populates="terms")
 
@@ -456,13 +456,27 @@ tag_table = db.Table(
 db.event.listen(Term.definition, "set", Term.on_changed_definition)
 db.event.listen(Term.examples, "set", Term.on_changed_examples)
 
+set_table = db.Table(
+    "term_sets",
+    db.Model.metadata,
+    db.Column("set_id", db.Integer, db.ForeignKey("termsets.id")),
+    db.Column("term_id", db.Integer, db.ForeignKey("terms.id")),
+)
+
 
 class TermSet(db.Model):
     __tablename__ = "termsets"
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     source = db.Column(db.Text)
+    name = db.Column(db.Text)
     description = db.Column(db.Text)
     created = db.Column(db.DateTime, default=db.func.now())
     updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
-    terms = db.relationship("Term", back_populates="termset")
+    terms = db.relationship(
+        "Term",
+        secondary="term_sets",
+        back_populates="termsets",
+        order_by="Term.term_string",
+    )
