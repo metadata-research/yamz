@@ -97,7 +97,7 @@ class Term(db.Model):
     concept_id = db.Column(db.String(64))
     status = db.Column("status", db.Enum(status), default=status.published)
     term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
-    term_set = db.Column(db.Integer, db.ForeignKey("termsets.id"))
+
     __ts_vector__ = db.Column(
         TSVECTOR,
         db.Computed(
@@ -112,7 +112,7 @@ class Term(db.Model):
 
     # relationships
 
-    termset = db.relationship("TermSet", primaryjoin="Term.term_set == TermSet.id")
+    termsets = db.relationship("TermSet", secondary="term_sets", back_populates="terms")
 
     contributor = db.relationship("User", back_populates="terms")
 
@@ -456,13 +456,32 @@ tag_table = db.Table(
 db.event.listen(Term.definition, "set", Term.on_changed_definition)
 db.event.listen(Term.examples, "set", Term.on_changed_examples)
 
+set_table = db.Table(
+    "term_sets",
+    db.Model.metadata,
+    db.Column("set_id", db.Integer, db.ForeignKey("termsets.id")),
+    db.Column("term_id", db.Integer, db.ForeignKey("terms.id")),
+)
+
 
 class TermSet(db.Model):
     __tablename__ = "termsets"
     id = db.Column(db.Integer, primary_key=True)
+    ark = db.Column(db.Text, nullable=True, unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     source = db.Column(db.Text)
+    name = db.Column(db.Text)
     description = db.Column(db.Text)
     created = db.Column(db.DateTime, default=db.func.now())
     updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
-    terms = db.relationship("Term", back_populates="termset")
+    terms = db.relationship(
+        "Term",
+        secondary="term_sets",
+        back_populates="termsets",
+        order_by="Term.term_string",
+    )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

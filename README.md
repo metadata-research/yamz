@@ -256,3 +256,11 @@ Make sure there is a generic type a record and one for www for your domain.
 
 Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
 
+## Backups
+Backup on production
+`pg_dump -C -Fp -f yamz.sql -U postgres yamz`
+
+A fairly recent copy is also available in the git repository
+
+Restore on development
+`psql - U postgres -f yamz.sql'

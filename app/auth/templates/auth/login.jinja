@@ -15,10 +15,12 @@ Login
     <li>
         Sign in with <a href="{{ url_for('auth.oauth_authorize', provider='google') }}">Google</a>
     </li>
+    <!--
     <li>
         Sign in with
         <i class="fab fa-orcid"></i>
         <span class="pl-1"><a href="{{ url_for('auth.oauth_authorize', provider='orcid') }}">ORCiD</a></span>
     </li>
+    -->
 </p>
 {% endblock content%}
