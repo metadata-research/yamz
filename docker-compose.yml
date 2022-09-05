@@ -2,28 +2,22 @@ version: '3.4'
 
 services:
   yamz:
-    image: yamz
+    image: tiangolo/uwsgi-nginx
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - 5002:5002
   db:
-    image: postgres12:12
+    image: postgres
+    build:
+      context: .
+      dockerfile: ./PGDockerfile
     ports:
       - 5432:5432
     environment:
-      USER: postgres
       POSTGRES_PASSWORD: PASS
       POSTGRES_USER: postgres
       POSTGRES_DB: yamz
     volumes:
       - ./db:/var/lib/postgresql/data
-    CMD:
-      [
-        "echo",
-        "host all all 0.0.0.0/0 md5 >> /var/lib/postgresql/data/pg_hba.conf",
-        "&&",
-        "echo",
-        "listen_addresses='*' >> /var/lib/postgresql/data/postgresql.conf"
-      ]
