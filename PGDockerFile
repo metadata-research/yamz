@@ -1,6 +1,12 @@
+
+
 FROM postgres:12.2-alpine
 
 USER postgres
+
+RUN mkdir -p /var/lib/postgresql/data/pgdata
+RUN command="initdb -D /var/lib/postgresql/data/pgdata" && \
+    su - postgres -c "$command"
 
 # Adjust PostgreSQL configuration so that remote connections to the
 # database are possible.
@@ -14,3 +20,11 @@ EXPOSE 5432
 
 # Add VOLUMEs to allow backup of config, logs and databases
 VOLUME  ["/etc/postgresql", "/var/log/postgresql", "/var/lib/postgresql"]
+
+# Set the default command to run when starting the container
+RUN echo "postgres -D /var/lib/postgresql/data/pgdata -c config_file=/etc/postgresql/data/main/postgresql.conf"
+
+RUN "psql template1 -c 'ALTER USER postgres WITH ENCRYPTED PASSWORD '{PASS}';'"
+RUN "psql template1 -c 'CREATE DATABASE {DBNAME};'"
+
+

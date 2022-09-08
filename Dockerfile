@@ -1,6 +1,4 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
 FROM tiangolo/uwsgi-nginx:python3.8
-
 
 EXPOSE 5002
 
@@ -10,6 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
+# Set the location of the ini file
 ENV UWSGI_INI /app/yamz.ini
 
 # Install pip requirements
@@ -23,6 +22,12 @@ COPY . /app
 # For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
+
+# Restore the database from a backup
+RUN echo "psql - U postgres -f /configs/yamz.sql"
+
+# copy the application configuration file
+COPY ./configs/yamz.ini /app/yamz.ini
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 CMD ["uwsgi", "yamz.ini"]
