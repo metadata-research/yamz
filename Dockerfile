@@ -1,4 +1,8 @@
-FROM python:3.8
+# For more information, please refer to https://aka.ms/vscode-docker-python
+FROM ubuntu/postgres:latest
+RUN apt-get update && apt-get install -y python3 python3-pip
+RUN apt-get install -y git
+
 
 EXPOSE 5000
 
@@ -8,25 +12,18 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# Set the location of the ini file
-# ENV UWSGI_INI /app/yamz.ini
-
 # Install pip requirements
 COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
+RUN python3 -m pip install -r requirements.txt
 
+RUN git clone https://github.com/metadata-research/yamz.git
 WORKDIR /app
-COPY . /app
 
 
-# FROM postgres:12
-# USER postgres
-
-# Restore the database from a backup
-# RUN echo "psql - U postgres -f /configs/yamz.sql"
-
-# copy the application configuration file
-# COPY ./configs/yamz.ini /app/yamz.ini
+# Creates a non-root user with an explicit UID and adds permission to access the /app folder
+# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
+#RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+#USER appuser
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-CMD ["flask", "run"]
+CMD ["flask", "run", "-h", "0.0.0.0", "-p", "5000", "--app", "yamz.py"]
