@@ -18,6 +18,8 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /app
 COPY . /app
 
+
+# FROM postgres:12
 # USER postgres
 
 # Restore the database from a backup
