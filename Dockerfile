@@ -56,5 +56,7 @@ RUN python3 -m pip install -r requirements.txt
 RUN rm /var/run/postgresql/.s.PGSQL.5432.lock
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 
+COPY yamz.sql /yamz/
+
 ENTRYPOINT service postgresql start && psql -f yamz.sql && python3 -m flask run -h 0.0.0.0 -p 5000
 
