@@ -1,5 +1,3 @@
-# For more information, please refer to https://aka.ms/vscode-docker-python
-
 FROM ubuntu:focal
 
 
@@ -8,12 +6,14 @@ ENV TZ=America/New_York
 
 
 RUN apt-get update && apt-get install -y tzdata python3 python3-pip git
-ARG TZ=Etc/UTC
+
 RUN apt-get install -y postgresql-12
 
 RUN git clone https://github.com/metadata-research/yamz.git
 
-# RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /yamz
+
+#TODO: RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /yamz
+
 
 RUN chown -R postgres /yamz
 USER postgres
@@ -32,13 +32,6 @@ EXPOSE 5432 5000
 WORKDIR /yamz
 
 
-#RUN command="initdb -D /var/lib/postgresql/data" && \
-#su - postgres -c "$command"
-# Creates a non-root user with an explicit UID and adds permission to access the /app folder
-# For more info, please refer to https://aka.ms/vscode-docker-python-configure-containers
-#RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-# USER appuser
-
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -53,8 +46,8 @@ COPY requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 
 
+# this is leftover from the container setup I think. Maybe figure out how to shutdown there
 RUN rm /var/run/postgresql/.s.PGSQL.5432.lock
-# During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
 
 COPY yamz.sql /yamz/
 
