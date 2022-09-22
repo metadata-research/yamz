@@ -379,7 +379,7 @@ def create_tag():
         tag_value = tag_form.value.data
         tag_description = tag_form.description.data
 
-        tag = Tag.query.filter_by(name=tag_category, value=tag_value).first()
+        tag = Tag.query.filter_by(category=tag_category, value=tag_value).first()
         if tag is None:
             new_tag = Tag(
                 category=tag_category, value=tag_value, description=tag_description
