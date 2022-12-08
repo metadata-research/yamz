@@ -142,7 +142,8 @@ def create_term():
         definition = form.definition.data
         examples = form.examples.data
         concept_id = shoulder + str(ark_id)
-
+        draft = form.draft.data
+        
         new_term = Term(
             ark_id=ark_id,
             shoulder=shoulder,
@@ -154,6 +155,12 @@ def create_term():
             concept_id=concept_id,
         )
         new_term.save()
+        if(draft):
+            #new_term.status = "draft" this is the intended way to track the status
+            # assigning the 'Draft' tag assumes it exists, maybe we don't want to do that
+            tag = Tag.query.filter_by(value="Draft").first()
+            new_term.tags.append(tag)
+            new_term.save()
         return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
     return render_template("term/create_term.jinja", form=form)
