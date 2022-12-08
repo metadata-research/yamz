@@ -1,6 +1,6 @@
 from flask import request
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, StringField, TextAreaField, SelectField
+from wtforms import SubmitField, StringField, TextAreaField, SelectField, BooleanField
 from wtforms.validators import DataRequired
 from flask_pagedown.fields import PageDownField
 
@@ -9,6 +9,7 @@ class CreateTermForm(FlaskForm):
     term_string = StringField("Term string", validators=[DataRequired()])
     definition = PageDownField("Definition")
     examples = PageDownField("Examples")
+    draft =  BooleanField("Draft", default=True)
     submit = SubmitField("Submit")
 
 
