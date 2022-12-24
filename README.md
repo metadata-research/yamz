@@ -73,6 +73,7 @@ On a mac you may have to first install python3 and virtualenv (https://gist.gith
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
 From the config.py file:
+
     OAUTH_CREDENTIALS = {
         "google": {
             "id": "<your-client-id>",
