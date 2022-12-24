@@ -67,9 +67,7 @@ source env/bin/activate
 pip install -r requirements.txt
 
 
-10.  create a config.py file in the root directory using the example in the /stubs directory
-
-cp stubs/_config.py config.py
+10.  modify the  _config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
 
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
@@ -119,27 +117,8 @@ Note that when working in dev mode, the google authorized urls must allow access
 
 ## Import legacy entries
 
-    python cli.py addall
-
-for just users
-
-    python cli.py addusers
-
-for just terms
-
-    python cli.py addterms
-
-you must add users before terms to preserve the pk based relationships
-
-    python cli.py setsuperuser 'email@somewhere.com' # your gmail if you are logging in with Google
-
-    python cli.py transfertags
-
-    python cli.py printinner # test the term splitting
-
-    python cli.py splitterms # do the actual splitting
-
-    python cli.py removetagterms # remove the term_strings that have become tags
+    It is no longer necessary to run the scripts to import legacy entries. Please follow the instructions
+    for backups below to import the entries into a new instance of yamz. 
 
 ## OAuth Credentials and appkey
 
