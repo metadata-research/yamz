@@ -24,47 +24,48 @@ The following is an example configuration. You can substitute your own db names 
 
 On a mac
     createuser -d postgres
-    psql -c "alter user postgres with encrypted password 'PASS'"
+    psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
 
 
-3. Create a database in psql
+3. Create a yamz database in psql.
 
-(the installation should create a unix user postgres so something like sudo -u postgres psql). On a mac psql -U postgres -c 'create database yamz with owner postgres'
+(the installation should create a unix user postgres so something like
 
-postgres=# create database yamz with owner postgres;
+    sudo -u postgres psql
 
+    postgres=# create database yamz with owner postgres;
 
-\q to exit
+On a mac
+    psql -U postgres -c 'create database yamz with owner postgres'
 
 4. Placeholder
 
 
 5. Clone the repository
 
-git clone https://github.com/metadata-research/yamz.git
+    git clone https://github.com/metadata-research/yamz.git
 
 6. switch to the yamz directory
 
-cd yamz
+    cd yamz
 
-7. Create a python virtual environment
+7. Create a python 3 virtual environment
 
-virtualenv env
+    virtualenv env
 
-to instal: [on a mac](https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3) external
+On a mac you may have to first install python3 and virtualenv (https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3)
 
-    $ brew install python3
-
-    $ pip3 install virtualenv
-
+    brew install python3
+    pip3 install virtualenv
+    virtualenv env
 
 8. Activate
 
-source env/bin/activate
+    source env/bin/activate
 
 9.  install the python dependencies
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
 
 10.  modify the  _config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
@@ -96,6 +97,7 @@ From the config.py file:
 
     flask db init
 
+On not-the-first run do
     flask db migrate
 
     flask db upgrade     
@@ -242,4 +244,4 @@ Backup on production
 A fairly recent copy is also available in the git repository
 
 Restore on development
-`psql - U postgres -f yamz.sql'
+`psql -U postgres -f yamz.sql'
