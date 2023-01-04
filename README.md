@@ -68,7 +68,7 @@ On a mac you may have to first install python3 and virtualenv (https://gist.gith
     pip install -r requirements.txt
 
 
-10.  modify the  _config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
+10.  modify the  \_config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
 
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
@@ -142,6 +142,7 @@ configuration, supply these answers:
                                          https://domain.name/g_authorized
 
 The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory `uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or os store.
+
 ## Deploying to Production
 
 Create a `yamz.ini` file in the yamz directory. There is a template in the repository
