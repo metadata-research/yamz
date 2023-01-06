@@ -15,8 +15,15 @@ The following is an example configuration. You can substitute your own db names 
 
 [postgres downloads](https://www.postgresql.org/download/)
 
+On a mac you can use homebrew
+    brew install postgresql
 
-2. Edit a postgres user.
+Make sure the postgres server is running. You may want to configure your
+computer so that the server starts automatically on reboot. On a mac, for
+example,
+    brew services start postgresql
+
+2. Add a password for the user 'postgres'.
 
     sudo -u postgres psql template1
 
@@ -26,13 +33,12 @@ On a mac
     createuser -d postgres
     psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
 
+3. Create a yamz database using the psql client.
 
-3. Create a yamz database in psql.
-
-(the installation should create a unix user postgres so something like
+On Linux, the installation should create a system user 'postgres'
+(parallel to the postgres user 'postgres'), allowing something like
 
     sudo -u postgres psql
-
     postgres=# create database yamz with owner postgres;
 
 On a mac
@@ -68,7 +74,7 @@ On a mac you may have to first install python3 and virtualenv (https://gist.gith
     pip install -r requirements.txt
 
 
-10.  modify the  \_config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
+10. Modify the \_config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
 
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
@@ -90,11 +96,11 @@ From the config.py file:
         or "postgresql://contributor:PASS@localhost/yamz"
     )
 
-11.  set the FLASK_APP variable
+11. Set the FLASK_APP variable
 
     export FLASK_APP=yamz.py
 
-12.  On the first run create the db
+12. On the first run create the db
 
     flask db init
 
@@ -109,7 +115,8 @@ if you want to use a different port for the dev server
 
     export FLASK_RUN_PORT=xxxx
 
-If you want to run in development mode
+If you want to run in development mode (which sends error messages to the
+console),
 
     export FLASK_ENVIRONMENT=development
 
