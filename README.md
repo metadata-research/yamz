@@ -250,7 +250,21 @@ Certbot will ask you whether you wish to redirect all http traffic to https (rem
 Backup on production
 `pg_dump -C -Fp -f yamz.sql -U postgres yamz`
 
-A fairly recent copy is also available in the git repository
+This will create a yamz.sql file that is portable.
 
-Restore on development
-`psql -U postgres -f yamz.sql'
+Copy the generated yamz.sql file to the production directory and restore on the target server. 
+`psql -U postgres -f yamz.sql`
+
+## Development Environment
+The dev environment for the current version of Yamz is a direct copy of the production environment, currently located on the same server but in a different directory. (~/yamz_dev). There are several differences. 
+
+The the unix socket file must have a different name than yamz.sock in the yamz.ini file. Currently it is called yamz_dev.sock
+
+The SQLALCHEMY_DATABASE_URI points to a copy of the yamz database called yamz_dev which is not in syc with the main database. To sync it you can restore a backup copy with the yamz_dev name as described in 'Backups' above.
+
+There is a unix service called yamz_dev running that starts the uwsgi workers for the dev site. It is a copy of the yamz.service, just with a different name.
+
+The same git branch (deploy) exists in this dev directory so changes here will come as a pull request to 'deployment.' This is a shortcut that should be addressed.
+
+
+
