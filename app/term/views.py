@@ -74,6 +74,7 @@ def format_score(score):
 
 @term.route("/ark:/99152/<concept_id>")
 @term.route("/ark:99152/<concept_id>")
+@term.route("/ark/99152/<concept_id>")
 @term.route("/ark/<concept_id>")
 def display_term(concept_id):
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
