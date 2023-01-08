@@ -4,4 +4,4 @@ from app.ark import ark_blueprint as ark
 
 @ark.route("/")
 def index():
-    return ('test', 200, {'Content-Type': 'text/plain; charset=utf-8'})
+    return render_template("ark/index.jinja")
