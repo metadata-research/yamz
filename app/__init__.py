@@ -55,6 +55,7 @@ def create_app(config_class=Config):
     from app.user import user_blueprint as user_bp
     from app.io import io_blueprint as io_bp
     from app.ark import ark_blueprint as ark_bp
+    #from app.ark import ark_blueprint as ark_bp_colon
 
     app.register_blueprint(auth_bp, url_prefix="/")
     app.register_blueprint(error_bp, url_prefix="/error")
@@ -63,7 +64,8 @@ def create_app(config_class=Config):
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
     app.register_blueprint(io_bp, url_prefix="/io")
-    app.register_blueprint(ark_bp, url_prefix="/ark:")
+    app.register_blueprint(ark_bp, url_prefix="/ark", name="ark")
+    app.register_blueprint(ark_bp, url_prefix="/ark:", name="ark_colon")
 
     from app.term.models import Tag, Term
     from app.user.models import User
