@@ -51,9 +51,7 @@
                     <li class="nav-item">
                         {{ macros.nav_link('main.about', 'About') }}
                     </li>
-                    <li class="nav-item">
-                        {{ macros.nav_link('main.contact', 'Contact') }}
-                    </li>
+
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out of
@@ -129,6 +127,9 @@
             By using this site, you agree to Terms
             of Use and Privacy Policy statements similar to
             <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
+            <br>
+                                
+            <a href="{{ url_for('main.contact') }}">Contact</a>
         </small>
     </footer>
 
