@@ -5,6 +5,12 @@
 </li>
 {%- endmacro %}
 
+{% macro hide_link(endpoint, text) -%}
+{% if request.url_rule.endpoint != endpoint %}
+<a href="{{ url_for(endpoint) }}">{{text}}</a>
+{% endif %}
+{%- endmacro %}
+
 {% macro render_tag_pagination(pagination, endpoint, tag_id) %}
 <div class=pagination>
     {%- for page in pagination.iter_pages() %}
