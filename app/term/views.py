@@ -84,7 +84,6 @@ def display_term(concept_id):
     comment_form = CommentForm()
     tag_form = AddTagForm()
     tag_form.tag_list.choices = [t.value for t in Tag.query.order_by(Tag.value)]
-    test = [t.value for t in Tag.query.order_by(Tag.value)]
     comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
         "term/display_term.jinja",
@@ -93,7 +92,6 @@ def display_term(concept_id):
         comments=comments,
         comment_form=comment_form,
         tag_form=tag_form,
-        test=test,
     )
 
 
