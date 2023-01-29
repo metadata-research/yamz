@@ -24,3 +24,4 @@ __pycache__/
 logs/
 migrations/
 yamz.sql
+git-sim_media

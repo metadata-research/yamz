@@ -1,0 +1,90 @@
+YAMZ startup
+Endpoint                          Methods    Rule
+--------------------------------  ---------  --------------------------------------------------
+admin.index                       GET        /admin/
+admin.static                      GET        /admin/static/<path:filename>
+ark.index                         GET        /ark/<concept_id>
+ark.index                         GET        /ark/99152/<concept_id>
+ark.index                         GET        /ark/
+ark_colon.index                   GET        /ark:/<concept_id>
+ark_colon.index                   GET        /ark:/99152/<concept_id>
+ark_colon.index                   GET        /ark:/
+auth.login                        GET        /login
+auth.logout                       GET        /logout
+auth.oauth_authorize              GET        /authorize/<provider>
+auth.oauth_callback               GET        /<provider>_authorized
+io.export_page                    GET, POST  /io/export
+io.export_term_results            GET, POST  /io/export/terms
+io.import_document                GET, POST  /io/upload
+main.about                        GET        /about
+main.contact                      GET        /contact
+main.guidelines                   GET        /guidelines
+main.index                        GET        /
+notify.delete_message             GET        /notify/message/delete/<int:message_id>
+notify.delete_notification        GET        /notify/notifications/delete/<int:notification_id>
+notify.messages                   GET        /notify/messages
+notify.notifications              GET        /notify/notifications
+notify.send_message               GET, POST  /notify/message/send_to/<int:recipient_id>
+static                            GET        /static/<path:filename>
+tags.action_view                  POST       /admin/tags/action/
+tags.ajax_lookup                  GET        /admin/tags/ajax/lookup/
+tags.ajax_update                  POST       /admin/tags/ajax/update/
+tags.create_view                  GET, POST  /admin/tags/new/
+tags.delete_view                  POST       /admin/tags/delete/
+tags.details_view                 GET        /admin/tags/details/
+tags.edit_view                    GET, POST  /admin/tags/edit/
+tags.export                       GET        /admin/tags/export/<export_type>/
+tags.index_view                   GET        /admin/tags/
+term.add_comment                  POST       /term/comment/<term_id>
+term.add_tag                      GET, POST  /term/tag/add/<int:term_id>
+term.create_tag                   GET, POST  /term/tag/create
+term.create_term                  GET, POST  /term/contribute/create
+term.delete_tag                   GET, POST  /term/tag/delete/<int:tag_id>
+term.delete_term                  POST       /term/contribute/delete/<concept_id>
+term.display_term                 GET        /term/ark/<concept_id>
+term.display_term                 GET        /term/ark/99152/<concept_id>
+term.display_term                 GET        /term/ark:99152/<concept_id>
+term.display_term                 GET        /term/ark:/99152/<concept_id>
+term.display_term_by_id           GET        /term/id/<term_id>
+term.display_term_set             GET        /term/set/display/<int:term_set_id>
+term.edit_tag                     GET, POST  /term/tag/edit/<int:tag_id>
+term.edit_term                    POST       /term/contribute/edit/<concept_id>
+term.list_alphabetical            GET        /term/list/alphabetical
+term.list_recent                  GET        /term/list/recent
+term.list_score                   GET        /term/list/score
+term.list_tags                    GET        /term/tag/list
+term.list_term_sets               GET        /term/set/list
+term.list_terms                   GET        /term/list
+term.list_terms_by_tag            GET        /term/list/tag/<int:tag_id>
+term.list_top_terms_alphabetical  GET        /term/list/alphabetical/top
+term.remove_tag                   GET, POST  /term/tag/remove/<int:term_id>/<int:tag_id>
+term.remove_vote                  POST       /term/vote/remove/<concept_id>
+term.search                       GET        /term/search
+term.show_alternate_terms         GET        /term/alternates/<term_string>
+term.terms_by_tag_value           GET        /term/list/tag/value/<tag_value>
+term.test_term                    GET        /term/test/<concept_id>
+term.track_term                   POST       /term/track/<concept_id>
+term.untrack_term                 POST       /term/untrack/<concept_id>
+term.vote_down                    POST       /term/vote/down/<concept_id>
+term.vote_up                      POST       /term/vote/up/<concept_id>
+term.vote_zero                    POST       /term/vote/zero/<concept_id>
+terms.action_view                 POST       /admin/terms/action/
+terms.ajax_lookup                 GET        /admin/terms/ajax/lookup/
+terms.ajax_update                 POST       /admin/terms/ajax/update/
+terms.create_view                 GET, POST  /admin/terms/new/
+terms.delete_view                 POST       /admin/terms/delete/
+terms.details_view                GET        /admin/terms/details/
+terms.edit_view                   GET, POST  /admin/terms/edit/
+terms.export                      GET        /admin/terms/export/<export_type>/
+terms.index_view                  GET        /admin/terms/
+user.edit_profile                 GET, POST  /user/edit_profile
+user.index                        GET        /user/
+users.action_view                 POST       /admin/users/action/
+users.ajax_lookup                 GET        /admin/users/ajax/lookup/
+users.ajax_update                 POST       /admin/users/ajax/update/
+users.create_view                 GET, POST  /admin/users/new/
+users.delete_view                 POST       /admin/users/delete/
+users.details_view                GET        /admin/users/details/
+users.edit_view                   GET, POST  /admin/users/edit/
+users.export                      GET        /admin/users/export/<export_type>/
+users.index_view                  GET        /admin/users/
