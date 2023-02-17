@@ -6,7 +6,7 @@
 <head>
     <title>
         {% block title %}
-        YAMZ
+        Yamz
         {% endblock %}
     </title>
 
@@ -25,10 +25,10 @@
 
 </head>
 
-<body>
+<body style="min-height: 100vh; display: flex; flex-direction: column;">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container">
-            <a class="navbar-brand" href="/">YAMZ</a>
+            <a class="navbar-brand" href="/">Yamz</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar01"
                 aria-controls="navbar01" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -122,17 +122,31 @@
         {% endwith %}
     </div>
 
-    <footer class="text-end text-muted px-5">
+    <footer class="text-end text-muted px-5"
+            style="width: 100%; margin-top: auto;">
         <hr>
         <small>
-            Contributions to the YAMZ metadictionary are dedicated to the public
+	  <table align="right">
+	    <tr>
+	    <td>
+            {{ macros.hide_link('main.contact', 'Contact') }} |
+            Contributions to the Yamz metadictionary are dedicated to the public
             domain under the terms of CC0.
-            <br>
+            <br/>
             By using this site, you agree to Terms
             of Use and Privacy Policy statements similar to
             <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
-            <br>
-            {{ macros.hide_link('main.contact', 'Contact') }}            
+	    </td>
+	    <td>
+	    <a href="/" valign="top"><img 
+	       style="height: 50%; width: 50%;"
+	       src="/static/images/yamz_purple_logo_square_small.png"></a>
+	    </td>
+	    </tr>
+	    <tr>
+            <td>&nbsp;</td>
+	    </tr>
+	  </table>
         </small>
     </footer>
 
