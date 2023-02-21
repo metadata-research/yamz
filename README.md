@@ -111,9 +111,11 @@ On not-the-first run do
 
 13. Run the app
 
-if you want to use a different port for the dev server
+If you want to use a different port for the dev server, use FLASK_RUN_PORT.
+For example, on a Mac the default Flask port (5000) can conflict with the
+default AirPlay Receiver port, so you might run Flask on 5001 instead:
 
-    export FLASK_RUN_PORT=xxxx
+    export FLASK_RUN_PORT=5001
 
 If you want to run in development mode (which sends error messages to the
 console),
