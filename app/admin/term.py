@@ -198,3 +198,11 @@ def convert_ambiguous():
             
             
 # don't forget about t: entries
+
+def refresh_terms():
+    terms = Term.query
+    for term in terms:
+        term.examples = ""        
+        db.session.commit()
+        print(term.term_string + " refreshed")
+        

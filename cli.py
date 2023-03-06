@@ -26,8 +26,15 @@ def exportterms():
     export_terms()
 
 
+@click.command()
+def refreshterms():
+    refresh_terms() 
+
 cli.add_command(setsuperuser)
 cli.add_command(exportterms)
+cli.add_command(refreshterms)
+
 
 if __name__ == "__main__":
     cli()
+
