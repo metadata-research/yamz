@@ -16,7 +16,8 @@ The following is an example configuration. You can substitute your own db names 
 [postgres downloads](https://www.postgresql.org/download/)
 
 On a mac you can use homebrew
-    brew install postgresql
+    
+    `brew install postgresql`
 
 Make sure the postgres server is running. You may want to configure your
 computer so that the server starts automatically on reboot. On a mac, for
@@ -24,7 +25,9 @@ example,
 
     `brew services start postgresql`
 
-    on Ubuntu, `sudo service postgresql start`
+    on Ubuntu,
+    
+    `sudo service postgresql start`
 
 2. Add a password for the user 'postgres'.
 
