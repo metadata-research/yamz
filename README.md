@@ -17,23 +17,23 @@ The following is an example configuration. You can substitute your own db names 
 
 On a mac you can use homebrew
     
-    `brew install postgresql`
+    brew install postgresql
 
 Make sure the postgres server is running. You may want to configure your
 computer so that the server starts automatically on reboot. On a mac, for
 example,
 
-    `brew services start postgresql`
+    brew services start postgresql
 
-    on Ubuntu,
+on Ubuntu,
     
-    `sudo service postgresql start`
+    sudo service postgresql start
 
 2. Add a password for the user 'postgres'.
 
-    `sudo -u postgres psql template1`
+    sudo -u postgres psql template1
 
-    `postgres=# alter user postgres with encrypted password 'PASS';`
+    postgres=# alter user postgres with encrypted password 'PASS';
 
 On a mac
     createuser -d postgres
