@@ -26,11 +26,13 @@ def process_json_upload(data_file):
     return json_dataframe["Terms"]
 
 
-def import_term_dict(term_dict, term_set, term="term", definition="definition", examples="examples"):
+def import_term_dict(term_dict, term_set, term="Term", definition="Definition", examples=None):
     for term in term_dict:
         term_string = term[term]
         definition = term[definition]
-        examples = term[examples]
+        examples = ""
+        if examples is not None:
+            examples = term[examples]
 
         ark_id = get_ark_id()
         shoulder = current_app.config["SHOULDER"]
@@ -51,7 +53,6 @@ def import_term_dict(term_dict, term_set, term="term", definition="definition", 
         db.session.add(new_term)
         db.session.commit()
         db.session.refresh(new_term)
-        # term_list.append(new_term)
         term_set.terms.append(new_term)
         term_set.save()
     return term_set

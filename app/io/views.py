@@ -26,8 +26,10 @@ def import_document():
         )
         new_set.save()
         db.session.refresh(new_set)
-        # check the filetype and branch
-        term_dict = process_csv_upload(uploaded_file)
+        if (uploaded_file.filename.endswith(".json")):
+            term_dict = process_json_upload(uploaded_file)
+        else:
+            term_dict = process_csv_upload(uploaded_file)
         term_set = import_term_dict(term_dict, new_set)
         term_list = term_set.terms
         return render_template(
