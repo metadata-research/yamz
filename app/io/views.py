@@ -9,8 +9,8 @@ from flask_login import current_user, login_required
 from app.term.helpers import get_ark_id
 
 
-@login_required
 @io.route("/upload", methods=["GET", "POST"])
+@login_required
 def import_document():
     form = DataFileUploadForm()
     if form.validate_on_submit():
@@ -41,7 +41,6 @@ def import_document():
         )
 
     return render_template("io/import_document.jinja", form=form)
-
 
 @io.route("/export", methods=["GET", "POST"])
 def export_page():

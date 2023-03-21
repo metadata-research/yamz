@@ -9,7 +9,7 @@ class DataFileUploadForm(FlaskForm):
     description = TextAreaField("Describe Import")
     data_file = FileField(
         "data_file",
-        validators=[FileRequired(), FileAllowed(["csv"], "csv files only.")],
+        validators=[FileRequired(), FileAllowed(["csv", "json"], "CSV or JSON only!")]
     )
     submit = SubmitField("Upload")
 
