@@ -56,7 +56,6 @@ def export_term_results():
 #json test routes
 
 def process_json_upload(data_file):
-    data_file = open(data_file, "r")
     json_dataframe = pandas.read_json(data_file)
     # standardize the names of the columns in Terms to lowercase
     # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
@@ -71,9 +70,9 @@ def display_import():
     return render_template("io/display_import.jinja", selected_terms=term_data)
 
 
-@io.route("/upload/json", methods=["GET", "POST"])
+@io.route("/upload/helio", methods=["GET", "POST"])
 @login_required
-def import_json_document():
+def import_helio_document():
     form = DataFileUploadForm()
     if form.validate_on_submit():
         uploaded_file = form.data_file.data
@@ -92,7 +91,7 @@ def import_json_document():
             term_dict = process_json_upload(uploaded_file)
         else:
             term_dict = process_csv_upload(uploaded_file)
-        term_set = import_term_dict(term_dict, new_set)
+        term_set = import_helio_term_dict(term_dict, new_set)
         term_list = term_set.terms
         return render_template(
             "io/import_results.jinja",
@@ -101,4 +100,4 @@ def import_json_document():
             description=set_description,
             form=EmptyForm(),
         )
-    return render_template("io/import_document.jinja", form=form)
+    return render_template("io/import_helio_document.jinja", form=form)

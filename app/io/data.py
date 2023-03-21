@@ -49,7 +49,34 @@ def import_term_dict(term_dict, term_set):
         term_set.save()
     return term_set
     # return term_list
+def import_helio_term_dict(term_dict, term_set):
+    term_list = []
+    for term in term_dict:
+        term_string = term["Term"]
+        definition = term["Definition"]
+    
+        ark_id = get_ark_id()
+        shoulder = current_app.config["SHOULDER"]
+        naan = current_app.config["NAAN"]
+        ark = shoulder + str(ark_id)
+        owner_id = current_user.id
 
+        new_term = Term(
+            ark_id=ark_id,
+            shoulder=shoulder,
+            naan=naan,
+            owner_id=owner_id,
+            term_string=term_string,
+            definition=definition,
+            concept_id=ark,
+        )
+        db.session.add(new_term)
+        db.session.commit()
+        db.session.refresh(new_term)
+        # term_list.append(new_term)
+        term_set.terms.append(new_term)
+        term_set.save()
+    return term_set
 
 def export_term_dict(search_terms=None) -> Response:
     if search_terms is None:
