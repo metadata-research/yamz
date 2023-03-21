@@ -1,0 +1,23 @@
+{% extends './base.jinja' %}
+
+{% block title %}
+Contribute to YAMZ
+{% endblock %}
+
+{% block headline %}
+Test upload json
+{% endblock headline %}
+
+{% block content %}
+<p>
+
+{% for term in selected_terms %}
+    term: {{term['Term']}}<br>
+    definition: {{term['Definition']}}<p>
+{% endfor %}
+   
+</p>
+
+
+
+{% endblock content%}

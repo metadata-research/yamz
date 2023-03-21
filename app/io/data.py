@@ -18,8 +18,15 @@ def process_csv_upload(data_file):
     return csv_dataframe.to_dict(orient="records")
 
 
+def process_json_upload(data_file):
+    data_file = open(data_file, "r")
+    json_dataframe = pandas.read_json(data_file)
+    # standardize the names of the columns in Terms to lowercase
+    # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
+    return json_dataframe["Terms"]
+
+
 def import_term_dict(term_dict, term_set):
-    term_list = []
     for term in term_dict:
         term_string = term["term"]
         definition = term["definition"]
@@ -48,7 +55,6 @@ def import_term_dict(term_dict, term_set):
         term_set.terms.append(new_term)
         term_set.save()
     return term_set
-    # return term_list
 
 
 def export_term_dict(search_terms=None) -> Response:
@@ -81,7 +87,8 @@ def export_term_dict(search_terms=None) -> Response:
         )
     df_export_terms = pandas.DataFrame.from_records(
         term_list,
-        columns=["id", "term_string", "definition", "examples", "ark_id", "owner_id"],
+        columns=["id", "term_string", "definition",
+                 "examples", "ark_id", "owner_id"],
     )
     csv_list = df_export_terms.to_csv(index=False, header=True)
     output = make_response(csv_list)
@@ -112,4 +119,5 @@ def export_terms():
                     # "tsv": term.tsv,
                 }
             )
-        json.dump(export_terms, write_file, indent=4, sort_keys=True, default=str)
+        json.dump(export_terms, write_file, indent=4,
+                  sort_keys=True, default=str)

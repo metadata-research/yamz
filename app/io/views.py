@@ -1,11 +1,7 @@
 # from app import data
 from app import db
 from app.io import io_blueprint as io
-from app.io.data import (
-    export_term_dict,
-    import_term_dict,
-    process_csv_upload,
-)
+from app.io.data import *
 from app.io.forms import DataFileUploadForm, EmptyForm
 from app.term.models import TermSet
 from flask import render_template, request, send_file, current_app
@@ -54,5 +50,12 @@ def export_term_results():
     search_terms = request.args.get("search_terms")
     response = export_term_dict(search_terms)
     return response
-    #
-    # return render_template("io/export_terms.jinja", terms=term_list)
+
+
+@io.route("/display")
+def display_import():
+    dir = os.getcwd()
+    data_file = os.path.join(dir, 'uploads', 'data',
+                             'ESA Space Weather Glossary.json')
+    term_data = process_json_upload(data_file)
+    return render_template("io/display_import.jinja", selected_terms=term_data)
