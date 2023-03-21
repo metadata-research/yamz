@@ -26,11 +26,11 @@ def process_json_upload(data_file):
     return json_dataframe["Terms"]
 
 
-def import_term_dict(term_dict, term_set):
+def import_term_dict(term_dict, term_set, term="term", definition="definition", examples="examples"):
     for term in term_dict:
-        term_string = term["term"]
-        definition = term["definition"]
-        examples = term["examples"]
+        term_string = term[term]
+        definition = term[definition]
+        examples = term[examples]
 
         ark_id = get_ark_id()
         shoulder = current_app.config["SHOULDER"]
