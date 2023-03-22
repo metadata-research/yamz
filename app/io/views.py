@@ -3,7 +3,7 @@ from app import db
 from app.io import io_blueprint as io
 from app.io.data import *
 from app.io.forms import DataFileUploadForm, EmptyForm
-from app.term.models import TermSet
+from app.term.models import TermSet, Tag
 from flask import render_template, request, send_file, current_app
 from flask_login import current_user, login_required
 from app.term.helpers import get_ark_id
@@ -41,6 +41,7 @@ def import_document():
         )
     return render_template("io/import_document.jinja", form=form)
 
+
 @io.route("/export", methods=["GET", "POST"])
 def export_page():
     return render_template("io/export.jinja")
@@ -53,13 +54,15 @@ def export_term_results():
     return response
 
 ###
-#json test routes
+# json test routes
+
 
 def process_json_upload(data_file):
     json_dataframe = pandas.read_json(data_file)
     # standardize the names of the columns in Terms to lowercase
     # https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.rename.html
     return json_dataframe["Terms"]
+
 
 @io.route("/upload/display", methods=["GET", "POST"])
 def display_import():
@@ -74,11 +77,13 @@ def display_import():
 @login_required
 def import_helio_document():
     form = DataFileUploadForm()
+    form.tag_list.choices = [t.value for t in Tag.query.order_by(Tag.value)]
     if form.validate_on_submit():
         uploaded_file = form.data_file.data
         set_name = form.name.data
         set_description = form.description.data
         owner_id = current_user.id
+        tag = Tag.query.filter_by(value=form.tag_list.data).first()
         new_set = TermSet(
             user_id=owner_id,
             source="upload",
@@ -91,7 +96,7 @@ def import_helio_document():
             term_dict = process_json_upload(uploaded_file)
         else:
             term_dict = process_csv_upload(uploaded_file)
-        term_set = import_helio_term_dict(term_dict, new_set)
+        term_set = import_helio_term_dict(term_dict, new_set, tag)
         term_list = term_set.terms
         return render_template(
             "io/import_results.jinja",

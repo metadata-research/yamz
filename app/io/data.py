@@ -49,12 +49,13 @@ def import_term_dict(term_dict, term_set):
         term_set.save()
     return term_set
     # return term_list
-def import_helio_term_dict(term_dict, term_set):
-    term_list = []
+
+
+def import_helio_term_dict(term_dict, term_set, tag):
     for term in term_dict:
         term_string = term["Term"]
         definition = term["Definition"]
-    
+
         ark_id = get_ark_id()
         shoulder = current_app.config["SHOULDER"]
         naan = current_app.config["NAAN"]
@@ -71,12 +72,14 @@ def import_helio_term_dict(term_dict, term_set):
             concept_id=ark,
         )
         db.session.add(new_term)
+        new_term.tags.append(tag)  # might have to do after refresh
         db.session.commit()
         db.session.refresh(new_term)
-        # term_list.append(new_term)
+
         term_set.terms.append(new_term)
         term_set.save()
     return term_set
+
 
 def export_term_dict(search_terms=None) -> Response:
     if search_terms is None:
@@ -108,7 +111,8 @@ def export_term_dict(search_terms=None) -> Response:
         )
     df_export_terms = pandas.DataFrame.from_records(
         term_list,
-        columns=["id", "term_string", "definition", "examples", "ark_id", "owner_id"],
+        columns=["id", "term_string", "definition",
+                 "examples", "ark_id", "owner_id"],
     )
     csv_list = df_export_terms.to_csv(index=False, header=True)
     output = make_response(csv_list)
@@ -139,4 +143,5 @@ def export_terms():
                     # "tsv": term.tsv,
                 }
             )
-        json.dump(export_terms, write_file, indent=4, sort_keys=True, default=str)
+        json.dump(export_terms, write_file, indent=4,
+                  sort_keys=True, default=str)
