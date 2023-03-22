@@ -72,6 +72,7 @@ def format_date(date):
 def format_score(score):
     pass
 
+
 @term.route("/ark:/99152/<concept_id>")
 @term.route("/ark:99152/<concept_id>")
 @term.route("/ark/99152/<concept_id>")
@@ -83,7 +84,8 @@ def display_term(concept_id):
     form = EmptyForm()
     comment_form = CommentForm()
     tag_form = AddTagForm()
-    tag_form.tag_list.choices = [t.value for t in Tag.query.order_by(Tag.value)]
+    tag_form.tag_list.choices = [
+        t.value for t in Tag.query.order_by(Tag.value)]
     comments = selected_term.comments.order_by(Comment.modified.desc())
     return render_template(
         "term/display_term.jinja",
@@ -142,7 +144,7 @@ def create_term():
         examples = form.examples.data
         concept_id = shoulder + str(ark_id)
         draft = form.draft.data
-        
+
         new_term = Term(
             ark_id=ark_id,
             shoulder=shoulder,
@@ -154,8 +156,8 @@ def create_term():
             concept_id=concept_id,
         )
         new_term.save()
-        if(draft):
-            #new_term.status = "draft" this is the intended way to track the status
+        if (draft):
+            # new_term.status = "draft" this is the intended way to track the status
             # assigning the 'Draft' tag assumes it exists, maybe we don't want to do that
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
@@ -229,8 +231,8 @@ def search():
     search_terms = " & ".join(search_terms.split(" "))
 
     term_list = (
-        Term.query.filter(Term.__ts_vector__.match(search_terms))
-        # .filter(Term.status != status.deleted)
+        Term.query.filter(Term.__ts_vector__.match(search_terms)).filter(
+            Term.status != status.archived)
         .paginate(page, per_page, False)
     )
 
@@ -385,7 +387,8 @@ def create_tag():
         tag_value = tag_form.value.data
         tag_description = tag_form.description.data
 
-        tag = Tag.query.filter_by(category=tag_category, value=tag_value).first()
+        tag = Tag.query.filter_by(
+            category=tag_category, value=tag_value).first()
         if tag is None:
             new_tag = Tag(
                 category=tag_category, value=tag_value, description=tag_description
@@ -570,7 +573,8 @@ def references_to_html(match):
     if reference_type == "g":
         # yyy in theory don't need to check before removing uniquerifier string
         #     as all normalized tag ids will start with it
-        if display_string.startswith(ixuniq):  # stored index "uniquerifier" string
+        # stored index "uniquerifier" string
+        if display_string.startswith(ixuniq):
             display_string = display_string[
                 ixqlen:
             ]  # but remove "uniquerifier" on display
