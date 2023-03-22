@@ -105,7 +105,6 @@
             {% endif %}
         </div>
 
-
         {% block content %}
 
         {% endblock content %}
@@ -122,33 +121,31 @@
         {% endwith %}
     </div>
 
-    <footer class="text-end text-muted px-5"
+    <footer class="container mt-4 text-end text-muted"
             style="width: 100%; margin-top: auto;">
         <hr>
         <small>
-	  <table>
+	  <table style="width 100%;">
 	    <tr valign="top">
 	    <td style="text-align: left;">
 	    <a
 	       href="https://cci.drexel.edu/mrc/"
 	       style="text-decoration: none; font-weight: bold">
-	       Metadata</br>
+	       Drexel Metadata</br>
 	       Research Center</a>
 	    </td>
-	    <td> &nbsp; &nbsp; &nbsp; &nbsp; </td>
-	    <td style="text-align: center; vertical-align: center;">
+	    <td style="width: 65%; text-align: center; vertical-align: center;">
             {{ macros.hide_link('main.contact', 'Contact') }} |
             Contributions to the YAMZ metadictionary are dedicated to the public
-            domain under the terms of CC0.
-            <br/>
-            By using this site, you agree to Terms
-            of Use and Privacy Policy statements similar to
+            domain under the terms of CC0. By using this site, you agree to
+	    Terms of Use and Privacy Policy statements similar to
             <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
 	    </td>
-	    <td style="text-align: center">
-	    <a href="/"
-	       style="text-decoration: none; font-size: large; font-weight: bold">
-	       <img style="height: 30%; width: 30%; margin: -5px 0px 0px 0px; vertical-align: center;"
+	    <td style="text-align: right; vertical-align: center">
+	    <a href="/" style="text-decoration: none;
+	                       font-size: large; font-weight: bold" >
+	       <img style="height: 60px; width: 60px;
+			   margin: -9px 0px 0px 0px;"
 	       src="/static/images/yamz_purple_logo_square_small.png">
 	           YAMZ
 	    </a>
@@ -160,6 +157,8 @@
 	  </table>
         </small>
     </footer>
+<!-- style="min-height: 22%; min-width: 22%; max-height: 22%; max-width: 22%;
+-->
 
     {% block body_scripts %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
