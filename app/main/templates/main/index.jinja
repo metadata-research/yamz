@@ -5,30 +5,25 @@ YAMZ Metadata Dictionary
 {% endblock %}
 
 {% block headline %}
+{% if current_user.is_authenticated %}
+
+<h6 class="text-muted" style="white-space:nowrap;">
+    A dictionary for all things metadata.
+</h6>
+
+{% endif %}
 {% endblock headline %}
 
 {% block content %}
-
-<div>
-    <form action="{{ url_for('term.search') }}" method="get">
-        <div class="control-group"><label class="control-label"></label>
-            <div class="controls">
-                {{ search_form.q(size=40, class='form-control', placeholder=search_form.q.label.text)}}
-            </div>
-    </form>
-    {% if current_user.is_authenticated %}
-    <br />
-    <h6 class="text-muted" style="white-space:nowrap;">A dictionary for all things metadata.</h6>
-    {% endif %}
-</div>
 
 {% if not current_user.is_authenticated %}
 
 <div class="jumbotron" style="background-color: transparent">
     <br />
-    <h1 class='text-center'>Metadictionary</h1>
+    <h1 class='text-center' style="font-size: 3.5em;">Metadictionary</h1>
+    <br />
     <p class="lead text-center">
-        A crowdsourced metadata dictionary. Search for terms, upvote useful ones.
+    A crowdsourced metadata dictionary. Add terms, get permalinks. Talk, refine, vote.
     </p>
     <br />
 </div>
@@ -80,7 +75,7 @@ YAMZ Metadata Dictionary
     </table>
     {% endif %}
 
-    {% endblock%}
+    {% endblock content %}
 
     {% block body_scripts%}
     {{ super() }}
