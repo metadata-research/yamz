@@ -11,6 +11,11 @@
 {% endif %}
 {%- endmacro %}
 
+{% macro noline_link(endpoint, text) -%}
+<a style="text-decoration: none; font-weight: bold"
+   href="{{ endpoint }}">{{ text }}</a>
+{%- endmacro %}
+
 {% macro render_tag_pagination(pagination, endpoint, tag_id) %}
 <div class=pagination>
     {%- for page in pagination.iter_pages() %}

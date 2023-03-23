@@ -128,18 +128,16 @@
 	  <table style="width 100%;">
 	    <tr valign="top">
 	    <td style="text-align: left;">
-	    <a
-	       href="https://cci.drexel.edu/mrc/"
-	       style="text-decoration: none; font-weight: bold">
-	       Drexel Metadata</br>
-	       Research Center</a>
+            {{ macros.noline_link('https://cci.drexel.edu/mrc/',
+	       'Drexel Metadata</br> Research Center') }}
 	    </td>
 	    <td style="width: 65%; text-align: center; vertical-align: center;">
-            {{ macros.hide_link('main.contact', 'Contact') }} |
+            {{ macros.noline_link('/contact', 'Contact') }} |
             Contributions to the YAMZ metadictionary are dedicated to the public
             domain under the terms of CC0. By using this site, you agree to
 	    Terms of Use and Privacy Policy statements similar to
-            <a href="http://wikimediafoundation.org">wikimediafoundation.org</a>.
+            {{ macros.noline_link('https://wikimediafoundation.org',
+	       'wikimediafoundation.org') }}.
 	    </td>
 	    <td style="text-align: right; vertical-align: center">
 	    <a href="/" style="text-decoration: none;
