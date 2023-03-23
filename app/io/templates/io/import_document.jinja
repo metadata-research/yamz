@@ -1,7 +1,7 @@
 {% extends './base.jinja' %}
 
 {% block title %}
-Contribute to YAMZ
+Import to YAMZ
 {% endblock %}
 
 {% block headline %}
@@ -10,9 +10,12 @@ Import dictionary terms
 
 {% block content %}
 
-Here you can propose a new term. You can help us maintain a high-quality metadictionary
-and minimize redundancies by <a href="/search">searching</a> for your term. Take a look
-at our community <a href="/guidelines">community guidelines</a> for best practice tips.
+Here you can import new terms from a CSV file containing a 3-column table.
+The columns, which may be separated by commas or tabs, should be ordered
+as follows: Term string, Definition, and Examples. You can help us maintain
+a high-quality metadictionary and minimize redundancies by searching for your
+term. Take a look at our <a href="/guidelines">community guidelines</a> for best
+practice tips.
 <hr>
 
 {% include 'io/_file_upload_form.jinja' %}
