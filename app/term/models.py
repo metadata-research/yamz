@@ -88,7 +88,8 @@ class Term(db.Model):
     naan = db.Column(db.String(64), default=NAAN)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     created = db.Column(db.DateTime, default=db.func.now())
-    modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    modified = db.Column(db.DateTime, default=db.func.now(),
+                         onupdate=db.func.now())
     term_string = db.Column(db.Text)
     definition = db.Column(db.Text)
     definition_html = db.Column(db.Text)
@@ -96,27 +97,24 @@ class Term(db.Model):
     examples_html = db.Column(db.Text)
     concept_id = db.Column(db.String(64))
     status = db.Column("status", db.Enum(status), default=status.published)
-    term_class = db.Column("class", db.Enum(term_class), default=term_class.vernacular)
+    term_class = db.Column("class", db.Enum(term_class),
+                           default=term_class.vernacular)
 
-    __ts_vector__ = db.Column(
-        TSVECTOR,
-        db.Computed(
-            "to_tsvector('english', term_string || ' ' || definition || ' ' || examples)",
-            persisted=True,
-        ),
-    )
+    search_vector = db.Column(TSVECTOR)
 
     __table_args__ = (
-        Index("ix_term___ts_vector__", __ts_vector__, postgresql_using="gin"),
+        Index("ix_term_search_vector", search_vector, postgresql_using="gin"),
     )
 
     # relationships
 
-    termsets = db.relationship("TermSet", secondary="term_sets", back_populates="terms")
+    termsets = db.relationship(
+        "TermSet", secondary="term_sets", back_populates="terms")
 
     contributor = db.relationship("User", back_populates="terms")
 
-    tags = db.relationship("Tag", secondary="term_tags", back_populates="terms")
+    tags = db.relationship("Tag", secondary="term_tags",
+                           back_populates="terms")
 
     tracks = db.relationship(
         "Track",
@@ -160,7 +158,8 @@ class Term(db.Model):
         )
 
     def add_child_relationship(self, child, predicate):
-        child = Relationship(parent_id=self.id, child_id=child.id, predicate=predicate)
+        child = Relationship(
+            parent_id=self.id, child_id=child.id, predicate=predicate)
         child.save()
 
     @property
@@ -184,9 +183,11 @@ class Term(db.Model):
         return case(
             [
                 (
-                    select([db.func.sum(Vote.vote)]).where(Vote.term_id == cls.id)
+                    select([db.func.sum(Vote.vote)]).where(
+                        Vote.term_id == cls.id)
                     != None,
-                    select([db.func.sum(Vote.vote)]).where(Vote.term_id == cls.id),
+                    select([db.func.sum(Vote.vote)]).where(
+                        Vote.term_id == cls.id),
                 ),
             ],
             else_=0,
@@ -339,13 +340,18 @@ class Term(db.Model):
             db.session.commit()
 
     def update(self):
-        db.session.commit()
+        self.save()
         term_updated.send(self)
 
     def save(self):
-        db.session.add(self)
+        tags = "" if self.tags is None else " ".join(
+            [tag.value for tag in self.tags])
+        definition = "" if self.definition is None else self.definition
+        examples = "" if self.examples is None else self.examples
+
+        string = definition + " " + examples + " " + tags
+        self.search_vector = db.func.to_tsvector("english", string.strip())
         db.session.commit()
-        term_saved.send(self)
 
     def delete(self):
         db.session.delete(self)
@@ -362,7 +368,8 @@ class Comment(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     term_id = db.Column(db.Integer, db.ForeignKey("terms.id"))
     created = db.Column(db.DateTime, default=db.func.now())
-    modified = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    modified = db.Column(db.DateTime, default=db.func.now(),
+                         onupdate=db.func.now())
     comment_string = db.Column(db.Text)
     comment_string_html = db.Column(db.Text)
 
@@ -416,10 +423,13 @@ class Tag(db.Model):
 
 class Track(db.Model):
     __tablename__ = "tracking"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey(
+        "terms.id"), primary_key=True)
 
-    term = db.relationship("Term", back_populates="tracks", order_by="Term.term_string")
+    term = db.relationship("Term", back_populates="tracks",
+                           order_by="Term.term_string")
     user = db.relationship("User", back_populates="tracking")
 
     def save(self):
@@ -436,8 +446,10 @@ class Track(db.Model):
 
 class Vote(db.Model):
     __tablename__ = "votes"
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), primary_key=True)
-    term_id = db.Column(db.Integer, db.ForeignKey("terms.id"), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(
+        "users.id"), primary_key=True)
+    term_id = db.Column(db.Integer, db.ForeignKey(
+        "terms.id"), primary_key=True)
     vote = db.Column(db.Integer, default=0, nullable=False)
 
     def save(self):
@@ -473,7 +485,8 @@ class TermSet(db.Model):
     name = db.Column(db.Text)
     description = db.Column(db.Text)
     created = db.Column(db.DateTime, default=db.func.now())
-    updated = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    updated = db.Column(db.DateTime, default=db.func.now(),
+                        onupdate=db.func.now())
 
     terms = db.relationship(
         "Term",

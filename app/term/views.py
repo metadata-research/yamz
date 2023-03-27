@@ -73,6 +73,13 @@ def format_score(score):
     pass
 
 
+@term.app_template_filter("highlight_term_string")
+def highlight_term_string(definition, search_terms):
+    for term in search_terms.split(" "):
+        definition = definition.replace(term, "<b>" + term + "</b>")
+    return definition
+
+
 @term.route("/ark:/99152/<concept_id>")
 @term.route("/ark:99152/<concept_id>")
 @term.route("/ark/99152/<concept_id>")
@@ -221,22 +228,23 @@ def add_comment(term_id):
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
 
-# TODO: filter by published status
 @term.route("/search")
 def search():
     page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
+    per_page = 10
     sort_type = "search"
-    search_terms = g.search_form.q.data
-    search_terms = " & ".join(search_terms.split(" "))
+    search_terms = g.search_form.q.data.strip()
 
-    term_list = (
-        Term.query.filter(Term.__ts_vector__.match(search_terms)).filter(
-            Term.status != status.archived)
-        .paginate(page, per_page, False)
-    )
+    term_string_matches = Term.query.filter(
+        Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
 
-    # pager = Pager(term_list, page, per_page, len(term_list.items))
+    vector_search_terms = " & ".join(search_terms.split(" "))
+    term_vector_matches = Term.query.filter(Term.search_vector.match(
+        vector_search_terms)).filter(Term.status != status.archived)
+
+    term_list = term_string_matches.union_all(
+        term_vector_matches).paginate(page, per_page, False)
+
     next_url = (
         url_for("term.search", q=search_terms, page=term_list.next_num)
         if term_list.has_next
@@ -245,8 +253,8 @@ def search():
     prev_url = (
         url_for("term.search", q=search_terms, page=term_list.prev_num)
         if term_list.has_prev
-        else None
-    )
+        else None)
+
     return render_template(
         "term/search_results.jinja",
         term_list=term_list.items,

@@ -16,43 +16,42 @@ Search Results for <i>{{ search_terms }}</i>
 {% endblock headline %}
 
 {% block content %}
-{% include 'term/_subnav.jinja' %}
 <table class="table table-borderless table-sm">
     <thead>
         <tr>
             <th>Term</th>
-            <th>Score</th>
-            <th>Consensus</th>
-            <th>Class</th>
-            <th>Modified</th>
+            <th>Definition</th>
             <th>Contributor</th>
         <tr>
     </thead>
-    <a href="{{ url_for('io.export_term_results', search_terms=search_terms) }}">[Export Terms]</a>
-    {% for term in term_list %}
+    <!--<a href="{{ url_for('io.export_term_results', search_terms=search_terms) }}">[Export Terms]</a>-->
+    
     <tbody>
+    {% set count = namespace(value=0) %}
+    {% for term in term_list %}         
+        {% set count.value = count.value + 1 %}
         <tr>
             <td>
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
-            <td>
-                {{ term.score }}
-            </td>
-            <td>
-                {{ term.consensus}}
-            </td>
-            <td>
-                {{ term.term_class.value[1]}}
-            </td>
-            <td>
-                {{ term.modified | format_date}}
+            <td width ="60%">
+                {{ term.definition[0:200]|highlight_term_string(search_terms) }}
+                {% if term.definition|length > 200%}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition[201:]|highlight_term_string(search_terms) }}</span>
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
+                ...
+                </button>
+                {% endif %}
             </td>
             <td>
                 {{ term.contributor.full_name }}
             </td>
         </tr>
-    </tbody>
+        
     {% endfor %}
+    
+    </tbody>
+    
 </table>
 
 {% if prev_url %}
