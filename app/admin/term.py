@@ -1,4 +1,5 @@
-import re, enum
+import re
+import enum
 from flask import render_template
 from app.term.models import Relationship, Term, Tag
 from app import db
@@ -22,10 +23,12 @@ def tagGCW():
     print(terms.count())
 
 
-ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+ref_regex = re.compile(
+    "#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
 
-###############################add other tag start here
-g_regex = re.compile("#\{\s*(([g])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
+# add other tag start here
+g_regex = re.compile(
+    "#\{\s*(([g])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\s*\}")
 ixuniq = "xq"
 ixqlen = len(ixuniq)
 tagstart = "#{g: "  # final space is important
@@ -86,7 +89,8 @@ def splitTerms():
                 print(excerpt)
                 print("------------------------")
                 start = end
-                last_ark_id = db.session.query(db.func.max(Term.ark_id)).scalar()
+                last_ark_id = db.session.query(
+                    db.func.max(Term.ark_id)).scalar()
                 ark_id = int(last_ark_id + 1)
                 shoulder = "h"
                 naan = "99152"
@@ -156,6 +160,7 @@ def tagOtherTerms():
                     # term.save()
                     # print(definition)
 
+
 def clean_tags():
     terms = Term.query
     for term in terms:
@@ -170,10 +175,8 @@ def clean_tags():
                     print(term.definition)
                     db.session.add(term)
     db.session.commit()
-                    
-                
-                    
-                
+
+
 def convert_ambiguous():
     terms = Term.query
     for term in terms:
@@ -194,15 +197,14 @@ def convert_ambiguous():
                         print(term.definition)
                         db.session.add(term)
     db.session.commit()
-                    
-            
-            
+
+
 # don't forget about t: entries
 
 def refresh_terms():
-    terms = Term.query
+    terms = Term.query.filter(Term.status == "published")
+    count = terms.count()
     for term in terms:
-        term.shoulder = "h"
-        db.session.commit()
-        print(term.term_string + " refreshed")
-        
+        term.save()
+        count -= 1
+        print(count)
