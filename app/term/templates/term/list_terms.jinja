@@ -21,37 +21,37 @@ Browse terms - {{ sort_type }}
     <thead>
         <tr>
             <th><a href="{{ url_for('term.list_alphabetical', page=pager.page, order=sort_order)}}">Term</a></th>
-            <th>Score</th>
-            <th>Consensus</th>
-            <th>Class</th>
-            <th>Modified</th>
+            <th>Definition</th>
             <th>Contributor</th>
+            <th>Modified</th>
         <tr>
     </thead>
-    {% for term in term_list %}
+
     <tbody>
+    {% set count = namespace(value=0) %}
+    {% for term in term_list %}
+            {% set count.value = count.value + 1 %}
         <tr>
             <td>
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
-            <td>
-                {{ term.score }}
-            </td>
-            <td>
-                {{ term.consensus}}
-            </td>
-            <td>
-                {{ term.term_class.value[1]}}
-            </td>
-            <td>
-                {{ term.modified | format_date}}
+            <td width="70%">
+                {{ term.definition[0:200] }}
+                {% if term.definition|length > 200%}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{term.definition[200:]}}</span>
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
+                ...
+                </button>
+                {% endif %}
             </td>
             <td>
                 {{ term.contributor.full_name }}
+            <td>
+                {{ term.modified|format_date }}
             </td>
         </tr>
-    </tbody>
     {% endfor %}
+    </tbody>
 </table>
 
 {% if pager %}

@@ -22,6 +22,7 @@ Search Results for <i>{{ search_terms }}</i>
             <th>Term</th>
             <th>Definition</th>
             <th>Contributor</th>
+            <th>Modified</th>
         <tr>
     </thead>
     <!--<a href="{{ url_for('io.export_term_results', search_terms=search_terms) }}">[Export Terms]</a>-->
@@ -34,10 +35,10 @@ Search Results for <i>{{ search_terms }}</i>
             <td>
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
-            <td width ="60%">
-                {{ term.definition[0:200]|highlight_term_string(search_terms) }}
+            <td width ="70%">
+                {{ term.definition[0:200] | highlight_term_string(search_terms) }}
                 {% if term.definition|length > 200%}
-                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition[200:]|highlight_term_string(search_terms) }}</span>
+                <span class="collapse" id="collapseDiv{{count.value}}">{{term.definition[200:]|highlight_term_string(search_terms)}}</span>
                 <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
                 ...
                 </button>
@@ -45,13 +46,12 @@ Search Results for <i>{{ search_terms }}</i>
             </td>
             <td>
                 {{ term.contributor.full_name }}
+            <td>
+                {{ term.modified|format_date }}
             </td>
-        </tr>
-        
+        </tr>        
     {% endfor %}
-    
     </tbody>
-    
 </table>
 
 {% if prev_url %}
