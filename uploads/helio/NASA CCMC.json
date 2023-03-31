@@ -1,0 +1,478 @@
+{
+    "Source Name": "NASA CCMC",
+    "Division": "Heliophysics",
+    "Term Count": 78,
+    "Definition Count": 78,
+    "Acronym Count": 3,
+    "Synonym Count": 0,
+    "Terms": [
+        {
+            "Term": "ambient solar wind",
+            "Definition": "the undisturbed outflow of the Sun's ionized atmosphere into interplanetary space",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ACE",
+            "Definition": "the Advanced Composition Explorer (ACE) spacecraft is positioned on the Earth-Sun line and provides measurements of the solar wind plasma and radiation conditions that will impact Earth.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "active regions",
+            "Definition": "A disturbed volume of the Sun's atmosphere that often consists of (from bottom to top) sunspots, plage, prominences, and hot magnetized loops. Active regions may release significant amounts of energy during magnetic eruptions that produce coronal mass ejections and/or flares.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ambient solar wind",
+            "Definition": "the outflow of the Sun's ionized atmosphere into interplanetary space",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "AU",
+            "Definition": "1 Astronomical Unit (AU) is equal to the average distance from the Earth to the Sun. This is a convenient measure of distances in the solar system.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "aurora",
+            "Definition": "transient displays of light, often displaying as moving curtains and rays, at high latitudes associated with geomagnetic disturbances",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "auroral region",
+            "Definition": "oval-shaped, high-latitude zone centered on the geomagnetic pole, in which aurora are most visible.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "auroral activity",
+            "Definition": "usually refers to visible aurora and the particles that create them, but may also refer to electrical currents that flow in the auroral region. One measure of auroral activity is hemispheric power",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "auroral boundary",
+            "Definition": "The high and low latitude edges of the auroral zone, typically 72 deg (poleward) and 62 deg (equatorward)",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "auroral precipitation",
+            "Definition": "ionized particles that fall, or are accelerated, into Earth's atmosphere to create the aurora and aid in the flow of electrical current",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "cadence",
+            "Definition": "in science, the rate at which an instrument, usually an imager, records a data",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Carrington event",
+            "Definition": "An extremely powerful solar flare followed by intense geomagnetic activity in late August and early September 1859",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Carrington rotation",
+            "Definition": "a full rotation of the Sun with a period of about 27 days.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "chromosphere",
+            "Definition": "The region of the Sun’s atmosphere that exists just above the photosphere. The chromosphere is visible with a special narrow band telescope the views the emissions of Hydrogen-alpha.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Corotating Interaction Region",
+            "Definition": "Corotating interaction regions are zones of enhanced solar wind plasma density and interplanetary magnetic field that result from a region of slow solar wind (ahead) being compressed by fast solar wind behind it. In Earth's reference frame these enhanced regions sweep by, often creating small to moderate geomagnetic disturbances for a few to tens of hours.",
+            "Acronym": "CIR",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME",
+            "Definition": "Coronal Mass Ejection - An eruption in the outer solar atmosphere that sends billions of tons of magnetized plasma clouds into interplanetary space. When traveling at high speeds these ejections create shocks in the solar wind. Earth-intercept of a CME is often followed by a geomagnetic storm",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME angular width",
+            "Definition": "the full angular width of the CME, a measure of the size of a coronal mass ejection as it propagates away from the Sun.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME opening half-angle",
+            "Definition": "Half the full angular width of the CME, which is a measure of the size of a coronal mass ejection as it propagates away from the Sun. Often the propagation is assumed to sweep out the shape of a cone in interplanetary space. The angle between the cone edge and the central axis of the cone is the opening half-angle",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME parameters",
+            "Definition": "Basic attributes of a CME such as plane of sky speed, radial speed, width, longitude, latitude.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME plane of sky measurements",
+            "Definition": "Measurements CME motion(propagation and expansion) or behavior that is transverse to the Sun-observer line (in the plane of the observation).",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME plane of sky speed",
+            "Definition": "The speed of a CME that is transverse to the Sun-observer line. This speed is always an underestimate of the CME speed since it does not include the radial motion (to/from observer)",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "CME radial velocity",
+            "Definition": "The three dimensional velocity of the CME which is derived from plane of sky speeds using various methods (e.g. source location, geometric triangulation, fitting models).",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "cone model",
+            "Definition": "A coronal mass ejection (CME) propagation model that assumes the CME expands and propagates from narrow region (vertex) and subsequently develops a round cross section thus sweeping out a cone",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "coronagraph",
+            "Definition": "A telescope, or attachment to a telescope, that blocks the light of a star (Sun) inside the instrument field of view so that regions near the star (Sun), particularly the atmosphere or solar corona, can be viewed",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "coronagraph field of view",
+            "Definition": "The total amount of sky viewed in a coronagraph. The Sun is ~ 0.5 degrees across. A 3-degree coronagraph field of view covers 2-6 solar radii (inside of 2 solar radii the Sun is blocked out)",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "coronagraph difference images",
+            "Definition": "A method of subtracting a previous coronagraph image from a current image to find changes that have occurred between the time the two images were made. The subtraction removes much of the original background so that new changes are highlighted. The method is often applied to track the expansion and propagation of CMEs",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "coronal hole",
+            "Definition": "vast regions in the Sun’s upper atmosphere that appear dark compared to surrounding areas when observed in Extreme Ultra-Violet (EUV) and X-ray wavelengths.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "coronal loop",
+            "Definition": "Coronal loops form the basic structure of the lower corona and transition region of the Sun. These highly structured loops are a direct consequence of the twisted solar magnetic flux within the solar body. The population of coronal loops can be directly linked with the solar cycle. it is for this reason coronal loops are often found with sunspots at their footpoints. The upwelling magnetic flux pushes through the photosphere, exposing the cooler plasma below. The contrast between the photosphere and the solar interior gives the impression of dark spots, or sunspots",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "differential rotation",
+            "Definition": "different rotation speeds at different solar latitudes, faster at lower latitudes and slower near the poles",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "diffuse aurora",
+            "Definition": "Diffuse auroral emissions occur when plasma sheet particles are scattered from the loss cone and precipitate into the auroral zone without additional acceleration along geomagnetic field lines. Diffuse auroral precipitation, which is usually sub-visual, is a continuous process that expands equatorward when geomagnetic activity increases.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "discrete aurora",
+            "Definition": "Discrete auroral particles are accelerated by two distinct physical mechanisms: quasi-static electric fields, producing monoenergetic peaks, and dispersive Alfven waves, producing broadband electron acceleration. Discrete aurora are responsible for the rays and curtains usually associated with visible active aurora.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ecliptic plane",
+            "Definition": "The plane of Earth's orbit around the Sun. The ecliptic plane is used as the main reference when describing the position of other objects that rotate about the Sun or need to be located with respect to the Sun and the Earth. The angle between the ecliptic plane and the plane of an orbit is called the inclination.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "electromagnetic spectrum",
+            "Definition": "The distribution of electromagnetic waves or radiation arranged according to wavelength and frequency. Electromagnetic wave energy is the product of frequency and wavelength, and thus is a related means of categorizing the spectrum. Although the Sun's peak radiative output is in visible light band in the midst of the spectrum, the Sun emits energy ranging from short wavelength (high energy) gamma rays to long wavelength (low energy) radio waves.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "electron volt",
+            "Definition": "A small unit of energy that is associated with a particle of a single charge, such as an electron or proton, moving through an electric potential of 1 Volt. It is equivalent to 1.602x10^-19 J. Highly energized particles may have energies of mega electron volts (MeV) or beyond.",
+            "Acronym": "eV",
+            "Synonym": ""
+        },
+        {
+            "Term": "energetic charged particles",
+            "Definition": "charged particles such as energetic electrons and energetic protons, and sometimes heavier ions, that have high enough energies to be moving at a significant fraction of the speed of light - at least 1% of the speed of light. These energetic particles can cause ionizing radiation damage spacecraft components and biological materials such as DNA.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "energetic electrons",
+            "Definition": "electrons that are traveling much faster than ambient electrons in the space plasma and have the potential for causing ionizing radiation damage to spacecraft and astronauts.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "energetic protons",
+            "Definition": "protons that are traveling much faster then typical protons in the space plasma and have the potential for causing radiation damage to spacecraft and astronauts.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "geoeffective",
+            "Definition": "solar wind conditions which are capable of producing a geomagnetic storm",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "geomagnetic storm/space weather storm in the Earth's magnetopshere",
+            "Definition": "Disturbances/Changes in Earth's magnetic field due to changes in solar wind conditions typically lasting 3-6 days.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "geomagnetic Kp index",
+            "Definition": "The Kp-index is an indicator of the geomagnetic disturbance level in Earth’s mid- and high-latitude magnetic field compared to a quiet day.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "geostationary/GEO orbit",
+            "Definition": "A circular orbit at zero inclination directly above Earth's equator with an orbital period of 23 hr, 56 min and 4 sec. To a ground observer a geostationary satellite appears always at the same point in the sky. Geostationary orbits are a subset of geosynchronous orbits. Both orbits match Earth's rate of rotation measured relative to distant \"fixed\" stars.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "GOES",
+            "Definition": "Geostationary Operational Environmental Satellites (GOES) Built and launched by NASA and operated by NOAA (National Oceanic and Atmospheric Administration, these satellites are in geostationary orbit over the continental US with the primary mission of observing the environmental conditions (weather). They also carry instruments that monitor the space environment.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "halo CME",
+            "Definition": "CMEs that appear to surround the occulting disk of the coronagraph. The CME can originate from the front or back side of the Sun, and therefore are travelling either towards or away from the observer. About 70% of Earth directed halo CMEs are geoeffective.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Heliocentric Earth Equatorial coordinates",
+            "Definition": "This coordinate system has its Z axis parallel to the Sun's rotation axis (positive to the North) and its X axis towards the intersection of the solar equator and the solar central meridian as seen from the Earth. This system is sometimes known as heliocentric solar (HS).",
+            "Acronym": "HEEQ",
+            "Synonym": ""
+        },
+        {
+            "Term": "heliosphere",
+            "Definition": "The region of space dominated by the Sun’s extended, outflowing atmosphere. Based on views of other stellar spheres, the heliosphere probably has a tear-drop shape due to its interaction with the interstellar wind.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "hemispheric power",
+            "Definition": "A measure of auroral activity. Charged particles from the magnetosphere or solar wind can drive into the auroral zones and collide with the upper atmosphere particles. The collisions slow the charged particles, causing them transfer their kinetic energy to the upper atmosphere. The rate of particle energy deposition summed over the auroral zones is called hemispheric power.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "high speed solar wind stream",
+            "Definition": "Streams in solar wind formed by higher speed solar wind originating from coronal holes. Higher speed streams are less tightly wound in the Parker spiral compared to slower ones, and at various distances the faster solar wind overtakes the slower wind ahead of it.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ionization",
+            "Definition": "the process by which the energy of UV or X-Ray photon is absorbed by the electron of an atom, removing it completely from the atom and leaving a positively charged ion behind.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ionizing radiation",
+            "Definition": "either energetic charged particles (usually electrons or protons) or photon radiation (UV or X-Rays) that can damage molecular structures such as DNA and spacecraft electronics",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "ionosphere",
+            "Definition": "An atmospheric layer in which a small fraction of electrons have been separated from their parent ions by energetic processes. Solar photons, solar protons and auroral particles, with sufficient energy, strip the electrons to produce a weak plasma.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Kp Index",
+            "Definition": "The Kp index indicates the magnitude of geomagnetic disturbance on a 0-9 scale, with zero being very quiet and 9 indicating a major geomagnetic storm. The index has a three-hour cadence. Higher values of Kp are associated with geomagnetic storming, the appearance of auroral lights at lower than normal latitudes, and stronger linkages between Earth’s upper atmosphere and magnetosphere. See also the \"Kp Indicies\" Cygnet wiki page.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "L1 point",
+            "Definition": "Lagrange Point 1 is an (unstable) gravitational fix point between the Earth and the Sun. It is close to Earth and always on the Earth-Sun line. Several solar monitoring spacecraft are in orbit around the L1 point.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "magnetic reconnection",
+            "Definition": "Magnetic reconnection is a physical process in highly conducting plasmas in which the magnetic topology is rearranged and magnetic energy is converted to kinetic energy, thermal energy, and particle acceleration",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "magnetopause",
+            "Definition": "boundary of the magnetosphere. Outside this boundary of the environment is dominated by interactions the solar wind magnetic field while inside it is primarily influenced by the Earth's magnetic field.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "magnetosphere",
+            "Definition": "The region of space dominated by the magnetic field of a star or planet. Earth’s magnetosphere takes on a tear-drop shape under the influence of the flowing solar wind.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "MHD",
+            "Definition": "Magnetohydrodynamics theory - this is the theory the describes the physics of conducting fluids including plasmas. It includes both fluid theory (“hydrodynamics”) and Electricity and Magnetism (“Magneto”).",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Parker spiral",
+            "Definition": "the spiral of Archimedes magnetic geometry of the solar wind due to solar rotation. Parcels of solar wind leaving the sun are analogous the water spirals formed from a rotating sprinkler. The angle a solar wind magnetic field line makes at 1 AU is close to 45 degrees.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "particle flux",
+            "Definition": "a measure of the number of particles passing through a unit area per unit time",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "penumbra",
+            "Definition": "The outer, lighter portion of a sunspot. This structure has a striated or filamented appearance",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "photosphere",
+            "Definition": "thin layer of the solar atmosphere that is the source of most Solar photons",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "plage",
+            "Definition": "Visible and ultraviolet emissions from the photosphere,chromosphere and transition region. Plage are associated with concentrations of magnetic fields and form a part of the network of bright emissions that characterize the chromosphere.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "plasma",
+            "Definition": "a fourth state of matter where atoms are broken down into ions and separate electrons",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "POES",
+            "Definition": "Polar Orbiting Environmental Satellites (POES) are a constellation of spacecraft that provide near continuous monitoring of the terrestrial and space environment over the polar regions",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "reconnection",
+            "Definition": "see Magnetic reconnection",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "SDO",
+            "Definition": "The Solar Dynamics Observatory is a spacecraft with three experiments (instrument suites) designed to to study how solar activity is created and how space weather comes from that activity. The experiments are: 1) the Atmospheric Imaging Assembly (AIA); 2) the Extreme ultraviolet Variability Experiment (EVE); and 3)The Helioseismic and Magnetic Imager. Each of these observes the Sun simultaneously. SDO was launched on Feb 11, 2010 into an inclined geosynchronous orbit that permits full time viewing of the Sun.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "solar",
+            "Definition": "adjective used to describe aspects or behaviors of the Sun",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "solar atmosphere",
+            "Definition": "atmosphere consists of those layers of the Sun that allow photons to freely exit to space. The regions are: the photosphere, chromosphere, transition region and corona",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "solar corona",
+            "Definition": "the outer most portion of the solar atmosphere visible.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "solar cycle of magnetic activity",
+            "Definition": "The approximately 22 (Earth-) year variation of the Sun’s magnetic field",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "solar wind",
+            "Definition": "plasma flowing out from the sun",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "space weather",
+            "Definition": "describes the variable conditions in space, due to solar activity and the solar wind",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "spectral notation",
+            "Definition": "By convention spectral analysts designate the level of ionization with a roman numeral that is one unit larger that the actual number of missing electrons. For example HeII is singly ionized Helium (one electron missing).",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "STEREO",
+            "Definition": "Solar TErrestrial RElations Observatory; A spacecraft mission consisting of two identical spacecraft, STEREO A (“Ahead”) and STEREO B (“Behind”) that orbit closer and further from the Sun, respectively, than does Earth. The spacecraft carry solar imagers and solar wind detectors. Their orbit configuration allows the spacecraft to separate from Earth so that they can provide stereoscopic views of disturbances leaving the Sun.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "streamer",
+            "Definition": "features in the solar corona that overlie regions of closed magnetic field. They are sometimes called helmet streamers because they appear as pointed helmet-like features in the solar coronal.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "sunspot",
+            "Definition": "Sunspots are temporary phenomena on the photosphere of the Sun that appear visibly as dark spots compared to surrounding regions. Sunspots are caused by intense magnetic field, which inhibits convection, leaving their temperature (~ 3000–4500 K) lower than the temperature of surrounding material ( ~ 6000) K and makes them visible as dark spots. Sunspot sizes vary from 16 km to 160,000 km in diameter. They usually appear as pairs, with each sunspot having the opposite magnetic pole than the other. Sunspots host coronal loops and reconnection events. Most solar flares and CMEs originate in magnetically active regions around sunspot groups.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "tachocline",
+            "Definition": "A thin shear layer between the Sun's differentially rotating convection envelope and uniformly rotating interior. The tachocline is bounded by the solar radiation zone on the bottom and the solar convection zone on the top.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "transition region",
+            "Definition": "Above the solar chromosphere and solar corona there is a transition region. The temperature here rises from 20000 to ~ 1-2 millions of K. Below the transition region, gravity dominates the shape of most features, so that the Sun may be described in terms of layers and horizontal features (like sunspots); above the transition region, dynamic forces dominate the shape of most features, so that the transition region itself is not a well- defined layer at a particular altitude.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "X-ray flare",
+            "Definition": "A localized brightening in the solar atmosphere observed in the 0.1- 0.8 nm waveband of the electromagnetic spectrum.",
+            "Acronym": "",
+            "Synonym": ""
+        }
+    ]
+}

@@ -1,0 +1,70 @@
+{
+    "Source Name": "ESA Space Weather Glossary",
+    "Division": "Planetary, Astrophysics, Heliophysics",
+    "Term Count": 10,
+    "Definition Count": 10,
+    "Acronym Count": 0,
+    "Synonym Count": 0,
+    "Terms": [
+        {
+            "Term": "Accuracy of data",
+            "Definition": "An estimate of the closeness of agreement between measured data and the observable being measured. In practice this is reflected by an uncertainty value taking into account all known and quantifiable sources of error in the data.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Alarm",
+            "Definition": "Near real-time notification issued when a dangerous condition occurs.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Alert",
+            "Definition": "Timely notification to the user that conditions of interest are taking place or are expected to take place.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Data",
+            "Definition": "Model output, raw or processed measurements, of any Space Weather parameter.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Forecast",
+            "Definition": "Description of the space environment at a future date based on actual data, proxies and models.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Index",
+            "Definition": "A set of derived variables frequently used to parameterise Space Weather conditions and as input to models. The default sets of indices are:  Solar activity and geomagnetism: PC, AE, Ap, Kp, Dst, IG12, IMF, R, R12, F10.7, S10, E10, M10, Y10; Ionospheric scintillation: S4, sigma_phi, fading depth, fade duration, time between fades.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Model",
+            "Definition": "A representation of a physical phenomenon built on data (measured and/or theoretical). There are three types of model:  Empirical: A model that is based on observations. Physics-based: A model that is based on first principles. It relies on mathematical descriptions of specific physical phenomena. Semi-empirical: A model that is partially based on observations and partially on first principles.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Near real-time",
+            "Definition": "Statement that an action is occurring as close as possible to the same rate at which an observable is measured/observed.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Nowcast",
+            "Definition": "Reconstruction in near real-time of a description of the present space environment based on actual data, proxies and models.",
+            "Acronym": "",
+            "Synonym": ""
+        },
+        {
+            "Term": "Product interface",
+            "Definition": "The means by which a particular product is accessed, examples of which are a user interface (GUI, web form, menu driven) or an API. Usually the product interface will conform to some well-defined standard in order to aid interoperability and re-use.",
+            "Acronym": "",
+            "Synonym": ""
+        }
+    ]
+}
