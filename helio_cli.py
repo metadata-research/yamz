@@ -34,9 +34,33 @@ def terms(file_no):
     load_terms_from_json(file_no)
 
 
+@click.command()
+def createset():
+    create_term_set("test", "test", "yamz.development@gmail.com")
+
+
+@click.command()
+def create():
+    import_terms()
+
+
+@click.command()
+def setlist():
+    print_termset_list()
+
+
+@click.command()
+@click.argument("set_id")
+def deleteset(set_id):
+    delete_term_set(set_id)
+
+
+cli.add_command(create)
 cli.add_command(list)
 cli.add_command(info)
 cli.add_command(terms)
-
+cli.add_command(createset)
+cli.add_command(setlist)
+cli.add_command(deleteset)
 if __name__ == "__main__":
     cli()

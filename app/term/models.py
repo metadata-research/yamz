@@ -109,7 +109,7 @@ class Term(db.Model):
     # relationships
 
     termsets = db.relationship(
-        "TermSet", secondary="term_sets", back_populates="terms")
+        "TermSet", secondary="term_sets", back_populates="terms", cascade="all")
 
     contributor = db.relationship("User", back_populates="terms")
 
@@ -479,7 +479,7 @@ set_table = db.Table(
 class TermSet(db.Model):
     __tablename__ = "termsets"
     id = db.Column(db.Integer, primary_key=True)
-    ark = db.Column(db.Text, nullable=True, unique=True)
+    ark_id = db.Column(db.Integer, nullable=True, unique=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)
     source = db.Column(db.Text)
     name = db.Column(db.Text)
@@ -493,8 +493,14 @@ class TermSet(db.Model):
         secondary="term_sets",
         back_populates="termsets",
         order_by="Term.term_string",
+        single_parent=True,
+        cascade="all, delete-orphan",
     )
 
     def save(self):
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
