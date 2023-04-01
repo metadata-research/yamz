@@ -18,8 +18,13 @@ def cli():
 
 
 @click.command()
-def list():
-    print_file_list()
+def create():
+    import_terms()
+
+
+@click.command()
+def deleteset():
+    delete_term_set()
 
 
 @click.command()
@@ -29,19 +34,8 @@ def info(file_no):
 
 
 @click.command()
-@click.argument("file_no")
-def terms(file_no):
-    load_terms_from_json(file_no)
-
-
-@click.command()
-def createset():
-    create_term_set("test", "test", "yamz.development@gmail.com")
-
-
-@click.command()
-def create():
-    import_terms()
+def list():
+    print_file_list()
 
 
 @click.command()
@@ -49,17 +43,11 @@ def setlist():
     print_termset_list()
 
 
-@click.command()
-def deleteset():
-    delete_term_set()
-
-
 cli.add_command(create)
-cli.add_command(list)
-cli.add_command(info)
-cli.add_command(terms)
-cli.add_command(createset)
-cli.add_command(setlist)
 cli.add_command(deleteset)
+cli.add_command(info)
+cli.add_command(list)
+cli.add_command(setlist)
+
 if __name__ == "__main__":
     cli()
