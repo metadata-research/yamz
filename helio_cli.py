@@ -50,9 +50,8 @@ def setlist():
 
 
 @click.command()
-@click.argument("set_id")
-def deleteset(set_id):
-    delete_term_set(set_id)
+def deleteset():
+    delete_term_set()
 
 
 cli.add_command(create)

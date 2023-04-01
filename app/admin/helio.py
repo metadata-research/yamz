@@ -1,7 +1,7 @@
 import os
 import pandas
 from app import db
-from app.term.models import Term, TermSet
+from app.term.models import Term, TermSet, Tag
 from app.user.models import User
 from app.term.helpers import get_ark_id
 from flask import current_app
@@ -45,8 +45,13 @@ def print_file_list() -> None:
 def print_termset_list():
     """print a list of term sets in the database by name and id"""
     termsets = TermSet.query.order_by(TermSet.name)
-    for termset in termsets:
-        print("[{id}] {termset}".format(id=termset.id, termset=termset.name))
+    if termsets.count() == 0:
+        print("No term sets found")
+        exit()
+    else:
+        for termset in termsets:
+            print("[{id}] {termset}".format(
+                id=termset.id, termset=termset.name))
 
 
 def get_file_info(file_no) -> pandas.DataFrame:
@@ -98,7 +103,7 @@ def load_terms_from_json(file_no) -> list:
     return term_list, source, divisions
 
 
-def create_term_set(name, source, owner_email) -> TermSet:
+def create_term_set(source_name, source_file, owner_email) -> TermSet:
     """a component function to create a termset in the database to organize imports
 
     Args:
@@ -109,8 +114,8 @@ def create_term_set(name, source, owner_email) -> TermSet:
             must exist in the db already
     """
 
-    set_name = name
-    set_source = source
+    set_name = source_name
+    set_source = source_file
     user = User.query.filter_by(email=owner_email).first(
     )  # take the first if multiple accounts match
     set_user_id = user.id
@@ -119,6 +124,11 @@ def create_term_set(name, source, owner_email) -> TermSet:
     arks to sets. Right now get_ark_id based on the last index of the terms table
     so we would need to implement a global way to generate ark_ids to use it here.
     """
+    # create a tag from the name if it doesn't already exist
+    if not Tag.query.filter_by(value=set_name).first():
+        source_tag = Tag(category="source", value=set_name)
+        source_tag.save()
+        print("created tag:", source_tag.category, source_tag.value)
 
     new_set = TermSet(
         name=set_name,
@@ -133,23 +143,38 @@ def create_term_set(name, source, owner_email) -> TermSet:
     return new_set
 
 
-def delete_term_set(termset_id) -> None:
-    """delete a termset from the database
+def get_tag(tag_category, tag_value) -> Tag:
+    """generate a tag if it doesn't exist and return it
+
     Args:
-        termset_id (string): the id of the termset to be deleted
+        tag_category (string): the category of the tag (as in community, source, etc)
+        tag_value (string): the value of the tag (as in the tag source name)
     """
-    termset = TermSet.query.get(termset_id)
-    print("deleting term set:", termset.name)
-    termset.delete()
+    if not Tag.query.filter_by(category=tag_category, value=tag_value).first():
+        new_tag = Tag(category=tag_category, value=tag_value)
+        new_tag.save()
+        print("created tag:", new_tag.category, new_tag.value)
+    return Tag.query.filter_by(category=tag_category, value=tag_value).first()
 
 
 def insert_terms(termset, data_frame) -> None:
-    """insert terms from a json file into the database"""
+    """insert terms from a json file into the database
+
+    Args:
+        termset (TermSet): the termset to add the terms to
+        data_frame (pandas.DataFrame): the dataframe containing the terms, definitions, etc.
+    """
     term_list = data_frame["Terms"]
+    division_tags = data_frame["Division"][0]
+    source_name_tag = get_tag("source", termset.name)
+    print("tags:", source_name_tag)
+
     for term in term_list:
         try:
             new_term = insert_term(
                 term["Term"], term["Definition"], termset.user_id)
+            # here you could get the acronyms and synonyms to the term term["Acronym"], term["Synonym"]
+            # and append them as Tags below
         except Exception as e:
             print(e)
             print("failed to insert term:", term["Term"])
@@ -157,6 +182,11 @@ def insert_terms(termset, data_frame) -> None:
         else:
             print("inserted term:", term["Term"])
             termset.terms.append(new_term)
+            new_term.tags.append(source_name_tag)
+            # if you don't want to use the division tags, comment out the next lines
+            for division in division_tags.split(","):
+                division_tag = get_tag("division", division)
+                new_term.tags.append(division_tag)
 
 
 def insert_term(term, definition, user_id) -> Term:
@@ -205,9 +235,22 @@ def import_terms() -> None:
         exit()
     else:
         print("importing terms...")
-        set_name = SOURCES[dataframe_from_json["Source Name"][0]]
-        set_source = file
+        source_name = SOURCES[dataframe_from_json["Source Name"][0]].strip()
+        source_file = file
         term_set = create_term_set(
-            set_name, set_source, "yamz.development@gmail.com")
+            source_name, source_file, "yamz.development@gmail.com")
         insert_terms(term_set, dataframe_from_json)
         print("import complete")
+
+
+def delete_term_set() -> None:
+    """delete a termset from the database
+    Args:
+        termset_id (string): the id of the termset to be deleted
+    """
+    print_termset_list()
+    set_to_delete = input("Enter the id of the termset to delete: ")
+    termset_id = set_to_delete
+    termset = TermSet.query.get(termset_id)
+    print("deleting term set:", termset.name)
+    termset.delete()
