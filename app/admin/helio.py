@@ -10,14 +10,16 @@ from flask import current_app
 The key is the source name as it appears in the json file
 """
 SOURCES = {
-    "Helio Ontology": "Helio Ontology",
-    "Heliophysics Event Knowledge Base": "HEK",
-    "NASA CCMC, SWEET, SPASE": "NASA CCMC, SWEET, SPASE",
+    "HELIO Ontology": "HELIO Ontology",
+    "Heliophysics Events Knowledgebase": "HEK",
+    "NASA CCMC": "NASA CCMC",
+    "Semantic Web for Earth and Environment Technology Ontology": "SWEET",
     "NASA Heliophysics Vocabulary": "NASA Heliophysics Vocabulary",
-    "Space Weather Glossary": "NOAA SWPC SpWx Glossary",
+    "Space Weather Glossary (Second)": "NOAA SWPC SpWx Glossary",
     "Space Weather Glossary": "SET SpWx Glossary",
+    "SPASE Dictionary": "SPASE",
     "ESA Space Weather Glossary": "ESA SpWx Glossary",
-    "Unified Astronomy Thesaurus": "UAT",
+    "Unified Astronomy Thesaurus (UAT)": "UAT",
     "AGU Index Terms": "AGU Index Terms",
 }
 
@@ -55,11 +57,10 @@ def print_termset_list():
 
 
 def get_file_info(file_no) -> pandas.DataFrame:
-    """load json file by index in 'json_files'
-    and return pandas content info
+    """load json file by index in 'json_files and return pandas content info
+
     Args:
-        file_no (string): the file number to load passed as an argument to the cli
-        python helio.py info 10
+        file_no (string): the file number to load passed as an argument to the cli (e.g python helio.py info 10)
     """
     file = json_files[int(file_no) - 1]
     filepath = os.path.join(uploads_dir, file)
@@ -134,7 +135,7 @@ def create_term_set(source_name, source_file, owner_email) -> TermSet:
         name=set_name,
         source=set_source,
         user_id=set_user_id,
-        # description=set_description,
+        description="imported from " + set_source
     )
     new_set.save()
     print("created term set: " + new_set.name)
@@ -157,6 +158,21 @@ def get_tag(tag_category, tag_value) -> Tag:
     return Tag.query.filter_by(category=tag_category, value=tag_value).first()
 
 
+def append_synonyms(term, synonyms) -> None:
+    """Add synonyms as Tags to a term
+
+    Args:
+        term (Term): the term to add the synonyms to
+        synonyms (list): a list of synonyms to add to the term
+    """
+    for synonym in synonyms:
+        if not Tag(category="synonym", value=synonym):
+            new_synonym = Tag(category="synonym", value=synonym)
+            new_synonym.save()
+            term.tags.append(new_synonym)
+            print("appended synonym tag:", new_synonym.value)
+
+
 def insert_terms(termset, data_frame) -> None:
     """insert terms from a json file into the database
 
@@ -170,11 +186,12 @@ def insert_terms(termset, data_frame) -> None:
     print("tags:", source_name_tag)
 
     for term in term_list:
+        synonyms = term["Synonym"]  # this is a list
+        acronym = term["Acronym"]
+
         try:
             new_term = insert_term(
                 term["Term"], term["Definition"], termset.user_id)
-            # here you could get the acronyms and synonyms to the term term["Acronym"], term["Synonym"]
-            # and append them as Tags below
         except Exception as e:
             print(e)
             print("failed to insert term:", term["Term"])
@@ -187,6 +204,19 @@ def insert_terms(termset, data_frame) -> None:
             for division in division_tags.split(","):
                 division_tag = get_tag("division", division)
                 new_term.tags.append(division_tag)
+            # if you don't want to use the acronym as a tag, comment out the next lines
+            if acronym:
+                acronym_tag = get_tag("acronym", acronym)
+                new_term.tags.append(acronym_tag)
+
+            # If you want to use the synonyms as tags, uncomment the next lines
+            # The Tag <category> is the word "synonym" and the <value> is the synonym from the file.
+            # By default all tags are displayed and searchable
+            # You can use <Tag synonym, value> as a filter to change this behavior
+            '''
+            if synonyms:
+                append_synonyms(new_term, synonyms)
+            '''
 
 
 def insert_term(term, definition, user_id) -> Term:
