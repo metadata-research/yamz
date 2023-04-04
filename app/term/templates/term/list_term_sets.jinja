@@ -10,30 +10,20 @@ List Term Sets
 
 {% block content %}
 <hr>
-<div class="row">
-    <div class="col-sm-2">
-        Name
-    </div>
-    <div class="col">
-        Description
-    </div>
-    <div class="col">
-        Created
-    </div>
+<div>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/AGU%20Index%20Terms">AGU Index Terms</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/ESA%20SpWx%20Glossary">ESA SpWx Glossary</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/HEK">HEK</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/HELIO%20Ontology">HELIO Ontology</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/NASA%20CCMC">NASA CCMC</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/NASA%20Heliophysics%20Vocabulary">NASA Heliophysics Vocabulary</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/NOAA%20SWPC%20SpWx%20Glossary">NOAA SWPC SpWx Glossary</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/SET%20SpWx%20Glossary">SET SpWx Glossary</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/SPASE">SPASE</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/SWEET">SWEET</a>
+<a href="https://yamz-dev.yamz.net/term/list/tag/value/UAT">UAT</a>
 </div>
 
-
-{% for term_set in term_sets  %}
-<div class="row">
-    <div class="col-sm-2">
-        <a href="{{ url_for('term.display_term_set', term_set_id=term_set.id) }}">{{ term_set.name}}</a>
-    </div>
-    <div class="col">
-        {{ term_set.description }}
-    </div>
-    <div class="col">
-        {{ term_set.created }}
-    </div>
 </div>
 {% endfor%}
 
