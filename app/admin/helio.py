@@ -185,6 +185,8 @@ def insert_terms(termset, data_frame) -> None:
     source_name_tag = get_tag("source", termset.name)
     print("tags:", source_name_tag)
 
+    count = len(term_list)  # for debugging
+
     for term in term_list:
         synonyms = term["Synonym"]  # this is a list
         acronym = term["Acronym"]
@@ -197,7 +199,6 @@ def insert_terms(termset, data_frame) -> None:
             print("failed to insert term:", term["Term"])
             print("skipping")
         else:
-            print("inserted term:", term["Term"])
             termset.terms.append(new_term)
             new_term.tags.append(source_name_tag)
             # if you don't want to use the division tags, comment out the next lines
@@ -217,6 +218,8 @@ def insert_terms(termset, data_frame) -> None:
             if synonyms:
                 append_synonyms(new_term, synonyms)
             '''
+            print(count)
+            count -= 1  # for debugging
 
 
 def insert_term(term, definition, user_id) -> Term:

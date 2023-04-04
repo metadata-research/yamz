@@ -455,8 +455,11 @@ def list_term_sets():
 
 @term.route("/set/display/<int:term_set_id>")
 def display_term_set(term_set_id):
+    page = request.args.get("page", 1, type=int)
+    per_page = current_app.config["TERMS_PER_PAGE"]
     term_set = TermSet.query.get_or_404(term_set_id)
-    term_list = term_set.terms
+    term_list = Term.query.join(
+        Term, TermSet.terms).paginate(page, per_page, False).items
     return render_template(
         "term/display_term_set.jinja",
         selected_terms=term_list,
