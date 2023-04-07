@@ -28,6 +28,7 @@ List Term Sets
 -->
 
 <div>
+<hr>
 {% for term_set in term_sets %}
 
 <a href="{{ url_for('term.display_term_set', term_set_id=term_set.id) }}">{{term_set.name}}</a>
