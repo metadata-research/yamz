@@ -272,7 +272,7 @@ def import_terms() -> None:
         source_name = SOURCES[dataframe_from_json["Source Name"][0]].strip()
         source_file = file
         term_set = create_term_set(
-            source_name, source_file, "christopher.b.rauch@gmail.com")
+            source_name, source_file, "ryan.mcgranaghan@gmail.com")
         insert_terms(term_set, dataframe_from_json)
         db.session.commit()
         print("import complete")
