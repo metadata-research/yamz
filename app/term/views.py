@@ -455,12 +455,11 @@ def list_term_sets():
 
 @term.route("/set/display/<int:term_set_id>")
 def display_term_set(term_set_id):
-    page = request.args.get("page", 1, type=int)
-    per_page = 10
+    # page = request.args.get("page", 1, type=int)
+    # per_page = 10
     term_set = TermSet.query.get_or_404(term_set_id)
-    term_list = Term.query.join(
-        Term, TermSet.terms).order_by(Term.term_string).paginate(page, per_page, False)
-
+    # term_list = term_set.terms
+    '''
     next_url = (
         url_for("term.display_term_set",
                 term_set_id=term_set_id, page=term_list.next_num)
@@ -474,15 +473,16 @@ def display_term_set(term_set_id):
         else None)
 
     pages = term_list.pages
-
+    '''
     return render_template(
         "term/display_term_set.jinja",
-        selected_terms=term_list.items,
+        # selected_terms=term_list.items,
         term_set=term_set,
-        next_url=next_url,
-        prev_url=prev_url,
-        page=page,
-        pages=pages,
+        # term_list=term_list,
+        # next_url=next_url,
+        # prev_url=prev_url,
+        # page=page,
+        # pages=pages,
         form=EmptyForm(),
     )
 

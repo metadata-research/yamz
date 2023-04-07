@@ -14,23 +14,13 @@ Termset: {{ term_set.name}}
     <br>
     created {{ term_set.created }}
 </p>
-<p>
-{{ page }} of {{ pages }}
-<br>
-{% if prev_url %}
-<a href="{{ prev_url }}">Prev</a>
-{% endif %}
+<hr>
 
-{% if next_url %}
-<a href="{{ next_url }}">Next</a>
-</p>
-
-{% for selected_term in selected_terms  %}
-
-{% include 'term/_term.jinja' %}
+{% for term in term_set.terms  %}
+<a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a><br>
 
 {% endfor %}
 
 
-{% endif %}
+
 {% endblock content%}

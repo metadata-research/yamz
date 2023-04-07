@@ -15,8 +15,8 @@ SOURCES = {
     "NASA CCMC": "NASA CCMC",
     "Semantic Web for Earth and Environment Technology Ontology": "SWEET",
     "NASA Heliophysics Vocabulary": "NASA Heliophysics Vocabulary",
-    "Space Weather Glossary (Second)": "NOAA SWPC SpWx Glossary",
-    "Space Weather Glossary": "SET SpWx Glossary",
+    "Space Weather Glossary": "NOAA SWPC SpWx Glossary",
+    "Space Weather Glossary (Second)": "SET SpWx Glossary",
     "SPASE Dictionary": "SPASE",
     "ESA Space Weather Glossary": "ESA SpWx Glossary",
     "Unified Astronomy Thesaurus (UAT)": "UAT",
@@ -218,6 +218,7 @@ def insert_terms(termset, data_frame) -> None:
             if synonyms:
                 append_synonyms(new_term, synonyms)
             '''
+            db.session.add(new_term)
             print(count)
             count -= 1  # for debugging
 
@@ -249,7 +250,7 @@ def insert_term(term, definition, user_id) -> Term:
         concept_id=ark,
         # examples=examples,
     )
-    new_term.save()
+    # new_term.save()
     return new_term
 
 # this is a rough draft of the import function
@@ -271,8 +272,9 @@ def import_terms() -> None:
         source_name = SOURCES[dataframe_from_json["Source Name"][0]].strip()
         source_file = file
         term_set = create_term_set(
-            source_name, source_file, "yamz.development@gmail.com")
+            source_name, source_file, "christopher.b.rauch@gmail.com")
         insert_terms(term_set, dataframe_from_json)
+        db.session.commit()
         print("import complete")
 
 

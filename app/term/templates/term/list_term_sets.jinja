@@ -9,6 +9,7 @@ List Term Sets
 {% endblock headline %}
 
 {% block content %}
+<!--
 <hr>
 <div>
 <a href="https://yamz-dev.yamz.net/term/list/tag/value/AGU%20Index%20Terms">AGU Index Terms</a><br>
@@ -24,5 +25,13 @@ List Term Sets
 <a href="https://yamz-dev.yamz.net/term/list/tag/value/UAT">UAT</a><br>
 </div>
 <hr>
+-->
 
+<div>
+{% for term_set in term_sets %}
+
+<a href="{{ url_for('term.display_term_set', term_set_id=term_set.id) }}">{{term_set.name}}</a>
+
+ <br>
+{% endfor %}    
 {% endblock content %}
