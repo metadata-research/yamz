@@ -364,6 +364,15 @@ def terms_by_tag_value(tag_value):
     )
 
 
+@term.route("/list/tag/value/<tag_value>/detail")
+def terms_by_tag_value_detail(tag_value):
+    tag = Tag.query.filter_by(value=tag_value).first()
+    selected_terms = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
+        Term.term_string
+    )
+    return render_template("term/terms_by_tag_value_detail.jinja", tag=tag, selected_terms=selected_terms, form=EmptyForm())
+
+
 @term.route("/list/score")
 def list_score():
     term_list = (
