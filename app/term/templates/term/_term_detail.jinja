@@ -117,12 +117,16 @@
                 </td>
             </tr>
             {% endif %}
-            {% if selected_term.comments %}
-            {% for comment in comments  %}
-                {{selected_term.comment_html}}
-            {% endfor %}
-                
-            {% endif %}
+            <tr>
+                <td class="fst-italic" valign="top">Comments:</td>
+                <td>
+                {% for comment in selected_term.comments  %}
+                    <p>{{ comment.comment_string }}<br>
+                    {{ comment.author | as_contributor_link}} {{ comment.modified | format_date }}
+                    </p>
+                {% endfor %}
+                </td>
+            </tr>
             </table>
             </div>
             {% include 'tag/_term_tags.jinja' %}
