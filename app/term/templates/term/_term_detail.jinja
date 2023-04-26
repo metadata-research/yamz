@@ -34,7 +34,9 @@
                         </button>
                     </form>
                     {% endif %}
+                    {{selected_term.votes_up_sum}}<br>
                     <h4>{{ selected_term.score }}</h4>
+                    {{selected_term.votes_down_sum}}<br>
                     {% if my_vote == -1 %}
                     <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id) }}" method="post">
                         {{ form.hidden_tag() }}
