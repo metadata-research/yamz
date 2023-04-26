@@ -106,7 +106,7 @@ def export_term_dict(search_terms=None) -> Response:
                 Term.ark_id,
                 Term.owner_id,
             )
-            .filter(Term.__ts_vector__.match(search_terms))
+            .filter(Term.search_vector.match(search_terms))
             .all()
         )
     df_export_terms = pandas.DataFrame.from_records(
