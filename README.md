@@ -277,15 +277,14 @@ The same git branch (deploy) exists in this dev directory so changes here will c
 
 ## Reinstalling YAMZ Environment
 1. Make a copy of the config file. You will need it once you pull the repository from github.
-2. If you plan on restoring the database from the same computer, execute the command to save the db to a file
-3. from the psql prompt, `pg_dump -C -Fp -f yamz.sql -U postgres yamz`
-4. This will create a file, yamz.sql. Save this or obtain the file from the production environment.
-5. Run psql as the postgres user `sudo -u postgres psql`
-6. Drop the yamz database `DROP DATABASE YAMZ`
-7. Restore from the backup `psql -U postgres -f yamz.sql`
-8. In an empty directory clone the deployment repository
-9. Copy the config file into the top level directory
-10. Yamz should run with flask run
-11. If you want to use migrations, first delete the alembic version from the restored db
-12. `flask db init`
-13. 
+1. If you plan on restoring the database from the same computer, execute the command to save the db to a file
+1. `sudo pg_dump -C -Fp -f yamz.sql -U postgres yamz`
+1. This will create a file, yamz.sql. Save this or obtain the file from the production environment.
+1. Run psql as the postgres user `sudo -u postgres psql`
+1. Drop the yamz database `DROP DATABASE YAMZ`
+1. Restore from the backup `psql -U postgres -f yamz.sql`
+1. In an empty directory clone the deployment repository
+1. Copy the config file into the top level directory
+1. Yamz should run with flask run
+1. If you want to use migrations, first delete the alembic version from the restored db
+1. `flask db init`
