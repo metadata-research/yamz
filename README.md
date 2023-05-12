@@ -1,9 +1,9 @@
 
-# YAMZ Metadata Dictionary
+# YAMZ Metadictionary
 
-This is the README for the YAMZ metadictionary and includes instructions for
-deploying on a local machine for testing and on a Linux based environment for a
-scalable production version (coming soon). 
+This is the README for the YAMZ vocabulary builder for data and metadata.
+It includes instructions for deploying on a local machine for testing and on
+a Linux based environment for a scalable production version (coming soon). 
 
 The current application requires the use of a postgres database to support full text search. 
 
@@ -260,8 +260,17 @@ Backup on production
 
 This will create a yamz.sql file that is portable.
 
-Copy the generated yamz.sql file to the production directory and restore on the target server. 
-`psql -U postgres -f yamz.sql`
+For example, to restore from a given daily backup,
+
+`service yamz stop`
+`dropdb -U postgres yamz`
+`psql -U postgres -f yamz_2023-05-11.sql`
+
+To update the yamz_dev database from current production database
+
+`service yamz stop`
+`psql -U postgres`
+`postgres=# CREATE DATABASE yamz_dev WITH TEMPLATE yamz`
 
 ## Development Environment
 The dev environment for the current version of Yamz is a direct copy of the production environment, currently located on the same server but in a different directory. (~/yamz_dev). There are several differences. 

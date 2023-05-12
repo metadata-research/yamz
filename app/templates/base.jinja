@@ -97,7 +97,8 @@
             </div>
             {% if g.search_form %}
             <div class="col-auto align-self-end pb-4">
-                <form method="get" action="{{ url_for('term.search') }}">
+                <form method="get" action="{{ url_for('term.search') }}"
+		    novalidate>
                     <div class="form-group">
                         {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text)}}
                     </div>

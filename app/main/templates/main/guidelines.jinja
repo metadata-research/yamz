@@ -28,27 +28,41 @@ Metadictionary Guidelines
         <li>... an encyclopedia. A definition is approximately one sentence,
             not an essay.
         </li>
-        <li>... a grammar. Whether a term is required or optional is out of
-            scope. A term is like a nano-standard. External documents, such as
-            a hypothetical "XYZ Ontology and Schema", are expected to specify
-            usage rules (eg, elements that are required, optional, and
-            conditional for the XYZ community) in reference to individual
-            elements published in YAMZ. Conversely, definitions may link out to
-            external documents. Different communities may reference a YAMZ term
-            under different usage rules.
+        <li>... an ontology, thesaurus, controlled vocabulary, nor other
+	    knowledge system that defines a set of concepts to represent
+	    a subject domain. YAMZ does not compete with any existing or
+	    prospective metadata ontology, whether it defines the pick list
+	    naming the four color choices in your app, the ten table column
+	    headings for recording state-mandated water sample observations,
+	    or the set of sixty thousand disease codes specified in an
+	    international standard. Instead it provides a pool of candidate
+	    terms from which ontologies, defined elsewhere, can pick and
+	    choose.
         </li>
-        <li>... a regular dictionary. While its terms resemble natural language
-            terms, they are actually formal jargon often inspired by natural
-            language. YAMZ should only contain terms that directly support
-            machine-readable descriptions and the metadictionary itself.
+        <li>... a replacement for &lt;<i>name your field's well-established
+	    vocabulary here</i>&gt;. Each YAMZ term is a tiny, free-standing
+	    specification &ndash; a kind of "nano-standard". For example, every
+	    academic domain maintains ontologies, usually as documents that
+	    specify which terms are required, optional, broader, narrow, etc.
+	    in a given domain. YAMZ offers to ease that burden for the
+	    unavoidable work of maintaining term definitions, leaving for
+	    others the work of choosing (and linking to) relevant terms
+	    and documenting the rules that apply in a given context.
+        </li>
+	<li>... a regular dictionary. While its terms resemble natural
+	    language terms, they are actually formal jargon often inspired by
+	    natural language. YAMZ should only contain terms that directly
+	    support machine-readable descriptions and the metadictionary
+	    itself.
         </li>
         <li>... a bunch of sub-vocabularies. If your working group in the XYZ
-            domain wants its own version of "thingummy", resist the temptation to
-            create "XYZ_thingummy", or similarly making the domain part of the term.
-            Instead consider creating "thingummy" and annotating its definition with
-            the tag reference "#XYZ" so that your group can narrow its focus to #XYZ
-            terms as needed. It is a feature that YAMZ is ultimately one large,
-            flat namespace with no domain borders.
+	    domain wants its own version of "thingummy", resist the temptation
+	    to create "XYZ_thingummy", or similarly making the domain part of
+	    the term string. Instead consider creating "thingummy" and
+	    annotating its definition with the tag reference "#XYZ" so that
+	    your group can narrow its focus to #XYZ terms as needed. It is
+	    a feature that YAMZ is ultimately one large, flat namespace with no
+	    domain borders.
         </li>
     </ul>
 </p>
