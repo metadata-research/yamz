@@ -66,7 +66,7 @@ Account
             {% if current_user.orcid and "nil" not in current_user.orcid %}
             <i class="fab fa-orcid"></i> <a
                 href="{{ config["OAUTH_URLS"]["orcid"]["base_url"]}}{{ current_user.orcid }}"
-                target="_blank">{{ current_user.orcid }}</a>
+                target="_blank" rel="noopener noreferrer">{{ current_user.orcid }}</a>
             {% else %}
             <a href="{{ url_for('auth.login') }}">
                 <button type="button" class="btn btn-primary">
