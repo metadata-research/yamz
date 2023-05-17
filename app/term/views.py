@@ -53,6 +53,7 @@ def format_tags(string):
 def as_link(contributor):
     if contributor is None:
         return ""
+        '''
     elif contributor.orcid and contributor.orcid != "nil":
         return '<a href="https://orcid.org/{}">{}</a>'.format(
             contributor.orcid, contributor.full_name
@@ -61,6 +62,9 @@ def as_link(contributor):
         return '<a href="mailto:{}">{}</a>'.format(
             contributor.email, contributor.full_name
         )
+        '''
+    else:
+        return contributor.full_name
 
 
 @term.app_template_filter("format_date")
