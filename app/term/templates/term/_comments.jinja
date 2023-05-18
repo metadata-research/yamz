@@ -1,6 +1,7 @@
+<small>
 <div class="container mt-2">
     {% for comment in comments %}
-    <div class="row px-5 mx-4">
+    <div class="row">
         <div class="col-md-12">
             <hr>
             {{ comment.comment_string }} - {{ comment.author | as_contributor_link }}
@@ -9,3 +10,4 @@
     </div>
     {% endfor %}
 </div>
+</small>

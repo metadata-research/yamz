@@ -1,4 +1,3 @@
-<hr>
 {% if current_user.is_authenticated %}
 
 {% set my_vote = selected_term.get_user_vote(current_user) %}
@@ -124,7 +123,7 @@
                 <td>
                 {% for comment in selected_term.comments  %}
                     <p>{{ comment.comment_string }}<br>
-                    {{ comment.author | as_contributor_link}} {{ comment.modified | format_date }}
+                    -{{ comment.author.full_name}} {{ comment.modified | format_date }}
                     </p>
                 {% endfor %}
                 </td>
