@@ -7,8 +7,8 @@ assignees: ''
 
 ---
 
-**Briefly describe the discussion topic and what decision is needed**
-This decision is required to complete and close this task and should be as clear and concise as possible.  
+**Briefly describe the discussion topic and what decision is needed**  
+*This decision is required to complete and close this task and should be as clear and concise as possible.*  
 
 **Please describe the history and context for this decision**
 
