@@ -29,7 +29,12 @@
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">YAMZ</a>
+	        <a class="navbar-brand" href="/"
+             title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
+	           <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;"
+	            src="/static/images/yamz_purple_logo_square_small.png">
+	               YAMZ
+	        </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar01"
                 aria-controls="navbar01" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -49,35 +54,35 @@
                     <li class="nav-item">
                         {{ macros.nav_link('term.list_tags', 'Tags') }}
                     </li>
-                    <li class="nav-item">
-                        {{ macros.nav_link('term.list_term_sets', 'Sets') }}
-                    </li>
 
                     <li class="nav-item">
                         {{ macros.nav_link('main.about', 'About') }}
                     </li>
 
+                </ul>
+                <ul class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.logout') }}">Log out of
-                            {{ current_user.first_name }}</a>
-                    </li>
-                    <li class="nav-item">
-                        {{ macros.nav_link('user.edit_profile', 'Profile') }}
-                    </li>
-                    <li class="nav-item">
-                        {{ macros.nav_link('notify.messages', 'Messages (' + current_user.new_message_count + ')') }}
-
-                    </li>
-
+                    <li class="nav-item dropdown mx-3">
+                        <a href="#" class="nav-link dropdown-toggle"
+                         data-bs-toggle="dropdown">Account</a>
+                      <div class="dropdown-menu dropdown-menu-end">
+                        <a href="{{ url_for('user.edit_profile') }}"
+                           class="dropdown-item">Profile</a>
+                        <a href="{{ url_for('notify.messages') }}"
+                           class="dropdown-item">{{ 'Messages ('
+                             + current_user.new_message_count + ')' }}</a>
                         {% if current_user.is_administrator %}
-                    <li class="nav-item">
-                        {{ macros.nav_link('admin.index', 'Admin') }}
-                    </li>
+                          <a href="{{ url_for('admin.index') }}"
+                             class="dropdown-item">Admin Dashboard</a>
                         {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ url_for('auth.logout') }}"
+                           class="dropdown-item">Logout</a>
+                        </div>
+                    </li>
                     {% else %}
-                    <li class=" nav-item">
-                        <a class="nav-link" href="{{ url_for('auth.login') }}">Log in</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
                     </li>
                     {% endif %}
                 </ul>
@@ -141,7 +146,7 @@
             {{ macros.noline_link('/contact', 'Contact') }}
 	    </td>
 	    <td style="text-align: right; vertical-align: center">
-	    <a title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced like 'yams'"
+	    <a title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'"
            href="/" style="text-decoration: none;
 	                       font-size: large; font-weight: bold" >
 	       <img style="height: 60px; width: 60px;
