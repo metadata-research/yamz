@@ -31,9 +31,8 @@ on Ubuntu:
 
 2. Add a password for the user 'postgres'. 
    
-    sudo -u postgres psql template1
-
-    postgres=# alter user postgres with encrypted password 'PASS';
+    `sudo -u postgres psql template1`
+    `postgres=# alter user postgres with encrypted password 'PASS';`
 
 On macOS:
 
@@ -57,15 +56,15 @@ On macOS:
 
 5. Clone the repository
 
-    git clone https://github.com/metadata-research/yamz.git
+    `git clone https://github.com/metadata-research/yamz.git`
 
 6. switch to the yamz directory
 
-    cd yamz
+    `cd yamz`
 
 7. Create a python 3 virtual environment
 
-    virtualenv env
+    `virtualenv env`
 
 On macOS, you may have to first install python3 and virtualenv (https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3)
 
@@ -73,20 +72,20 @@ On macOS, you may have to first install python3 and virtualenv (https://gist.git
     pip3 install virtualenv
     virtualenv env
 
-8. Activate
+8. Activate the virtual environment:
 
-    source env/bin/activate
+    `source env/bin/activate`
 
-9.  install the python dependencies
+9.  Install the Python dependencies:
 
-    pip install -r requirements.txt
+    `pip install -r requirements.txt`
 
 
-10. Modify the \_config.py file in the root directory with the appropriate credentials and change the name to config.py (remove the leading underscore). config.py is included in git ignore so the modified file should not be pushed to the repository
+10. Modify the `\_config.py` file in the root directory with the appropriate credentials and change the name to `config.py` (remove the leading underscore). `config.py` is included in `.gitignore` so the modified file should not be pushed to the repository.
 
-Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from orcid under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
+Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from ORCID under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 
-From the config.py file:
+From the `config.py` file:
 
     OAUTH_CREDENTIALS = {
         "google": {
@@ -104,37 +103,40 @@ From the config.py file:
         or "postgresql://contributor:PASS@localhost/yamz"
     )
 
-11. Set the FLASK_APP variable
+11. Set the `FLASK_APP` variable:
 
-    export FLASK_APP=yamz.py
+    `export FLASK_APP=yamz.py`
 
-12. On the first run create the db
+12. On the first run, create the db:
 
-    flask db init
+    `flask db init`
 
-On not-the-first run do:
+On subsequent runs:
 
     flask db migrate
     flask db upgrade     
 
 13. Run the app
 
-If you want to use a different port for the dev server, use FLASK_RUN_PORT.
+If you want to use a different port for the dev server, set FLASK_RUN_PORT.
 For example, on macOS the default Flask port (5000) can conflict with the
 default AirPlay Receiver port, so you might run Flask on 5001 instead:
 
     export FLASK_RUN_PORT=5001
 
 If you want to run in development mode (which sends error messages to the
-console),
+console):
 
     export FLASK_ENVIRONMENT=development
     flask run
 
-Note that when working in dev mode, the Google-authorized URLs must allow access on the port for authentication to work. You set these in the [console](https://console.cloud.google.com/apis/credentials).  ORCID authentication similarly will only work if the URL is pre-authorized.
+Note that when working in dev mode, the Google-authorized URLs must allow 
+access on the port for authentication to work. You set these in the 
+[console](https://console.cloud.google.com/apis/credentials). 
+ORCID authentication similarly will only work if the URL is pre-authorized.
 
 
-## Import legacy entries
+## Import Legacy Entries
 
     It is no longer necessary to run the scripts to import legacy entries. Please follow the instructions
     for backups below to import the entries into a new instance of yamz. 
@@ -157,7 +159,10 @@ configuration, supply these answers:
                                          https://localhost/g_authorized
                                          https://domain.name/g_authorized
 
-The credentials minus the port is for when the proxy web server is set up and you are no longer using the flask development server and have set up https on a named server. You can also serve the application locally using https by invoking uwsgi and the ini file from within the yamz directory `uwsgi yamz_local.ini` but you will need to generate an ssl certificate for the localhost and add it to your browser or OS store.
+The credentials minus the port is for when the proxy web server is set up, you are no longer using the flask 
+development server, and have set up https on a named server. You can also serve the application locally using 
+HTTPS by invoking uwsgi and the ini file from within the yamz directory `uwsgi yamz_local.ini` but you will need 
+to generate an ssl certificate for the localhost and add it to your browser or OS store.
 
 ## Deploying to Production
 
@@ -175,7 +180,8 @@ Create a `yamz.ini` file in the yamz directory. There is a template in the repos
     
     die-on-term = true
 
-Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _usr1_ is a standin for the username that is associated with the running instance of your webserver.
+Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _usr1_ is a stand-in for the username 
+that is associated with the running instance of your web server.
   
     [Unit]
     Description=uWSGI instance to serve yamz
@@ -190,15 +196,15 @@ Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _u
     [Install]
     WantedBy=multi-user.target
 
-Start the service.
+Start the service:
 
 `sudo systemctl start yamz`
 
-Enable the service so that it starts at boot.
+Enable the service so that it starts at boot:
 
 `sudo systemctl enable yamz`
 
-Check the status.
+Check the status:
 
 `sudo systemctl status yamz`
 
@@ -220,7 +226,7 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
     }
 
 
-Save and close the file when you’re finished.
+Save and close the file when you are finished.
 
 To enable the Nginx server block configuration, link the file to the sites-enabled directory:
 
@@ -237,13 +243,13 @@ Test for syntax errors.
 
 The YAMZ prototype is currently hosted at http://yamz.link
 
-make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
+Make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
 
 Restart nginx.
 
 `sudo systemctl restart nginx`
 
-## Secure the application
+## Secure the Application
 
 You can do this anyway you like, but currently it is with Certbot and its Nginx plugin
 
@@ -278,23 +284,23 @@ The dev environment for the current version of YAMZ is a direct copy of the prod
 
 The UNIX socket file must have a different name than yamz.sock in the yamz.ini file. Currently, it is called yamz_dev.sock
 
-The SQLALCHEMY_DATABASE_URI points to a copy of the yamz database called yamz_dev which is not in syc with the main database. To sync it you can restore a backup copy with the yamz_dev name as described in 'Backups' above.
+The `SQLALCHEMY_DATABASE_URI` points to a copy of the yamz database called yamz_dev which is not in syc with the main database. To sync it you can restore a backup copy with the yamz_dev name as described in 'Backups' above.
 
-There is a unix service called yamz_dev running that starts the uwsgi workers for the dev site. It is a copy of the yamz.service, just with a different name.
+There is a UNIX service called yamz_dev running that starts the uwsgi workers for the dev site. It is a copy of the yamz.service, just with a different name.
 
 The same git branch (deploy) exists in this dev directory so changes here will come as a pull request to 'deployment.' This is a shortcut that should be addressed.
 
 
 ## Reinstalling YAMZ Environment
 1. Make a copy of the config file. You will need it once you pull the repository from GitHub.
-1. If you plan on restoring the database from the same computer, execute the command to save the db to a file
+1. If you plan on restoring the database from the same computer, execute the command to save the db to a file.
 1. `sudo pg_dump -C -Fp -f yamz.sql -U postgres yamz`
-1. This will create a file, yamz.sql. Save this or obtain the file from the production environment.
+   1. This will create a file, yamz.sql. Save this or obtain the file from the production environment.
 1. Run psql as the postgres user `sudo -u postgres psql`
 1. Drop the yamz database `DROP DATABASE YAMZ`
 1. Restore from the backup `psql -U postgres -f yamz.sql`
-1. In an empty directory clone the deployment repository
-1. Copy the config file into the top level directory
-1. YAMZ should run with flask run
-1. If you want to use migrations, first delete the alembic version from the restored db
+1. In an empty directory, clone the deployment repository.
+1. Copy the config file into the top-level directory.
+1. Start YAMZ via `flask run`
+1. If you want to use migrations, first delete the alembic version from the restored db.
 1. `flask db init`
