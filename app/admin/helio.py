@@ -289,3 +289,23 @@ def delete_term_set() -> None:
     termset = TermSet.query.get(termset_id)
     print("deleting term set:", termset.name)
     termset.delete()
+
+def delete_terms_in_termset() -> None:
+    """delete all terms in a termset from the database
+    instead of as a bulk operation in delete_termset because that seems
+    to time out whith large termsets
+    Args:
+        termset_id (string): the id of the termset to be deleted
+    """
+    print_termset_list()
+    set_to_delete = input("Enter the id of the termset to delete: ")
+    termset_id = set_to_delete
+    termset = TermSet.query.get(termset_id)
+    print("deleting terms in term set:", termset.name)
+    for term in termset.terms:
+        db.session.delete(term)
+        print("deleted term:", term.term_string)
+    print("Commiting deletions. This may take some time.")
+    db.session.commit()
+    db.session.delete(termset)
+    db.session.close()
