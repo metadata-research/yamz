@@ -238,9 +238,11 @@ def search():
     per_page = 10
     sort_type = "search"
     search_terms = g.search_form.q.data.strip()
+    term_string_re = "(?i)(\W|^)(" + re.escape(search_terms).replace(" ","|")+ ")(\W|$)"
 
-    term_string_matches = Term.query.filter(
-        Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
+    #term_string_matches = Term.query.filter(
+    #    Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
+    term_string_matches = Term.query.filter(Term.term_string.regexp_match(term_string_re))
 
     vector_search_terms = " & ".join(search_terms.split(" "))
     term_vector_matches = Term.query.filter(Term.search_vector.match(
