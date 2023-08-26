@@ -166,10 +166,14 @@ def create_term():
             examples=examples,
             concept_id=concept_id,
         )
-        new_term.save()
+        db.session.add(new_term)
+        db.session.commit()
+
         if (draft):
-            # new_term.status = "draft" this is the intended way to track the status
-            # assigning the 'Draft' tag assumes it exists, maybe we don't want to do that
+            tag = Tag.query.filter_by(value="Draft").first()
+            if tag is None:
+                tag = create_tag("community", "Draft", "A draft term.")
+                tag.save()
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
             new_term.save()
