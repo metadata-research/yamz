@@ -44,7 +44,7 @@ class Config(object):
     SANDBOX = False
     TERMS_PER_PAGE = 20
 
-    # ark realted settings
+    # ark related settings
     SHOULDER = "h"
     ARK_PREFIX = "ark:/99152/"
     NAAN = "YOUR_NAAN"
@@ -60,5 +60,7 @@ class Config(object):
     )
     ADMINS = ["ADMIN_EMAIL_ADDRESS"]
 
-    # logging
+    # logging - set to True to see error messages on Flask console
+    # set to False for public-facing service to capture messages in logs/...
+    # files (directory and files will be created automatically)
     LOG_TO_STDOUT = True

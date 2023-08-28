@@ -166,10 +166,14 @@ def create_term():
             examples=examples,
             concept_id=concept_id,
         )
-        new_term.save()
+        db.session.add(new_term)
+        db.session.commit()
+
         if (draft):
-            # new_term.status = "draft" this is the intended way to track the status
-            # assigning the 'Draft' tag assumes it exists, maybe we don't want to do that
+            tag = Tag.query.filter_by(value="Draft").first()
+            if tag is None:
+                tag = create_tag("community", "Draft", "A draft term.")
+                tag.save()
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
             new_term.save()
@@ -238,9 +242,13 @@ def search():
     per_page = 10
     sort_type = "search"
     search_terms = g.search_form.q.data.strip()
+    term_string_re = "(?i)(\W|^)(" + \
+        re.escape(search_terms).replace(" ", "|") + ")(\W|$)"
 
-    term_string_matches = Term.query.filter(
-        Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
+    # term_string_matches = Term.query.filter(
+    #    Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
+    term_string_matches = Term.query.filter(Term.term_string.regexp_match(
+        term_string_re)).filter(Term.status != status.archived)
 
     vector_search_terms = " & ".join(search_terms.split(" "))
     term_vector_matches = Term.query.filter(Term.search_vector.match(

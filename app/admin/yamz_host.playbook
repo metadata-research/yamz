@@ -1,0 +1,148 @@
+# XXX draft -- under construction
+
+---
+- name: Create yamz user and service
+  hosts: all
+  become: yes
+
+  # XXX change service name!!
+  vars:
+    yamz_user: "yamz"
+    yamz_group: "yamz"
+    yamz_service_name: "jam-dev"
+    yamz_service_file: "/etc/systemd/system/{{ yamz_service_name }}.service"
+    yamz_service_script: "/home/{{ yamz_user }}/yamz.py"
+
+  tasks:
+    # Create yamz user with publicly readable home directory
+    - name: Create yamz user with publicly readable home directory
+      user:
+        name: "{{ yamz_user }}"
+        shell: /bin/bash
+        home: "/home/{{ yamz_user }}"
+        generate_ssh_key: yes
+
+    # Create subdirectories with appropriate permissions
+    - name: Create subdirectories with appropriate permissions
+      become_user: "{{ yamz_user }}"
+      file:
+        path: "/home/{{ yamz_user }}/{{ item }}"
+        state: "directory"
+        #owner: "{{ yamz_user }}"
+        #group: "{{ yamz_group }}"
+        mode: "0755"
+      loop:
+        - .
+        - admin
+        - backup
+        - local/bin
+        - log
+        - dev
+        - prd
+        - "jam-dev"
+
+    # XXX is read-only the only way? else github repo needs ssh_key+GHuser
+    # Clone read-only git repo into prd and dev
+    - name: Clone read-only git repo into prd and dev
+      become_user: "{{ yamz_user }}"
+      git:
+        repo: "https://github.com/metadata-research/yamz.git"
+        dest: "/home/{{ yamz_user }}/{{ item }}/yamz"
+        clone: yes
+        update: no
+      loop:
+        - prd
+        - dev
+
+    # xxx add captcha ??
+    # XXX haven't figured this out yet
+    # xxx Brian Bijeau: apt install postfix mailutils
+    #     internet: apt sendmail sendmail-cf mailutils
+    # xxx may need to adjust /etc/.../main...
+    # Install mail utilities
+    - name: Install mail utilities
+      apt:
+        name: sendmail
+        name: sendmail-cf
+        name: mailutils
+
+    # Install python requirements
+    - name: Install python requirements
+      become_user: "{{ yamz_user }}"
+      pip:
+        virtualenv: "/home/{{ yamz_user }}/{{ item }}/yamz/venv"
+        requirements: "/home/{{ yamz_user }}/{{ item }}/yamz/requirements.txt"
+      loop:
+        - prd
+        - dev
+
+    # XXX haven't yet committed to this
+    # Install jinja2 templating CLI for config management
+    - name: Install jinja2 templating CLI for config management
+      apt:
+        name: python3-jinja2
+        state: present
+
+    # xxx add RQ support (not so much Celery) for async workers
+    #     https://blog.miguelgrinberg.com/post/running-a-flask-application-as-a-service-with-systemd
+    # xxx push yamz role account passwd into keybase
+    # xxx document statuscake.com yamz and yamz-dev monitors
+    #     - but make yamzops the owner and notification group
+    # xxx document that yamz.development is the ADMINS email
+    # xxx change service yamz_dev to yamz-dev (and yamz to yamz-prd ?)
+    # XXX make sure yamz/logs are working and getting written properly
+    # XXX install ufw?
+    # XXX install nginx and uwsgi? add user www-data?
+    # XXX add task to copy admin/db_backup.sh to ~/local/bin
+    #     and install crontab file; or maybe it's a "make" task?
+    # XXX into prd and dev (but above yamz repo in each) need
+    #     config.py, yamz.ini, yamz.service, sites-available
+    #  For now, only yamz.ini, 
+    # XXX want centralize admin, with one selector (dev or prd)
+    #     to choose which values
+    # XXX maybe need to add yamz to sudoers
+
+    # xxx hmmm this task below might be the wrong approach
+    ## Install user-level crontab file
+    #- name: Install user-level crontab file
+    #  become_user: "{{ yamz_user }}"
+    #  cron:
+    #    name: "daily backups"
+    #    cron_file: "crontab_{{ yamz_user }}"
+    #    user: "{{ yamz_user }}"
+
+    # Copy crontab file for root
+    - name: Copy crontab file for root
+      become_user: "{{ yamz_user }}"
+      copy:
+        src: "{{ item }}"
+        dest: "/home/{{ yamz_user }}/crontab/"
+        mode: "0755"
+      loop:
+        - crontab_root
+
+    # XXX under construction
+    # Create systemd service file
+    - name: Create systemd service file
+      template:
+        src: "jam-dev.service.j2"
+        dest: "{{ yamz_service_file }}"
+      notify:
+        - Reload systemd
+
+    # XXX under construction
+    # Start and enable yamz service
+    - name: Start and enable yamz service
+      systemd:
+        name: "{{ yamz_service_name }}"
+        state: started
+        enabled: yes
+
+    # XXX add to sites-available/sites-enabled
+
+
+  handlers:
+    # Reload systemd after service file is created or modified
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes

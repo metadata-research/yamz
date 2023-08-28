@@ -26,6 +26,9 @@ def create():
 def deleteset():
     delete_term_set()
 
+@click.command()
+def deleteterms():
+    delete_terms_in_termset()
 
 @click.command()
 @click.argument("file_no")
@@ -45,6 +48,7 @@ def setlist():
 
 cli.add_command(create)
 cli.add_command(deleteset)
+cli.add_command(deleteterms)
 cli.add_command(info)
 cli.add_command(list)
 cli.add_command(setlist)
