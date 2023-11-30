@@ -16,10 +16,12 @@ db = SQLAlchemy(app)
 def cli():
     pass
 
+
 @click.command()
 @click.argument("email")
 def setsuperuser(email):
     set_superuser(email)
+
 
 @click.command()
 def exportterms():
@@ -28,13 +30,18 @@ def exportterms():
 
 @click.command()
 def refreshterms():
-    refresh_terms() 
+    refresh_terms()
+
+
+@click.command()
+def importlcsh():
+    import_lcsh()
+
 
 cli.add_command(setsuperuser)
 cli.add_command(exportterms)
 cli.add_command(refreshterms)
-
+cli.add_command(importlcsh)
 
 if __name__ == "__main__":
     cli()
-
