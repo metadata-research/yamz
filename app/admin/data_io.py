@@ -201,8 +201,8 @@ def import_lcsh():
         lcsh_tag.save()
 
     # for term in lcsh:
-    # add the first 5 terms
-    for term_string in lcsh[:5]:
+   
+    for term_string in lcsh:
         print(term_string)
         # if there is not already a term with this term string and the tag lcsh1910, create one
 
