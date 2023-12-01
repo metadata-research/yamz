@@ -95,7 +95,7 @@
                 <td>
                     {% if selected_term.definition_html %}
                         {{ selected_term.definition_html | process_tags_as_html }}
-                    {% else %}
+                    {% elif selected_term.definition %}
                         {{ selected_term.definition | process_tags_as_html }}
                     {% endif %}
                 </td>
