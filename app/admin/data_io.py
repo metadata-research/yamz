@@ -190,10 +190,10 @@ def import_terms():
 
 
 def import_lcsh():
-    lcsh = requests.get(
-        'https://raw.githubusercontent.com/metadata-research/lcsh1910/main/LCSH1910-terms.txt?token=GHSAT0AAAAAACLANK7CKVLN7PJDSRC6VESUZLJACYA')
-    lcsh = lcsh.text
-    lcsh = lcsh.split("\n")
+    cwd = os.getcwd()
+    with open(cwd + "/app/io/import/LCSH1910-terms.txt", "r") as read_file:
+        lcsh = read_file.read()
+        lcsh = lcsh.split("\n")
 
     lcsh_tag = Tag.query.filter_by(category="lcsh1910").first()
     if not lcsh_tag:
@@ -201,7 +201,7 @@ def import_lcsh():
         lcsh_tag.save()
 
     # for term in lcsh:
-   
+
     for term_string in lcsh:
         print(term_string)
         # if there is not already a term with this term string and the tag lcsh1910, create one
