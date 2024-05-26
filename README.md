@@ -48,6 +48,35 @@ On Linux, the installation should create a system user 'postgres'
     
     postgres=# create database yamz with owner postgres;
 
+## Postgress authentication configuration
+Configure the authentication method for postgres and all other users connecting locally
+In `/etc/postgresql/14/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
+
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     md5
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            md5
+
+Next, we want to only be able to connect to the database from the local machine
+
+In `/etc/postgresql/14/main/postgresql.conf`
+
+uncomment the line
+
+`listen_addresses = 'localhost'`
+
+Restart the postgres server
+
+`sudo service postgresql restart`
+
+Finally, log back in to postgres to create the database,
+
+`sudo -u postgres psql`
+
+`postgres=# create database seaice with owner postgres;`
+
+`postgres-# \q`
 On macOS:
 
     psql -U postgres -c 'create database yamz with owner postgres'
