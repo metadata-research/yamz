@@ -27,25 +27,19 @@ example:
 
 on Ubuntu:
     
-    sudo service postgresql start
+    ## Postgress default users
+The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
 
-2. Add a password for the user 'postgres'. 
-   
-    `sudo -u postgres psql template1`
-    `postgres=# alter user postgres with encrypted password 'PASS';`
+Enter the command:
+   `sudo passwd postgres`
 
-On macOS:
+You will get a prompt to enter your new password.
 
-    createuser -d postgres
-    psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
-
-3. Create a yamz database using the psql client.
-
-On Linux, the installation should create a system user 'postgres'
+Close and reopen your terminal.
 (parallel to the postgres user 'postgres'), allowing something like
 
     sudo -u postgres psql
-    
+
     postgres=# create database yamz with owner postgres;
 
 ## Postgress authentication configuration
@@ -72,11 +66,22 @@ Restart the postgres server
 
 Finally, log back in to postgres to create the database,
 
+Add a db password for the user 'postgres'. 
+   
+    `sudo -u postgres psql template1`
+    `postgres=# alter user postgres with encrypted password 'PASS';`
+
 `sudo -u postgres psql`
 
-`postgres=# create database seaice with owner postgres;`
+`postgres=# create database yamz with owner postgres;`
 
 `postgres-# \q`
+
+On macOS:
+
+    createuser -d postgres
+    psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
+
 On macOS:
 
     psql -U postgres -c 'create database yamz with owner postgres'
