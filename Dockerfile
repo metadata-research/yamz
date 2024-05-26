@@ -41,7 +41,7 @@ ENV PYTHONUNBUFFERED=1
 ENV FLASK_APP=yamz.py
 
 # Install pip requirements
-COPY config.py /yamz/config.py
+COPY _config.py /yamz/config.py
 COPY requirements.txt .
 RUN python3 -m pip install -r requirements.txt
 

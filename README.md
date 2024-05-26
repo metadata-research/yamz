@@ -151,11 +151,11 @@ configuration, supply these answers:
 
     Application type . . . . . . . . . . Web application
 
-    Authorized javascript origins  . . . http://localhost:5000
-                                         http://localhost
+    Authorized javascript origins  . . . https://localhost:5000 # note that the Credential API will not permit publishing the app with non-https redirects so it would be necessary to create a certificate for the machine running a dev instance of NGINX in order to test the Google authentication component locally
+                                         https://localhost
                                          https://domain.name
 
-    Authorized redirect URI  . . . . . . http://localhost:5000/g_authorized
+    Authorized redirect URI  . . . . . . https://localhost:5000/g_authorized
                                          https://localhost/g_authorized
                                          https://domain.name/g_authorized
 
