@@ -45,6 +45,7 @@ On Linux, the installation should create a system user 'postgres'
 (parallel to the postgres user 'postgres'), allowing something like
 
     sudo -u postgres psql
+    
     postgres=# create database yamz with owner postgres;
 
 On macOS:
