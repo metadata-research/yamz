@@ -32,7 +32,7 @@ orcid==1.0.3
 pandas==1.5.0
 psycopg2-binary==2.9.9
 python-dateutil==2.8.2
-pytz==2022.2.1
+pytz==2024.1
 rauth==0.7.3
 requests==2.28.1
 simplejson==3.17.6
