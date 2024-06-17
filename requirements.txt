@@ -1,4 +1,4 @@
-alembic==1.8.1
+alembic==1.13.1
 beautifulsoup4==4.11.1
 bleach==6.1.0
 blinker==1.5
