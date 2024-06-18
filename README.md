@@ -27,26 +27,60 @@ example:
 
 on Ubuntu:
     
-    sudo service postgresql start
+    ## Postgress default users
+The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
 
-2. Add a password for the user 'postgres'. 
+Enter the command:
+   `sudo passwd postgres`
+
+You will get a prompt to enter your new password.
+
+Close and reopen your terminal.
+(parallel to the postgres user 'postgres'), allowing something like
+
+    sudo -u postgres psql
+
+    postgres=# create database yamz with owner postgres;
+
+## Postgress authentication configuration
+Configure the authentication method for postgres and all other users connecting locally
+In `/etc/postgresql/14/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
+
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    # "local" is for Unix domain socket connections only
+    local   all             all                                     md5
+    # IPv4 local connections:
+    host    all             all             127.0.0.1/32            md5
+
+Next, we want to only be able to connect to the database from the local machine
+
+In `/etc/postgresql/14/main/postgresql.conf`
+
+uncomment the line
+
+`listen_addresses = 'localhost'`
+
+Restart the postgres server
+
+`sudo service postgresql restart`
+
+Finally, log back in to postgres to create the database,
+
+Add a db password for the user 'postgres'. 
    
     `sudo -u postgres psql template1`
     `postgres=# alter user postgres with encrypted password 'PASS';`
+
+`sudo -u postgres psql`
+
+`postgres=# create database yamz with owner postgres;`
+
+`postgres-# \q`
 
 On macOS:
 
     createuser -d postgres
     psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
-
-3. Create a yamz database using the psql client.
-
-On Linux, the installation should create a system user 'postgres'
-(parallel to the postgres user 'postgres'), allowing something like
-
-    sudo -u postgres psql
-    
-    postgres=# create database yamz with owner postgres;
 
 On macOS:
 
