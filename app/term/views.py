@@ -255,7 +255,7 @@ def search():
         vector_search_terms)).filter(Term.status != status.archived)
 
     term_list = term_string_matches.union_all(
-        term_vector_matches).paginate(page, per_page, False)
+        term_vector_matches).paginate(page=page, per_page=per_page, error_out=False)
 
     next_url = (
         url_for("term.search", q=search_terms, page=term_list.next_num)
@@ -293,13 +293,13 @@ def list_alphabetical():
         term_list = (
             Term.query.filter_by(status="published")
             .order_by(Term.term_string.desc())
-            .paginate(page, per_page, False)
+            .paginate(page=page, per_page=per_page, error_out=False)
         )
     else:
         term_list = (
             Term.query.filter_by(status="published")
             .order_by(Term.term_string.asc())
-            .paginate(page, per_page, False)
+            .paginate(page=page, per_page=per_page, error_out=False)
         )
 
     pager = Pager(term_list, page, per_page, Term.query.count())
@@ -326,7 +326,7 @@ def list_top_terms_alphabetical():
         .order_by(Term.term_string.asc())
     )
 
-    pager = query_result.paginate(page, per_page, False)
+    pager = query_result.paginate(page=page, per_page=per_page, error_out=False)
     term_list = pager.items
 
     tag_list = Tag.query.order_by(Tag.value.asc())
@@ -346,7 +346,7 @@ def list_terms_by_tag(tag_id):
     pager = (
         Term.query.filter(Term.tags.any(id=tag_id))
         .order_by(Term.term_string)
-        .paginate(page, per_page, False)
+        .paginate(page=page, per_page=per_page, error_out=False)
     )
     term_list = pager.items
 
