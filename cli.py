@@ -9,7 +9,7 @@ from app.admin.term import *
 app = create_app()
 app.app_context().push()
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
 
 @click.group()

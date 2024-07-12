@@ -39,7 +39,13 @@
                 aria-controls="navbar01" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
+            {% if title %}
+            <div class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <div class="text-white">{{ title }}</div>
+                </li>
+            </div>
+            {% endif %}
             <div class="collapse navbar-collapse" id="navbar01">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
