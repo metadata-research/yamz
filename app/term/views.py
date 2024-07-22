@@ -108,6 +108,7 @@ def display_term(concept_id):
     )
 
 
+
 @term.route("/id/<term_id>")  # change concelpt id to ark
 def display_term_by_id(term_id):
     form = EmptyForm()
@@ -276,31 +277,50 @@ def search():
         prev_url=prev_url,
     )
 
-
+@term.route("/list/<portal_tag>")
 @term.route("/list")
-def list_terms():
-    return redirect(url_for("term.list_top_terms_alphabetical"))
+def list_terms(portal_tag=''):
+    if portal_tag:
+        return redirect(url_for("term.list_top_terms_alphabetical", portal_tag=portal_tag))
+    else:
+        return redirect(url_for("term.list_top_terms_alphabetical"))
+
+
 
 
 @term.route("/list/alphabetical")
-def list_alphabetical():
+def list_alphabetical(portal_tag):
     sort_type = "alphabetical"
     sort_order = request.args.get("order", "ascending")
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
 
     if sort_order == "descending":
-        term_list = (
-            Term.query.filter_by(status="published")
-            .order_by(Term.term_string.desc())
-            .paginate(page=page, per_page=per_page, error_out=False)
-        )
+        if portal_tag:
+            term_list = (
+                Term.query.filter(Term.tags.any(value=portal_tag))
+                .order_by(Term.term_string.desc())
+                .paginate(page=page, per_page=per_page, error_out=False)
+            )
+        else:
+            term_list = (
+                Term.query.filter_by(status="published")
+                .order_by(Term.term_string.desc())
+                .paginate(page=page, per_page=per_page, error_out=False)
+            )
     else:
-        term_list = (
-            Term.query.filter_by(status="published")
-            .order_by(Term.term_string.asc())
-            .paginate(page=page, per_page=per_page, error_out=False)
-        )
+        if portal_tag:
+            term_list = (
+                Term.query.filter(Term.tags.any(value=portal_tag))
+                .order_by(Term.term_string.asc())
+                .paginate(page=page, per_page=per_page, error_out=False)
+            )
+        else:
+            term_list = (
+                Term.query.filter_by(status="published")
+                .order_by(Term.term_string.asc())
+                .paginate(page=page, per_page=per_page, error_out=False)
+            )
 
     pager = Pager(term_list, page, per_page, Term.query.count())
 
@@ -310,28 +330,38 @@ def list_alphabetical():
         sort_type=sort_type,
         sort_order=sort_order,
         pager=pager,
+        portal_tag=portal_tag,
     )
 
-
-# @term.route("/list/alphabetical/<letter>")
+# @term.route("/list/alphabetical/<letter>")")
 @term.route("/list/alphabetical/top")
-def list_top_terms_alphabetical():
+@term.route("/list/alphabetical/top/<portal_tag>")
+def list_top_terms_alphabetical(portal_tag=''):
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
 
-    query_result = (
+    if portal_tag:
+        query_result = (
+        db.session.query(Term.term_string, db.func.count(Term.term_string))
+        .join(Term.tags)
+        .filter(Tag.value == portal_tag)
+        .group_by(Term.term_string)
+        .order_by(Term.term_string.asc())
+        )
+    else:
+        query_result = (
         db.session.query(Term.term_string, db.func.count(Term.term_string))
         .filter_by(status="published")
         .group_by(Term.term_string)
         .order_by(Term.term_string.asc())
-    )
+        )
 
     pager = query_result.paginate(page=page, per_page=per_page, error_out=False)
     term_list = pager.items
 
     tag_list = Tag.query.order_by(Tag.value.asc())
     return render_template(
-        "term/list_top_terms.jinja", term_list=term_list, pager=pager, tag_list=tag_list
+        "term/list_top_terms.jinja", term_list=term_list, pager=pager, tag_list=tag_list, portal_tag=portal_tag
     )
 
 
