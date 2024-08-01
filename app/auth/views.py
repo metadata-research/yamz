@@ -5,34 +5,50 @@ from app.user.models import User
 from app.auth import auth_blueprint as auth
 from app.auth.oauth import OAuthSignIn
 
-
+@auth.route("/login/<portal_tag>")
 @auth.route("/login")
-def login():
+def login(portal_tag=''):
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-    return render_template("auth/login.jinja")
+        if portal_tag:
+            return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+        else:
+            return redirect(url_for("main.index"))
+    return render_template("auth/login.jinja", portal_tag=portal_tag)
 
-
+@auth.route("/logout/<portal_tag>")
 @auth.route("/logout")
-def logout():
+def logout(portal_tag=''):
     logout_user()
-    return redirect(url_for("main.index"))
+    if portal_tag:
+        return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+    else:
+        return redirect(url_for("main.index"))
 
 
+@auth.route("/authorize/<provider>/<portal_tag>")
 @auth.route("/authorize/<provider>")
-def oauth_authorize(provider):
+def oauth_authorize(provider, portal_tag=''):
 
     if not current_user.is_anonymous:
-        return redirect(url_for("main.index"))
+        if portal_tag:
+            return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+        else:
+            return redirect(url_for("main.index"))
 
     oauth = OAuthSignIn.get_provider(provider)
-    return oauth.authorize()
+    if portal_tag:
+        return oauth.authorize(portal_tag=portal_tag)
+    else:
+        return oauth.authorize()
 
-
+@auth.route("/<provider>" + "_authorized/<portal_tag>")
 @auth.route("/<provider>" + "_authorized")
-def oauth_callback(provider):
+def oauth_callback(provider, portal_tag=''):
     if not current_user.is_anonymous:
-        return redirect(url_for("main.index"))
+        if portal_tag:
+            return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+        else:
+            return redirect(url_for("main.index"))
 
     oauth = OAuthSignIn.get_provider(provider)
 
@@ -40,7 +56,10 @@ def oauth_callback(provider):
 
     if auth_id is None:
         flash("Authentication failed.")
-        return redirect(url_for("main.index"))
+        if portal_tag:
+            return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+        else:
+            return redirect(url_for("main.index"))
     user = User.query.filter_by(auth_id=auth_id).first()
 
     if not user:
@@ -64,4 +83,7 @@ def oauth_callback(provider):
 
     else:
         login_user(user, True)
-        return redirect(url_for("main.index"))
+        if portal_tag:
+            return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+        else:
+            return redirect(url_for("main.index"))

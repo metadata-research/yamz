@@ -21,10 +21,18 @@ class OAuthSignIn(object):
     def callback(self):
         pass
 
-    def get_callback_url(self):
-        return url_for(
-            "auth.oauth_callback", provider=self.provider_name, _external=True
-        )
+    def get_callback_url(self, portal_tag=""):
+        if portal_tag:
+            return url_for(
+                "auth.oauth_callback",
+                provider=self.provider_name,
+                portal_tag=portal_tag,
+                _external=True,
+            )
+        else:
+            return url_for(
+                "auth.oauth_callback", provider=self.provider_name, _external=True
+            )
 
     @classmethod
     def get_provider(self, provider_name):
@@ -48,12 +56,12 @@ class GoogleSignIn(OAuthSignIn):
             base_url="https://www.google.com/accounts/",
         )
 
-    def authorize(self):
+    def authorize(self, portal_tag=""):
         return redirect(
             self.service.get_authorize_url(
                 scope="profile email",
                 response_type="code",
-                redirect_uri=self.get_callback_url(),
+                redirect_uri=self.get_callback_url(portal_tag=portal_tag),
             )
         )
 

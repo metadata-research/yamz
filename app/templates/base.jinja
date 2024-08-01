@@ -29,12 +29,21 @@
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container-fluid">
+            {% if portal_tag %}
+            <a class="navbar-brand" href="{{ url_for('main.portal_index', portal_tag=portal_tag) }}"
+                title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
+                <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;"
+                    src="/static/images/yamz_purple_logo_square_small.png">
+                YAMZ-{{ portal_tag }}
+            </a>
+            {% else %}
 	        <a class="navbar-brand" href="/"
              title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
 	           <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;"
 	            src="/static/images/yamz_purple_logo_square_small.png">
 	               YAMZ
 	        </a>
+            {% endif %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar01"
                 aria-controls="navbar01" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -51,7 +60,7 @@
                     <li class="nav-item">
                         {% if portal_tag %}
                         <a class="nav-link" href="{{ url_for(endpoint='term.list_terms', portal_tag=portal_tag) }}">
-                            Browse {{ portal_tag }} Terms
+                            Browse
                         </a>
                         {% else %}
                         {{ macros.nav_link('term.list_terms', 'Browse') }}
@@ -68,7 +77,13 @@
                     </li>
 
                     <li class="nav-item">
+                        {% if portal_tag %}
+                        <a class="nav-link" href="{{ url_for(endpoint='main.about', portal_tag=portal_tag) }}">
+                            About
+                        </a>
+                        {% else %}
                         {{ macros.nav_link('main.about', 'About') }}
+                        {% endif %}
                     </li>
 
                 </ul>
@@ -88,13 +103,22 @@
                              class="dropdown-item">Admin Dashboard</a>
                         {% endif %}
                         <div class="dropdown-divider"></div>
+                        {% if portal_tag %}
+                        <a href="{{ url_for('auth.logout', portal_tag=portal_tag) }}"
+                           class="dropdown-item">Logout</a>
+                        {% else %}
                         <a href="{{ url_for('auth.logout') }}"
                            class="dropdown-item">Logout</a>
+                        {% endif %}
                         </div>
                     </li>
                     {% else %}
                     <li class="nav-item">
+                        {% if portal_tag %}
+                        <a class="nav-link" href="{{ url_for('auth.login', portal_tag=portal_tag) }}">Login</a>
+                        {% else %}
                         <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
+                        {% endif %}
                     </li>
                     {% endif %}
                 </ul>
@@ -114,8 +138,12 @@
             </div>
             {% if g.search_form %}
             <div class="col-auto align-self-end pb-4">
+                {% if portal_tag %}
+                <form method="get" action="{{ url_for('term.search', portal_tag=portal_tag) }}" novalidate>
+                {% else %} 
                 <form method="get" action="{{ url_for('term.search') }}"
-		    novalidate>
+		        novalidate>
+                {% endif %}
                     <div class="form-group">
                         {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text)}}
                     </div>
@@ -158,6 +186,9 @@
             {{ macros.noline_link('/contact', 'Contact') }}
 	    </td>
 	    <td style="text-align: right; vertical-align: center">
+        {% if portal_tag %}
+        <p>Enter the full YAMZ here!</p>
+        {% endif %}
 	    <a title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'"
            href="/" style="text-decoration: none;
 	                       font-size: large; font-weight: bold" >

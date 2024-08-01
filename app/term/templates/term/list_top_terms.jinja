@@ -20,13 +20,21 @@ Browse terms - alphabetical
 {% for term in term_list  %}
 <div class="row p-1">
     <div class="col">
-        <a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a> ({{term[1]}})<br>
+        {% if portal_tag %}
+            <a href="{{ url_for('term.show_alternate_terms', term_string= term[0], portal_tag=portal_tag) }}">{{ term[0] }}</a> ({{term[1]}})<br>
+        {% else %}
+            <a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a> ({{term[1]}})<br>
+        {% endif %}
     </div>
 </div>
 {% endfor %}
 <div class="row py-2">
     <div class="col">
+    {% if portal_tag %}
+        {{ macros.render_pagination(pager, request.url_rule.endpoint, portal_tag=portal_tag) }}
+    {% else %}
         {{ macros.render_pagination(pager, request.url_rule.endpoint) }}
+    {% endif %}
     </div>
 </div>
 {% endblock content %}

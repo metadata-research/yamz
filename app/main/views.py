@@ -6,6 +6,7 @@ from app.term.forms import SearchForm
 from app.term.models import Term, Tag
 from markupsafe import escape
 from werkzeug.exceptions import abort
+from flask import redirect, url_for
 
 @main.route("/p/<portal_tag>")
 def portal_index(portal_tag):
@@ -13,14 +14,14 @@ def portal_index(portal_tag):
     tag = Tag.query.filter_by(value=portal_tag).first()
     if not tag:
         abort(404)
-    g.search_form = SearchForm()
+    g.search_form = SearchForm(portal_tag=portal_tag)
     page = 1
     per_page = 10
     term_list = Term.query.filter(Term.tags.any(value=portal_tag)).order_by(Term.term_string)
 
     return render_template(
         "main/portal.jinja",
-        my_terms=term_list,
+        my_terms=[],
         tracked_terms=[],
         search_form=g.search_form,
         portal_tag=portal_tag,
@@ -44,9 +45,10 @@ def index():
     )
 
 
+@main.route("/about/<portal_tag>")
 @main.route("/about")
-def about():
-    return render_template("main/about.jinja")
+def about(portal_tag=''):
+    return render_template("main/about.jinja", portal_tag=portal_tag)
 
 
 @main.route("/contact")

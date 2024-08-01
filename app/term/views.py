@@ -83,12 +83,12 @@ def highlight_term_string(definition, search_terms):
         definition = definition.replace(term, "<b>" + term + "</b>")
     return definition
 
-
+@term.route("/ark/<concept_id>/<portal_tag>")
 @term.route("/ark:/99152/<concept_id>")
 @term.route("/ark:99152/<concept_id>")
 @term.route("/ark/99152/<concept_id>")
 @term.route("/ark/<concept_id>")
-def display_term(concept_id):
+def display_term(concept_id, portal_tag=''):
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
     if selected_term is None:
         abort(404)
@@ -105,6 +105,7 @@ def display_term(concept_id):
         comments=comments,
         comment_form=comment_form,
         tag_form=tag_form,
+        portal_tag=portal_tag,
     )
 
 
@@ -115,9 +116,9 @@ def display_term_by_id(term_id):
     selected_term = Term.query.get_or_404(term_id)
     return redirect(url_for("term.display_term", concept_id=selected_term.concept_id))
 
-
+@term.route("/alternates/<term_string>/<portal_tag>") 
 @term.route("/alternates/<term_string>")  # change concelpt id to ark
-def show_alternate_terms(term_string):
+def show_alternate_terms(term_string, portal_tag=''):
     form = EmptyForm()
     include = request.args.get("include", "published")
     if "published" in include:
@@ -135,6 +136,7 @@ def show_alternate_terms(term_string):
         tag_form=form,
         alternatives_for_string=term_string,
         headline="Alternate Definitions " + "for " + term_string,
+        portal_tag=portal_tag,
     )
 
 
@@ -236,9 +238,9 @@ def add_comment(term_id):
         return redirect(url_for("term.display_term_by_id", term_id=term_id))
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
-
+@term.route("/search/<portal_tag>")
 @term.route("/search")
-def search():
+def search(portal_tag=''):
     page = request.args.get("page", 1, type=int)
     per_page = 10
     sort_type = "search"
@@ -254,19 +256,37 @@ def search():
     vector_search_terms = " & ".join(search_terms.split(" "))
     term_vector_matches = Term.query.filter(Term.search_vector.match(
         vector_search_terms)).filter(Term.status != status.archived)
+    
+    if portal_tag:
+        term_string_matches = term_string_matches.filter(
+            Term.tags.any(value=portal_tag))
+        term_vector_matches = term_vector_matches.filter(
+            Term.tags.any(value=portal_tag))
 
     term_list = term_string_matches.union_all(
         term_vector_matches).paginate(page=page, per_page=per_page, error_out=False)
 
-    next_url = (
-        url_for("term.search", q=search_terms, page=term_list.next_num)
-        if term_list.has_next
-        else None
-    )
-    prev_url = (
-        url_for("term.search", q=search_terms, page=term_list.prev_num)
-        if term_list.has_prev
-        else None)
+    if portal_tag:
+        next_url = (
+            url_for("term.search", q=search_terms, portal_tag=portal_tag, page=term_list.next_num)
+            if term_list.has_next
+            else None
+        )
+        prev_url = (
+            url_for("term.search", q=search_terms, portal_tag=portal_tag, page=term_list.prev_num)
+            if term_list.has_prev
+            else None
+        )
+    else:
+        next_url = (
+            url_for("term.search", q=search_terms, page=term_list.next_num)
+            if term_list.has_next
+            else None
+        )
+        prev_url = (
+            url_for("term.search", q=search_terms, page=term_list.prev_num)
+            if term_list.has_prev
+            else None)
 
     return render_template(
         "term/search_results.jinja",
@@ -275,6 +295,7 @@ def search():
         search_terms=search_terms,
         next_url=next_url,
         prev_url=prev_url,
+        portal_tag=portal_tag,
     )
 
 @term.route("/list/<portal_tag>")
