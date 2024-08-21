@@ -2,13 +2,21 @@
 
 <div class="row">
     <div class="col-auto p-1">
+        {% if portal_tag %}
+        <form method="post" action="{{ url_for('term.edit_term', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}">
+        {% else %}
         <form method="post" action="{{ url_for('term.edit_term', concept_id=selected_term.concept_id) }}">
+        {% endif %}
             {{ form.hidden_tag() }}
             <button type="submit" class="btn btn-dark btn-sm">Edit</button>
         </form>
     </div>
     <div class="col p-1">
+        {% if portal_tag %}
+        <form method="post" action="{{ url_for('term.delete_term', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}">
+        {% else %}
         <form method="post" action="{{ url_for('term.delete_term', concept_id=selected_term.concept_id) }}">
+        {% endif %}
             {{ form.hidden_tag() }}
             <button type="submit" class="btn btn-dark btn-sm" onclick="confirm('Are you sure?')">Delete</button>
         </form>

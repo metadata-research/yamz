@@ -26,16 +26,38 @@
 
 </head>
 
+{% if portal_tag %}
+<body style="min-height: 100vh; display: flex; flex-direction: column; background-color: #fceaea">
+{% else %}
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
+{% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container-fluid">
             {% if portal_tag %}
-            <a class="navbar-brand" href="{{ url_for('main.portal_index', portal_tag=portal_tag) }}"
-                title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
-                <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;"
-                    src="/static/images/yamz_purple_logo_square_small.png">
-                YAMZ-{{ portal_tag }}
-            </a>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown mx-3">
+                        <a href="#" class="navbar-brand"
+                         data-bs-toggle="dropdown" title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
+                        <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;" src="/static/images/yamz_purple_logo_square_small.png">
+                        YAMZ-{{ portal_tag }}</a></a>
+                      <div class="dropdown-menu dropdown-menu-end">
+                        <a href="{{ url_for('main.portal_index', portal_tag=portal_tag) }}"
+                           class="dropdown-item">YAMZ-{{portal_tag}}</a>
+                        <a href="{{ url_for('main.index') }}"
+                           class="dropdown-item">YAMZ</a>
+                        </div>
+                    </li>
+                </ul>
+            <!-- <li class="nav-item dropdown mx-3">
+            <a href="#" class="nav-link dropdown-toggle"
+            data-bs-toggle="dropdown" title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
+            <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;" src="/static/images/yamz_purple_logo_square_small.png">
+            YAMZ-{{ portal_tag }}</a>
+            <div class="dropdown-menu dropdown-menu-end">
+            <a href="{{ url_for('main.index') }}"
+            class="dropdown-item">Full YAMZ</a>
+            </div>
+            </li> -->
             {% else %}
 	        <a class="navbar-brand" href="/"
              title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
@@ -67,10 +89,22 @@
                         {% endif %}
                     </li>
                     <li class="nav-item">
+                        {% if portal_tag %}
+                        <a class="nav-link" href="{{ url_for(endpoint='term.create_term', portal_tag=portal_tag) }}">
+                            Add
+                        </a>
+                        {% else %}
                         {{ macros.nav_link('term.create_term', 'Add') }}
+                        {% endif %}
                     </li>
                     <li class="nav-item">
+                        {% if portal_tag %}
+                        <a class="nav-link" href="{{ url_for(endpoint='io.import_document', portal_tag=portal_tag) }}">
+                            Import
+                        </a>
+                        {% else %}
                         {{ macros.nav_link('io.import_document', 'Import') }}
+                        {% endif %}
                     </li>
                     <li class="nav-item">
                         {{ macros.nav_link('term.list_tags', 'Tags') }}

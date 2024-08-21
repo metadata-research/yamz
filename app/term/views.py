@@ -109,12 +109,12 @@ def display_term(concept_id, portal_tag=''):
     )
 
 
-
+@term.route("/id/<term_id>/<portal_tag>")
 @term.route("/id/<term_id>")  # change concelpt id to ark
-def display_term_by_id(term_id):
+def display_term_by_id(term_id, portal_tag=''):
     form = EmptyForm()
     selected_term = Term.query.get_or_404(term_id)
-    return redirect(url_for("term.display_term", concept_id=selected_term.concept_id))
+    return redirect(url_for("term.display_term", concept_id=selected_term.concept_id, portal_tag=portal_tag))
 
 @term.route("/alternates/<term_string>/<portal_tag>") 
 @term.route("/alternates/<term_string>")  # change concelpt id to ark
@@ -140,9 +140,10 @@ def show_alternate_terms(term_string, portal_tag=''):
     )
 
 
+@term.route("/contribute/create/<portal_tag>", methods=["GET", "POST"])
 @term.route("/contribute/create", methods=["GET", "POST"])
 @login_required
-def create_term():
+def create_term(portal_tag=''):
     form = CreateTermForm()
     if form.validate_on_submit():
         if db.session.query(Term.ark_id).first() is None:
@@ -179,15 +180,21 @@ def create_term():
                 tag.save()
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
+            if portal_tag:
+                new_term.tags.append(Tag.query.filter_by(value=portal_tag).first())
             new_term.save()
-        return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
+        if portal_tag:
+            return redirect(url_for("term.display_term", concept_id=new_term.concept_id, portal_tag=portal_tag))
+        else:
+            return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
-    return render_template("term/create_term.jinja", form=form)
+    return render_template("term/create_term.jinja", form=form, portal_tag=portal_tag)
 
 
+@term.route("/contribute/edit/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/contribute/edit/<concept_id>", methods=["POST"])
 @login_required
-def edit_term(concept_id):
+def edit_term(concept_id, portal_tag=''):
     form = CreateTermForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
     if form.validate_on_submit():
@@ -196,17 +203,23 @@ def edit_term(concept_id):
         selected_term.examples = form.examples.data
         selected_term.update()
         # flash("Term updated.")
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        if portal_tag:
+            return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
+        else:
+            return redirect(url_for("term.display_term", concept_id=concept_id))
     else:
         form.term_string.data = selected_term.term_string
         form.definition.data = selected_term.definition
         form.examples.data = selected_term.examples
-        return render_template("term/edit_term.jinja", form=form)
+        
+        return render_template("term/edit_term.jinja", form=form, portal_tag=portal_tag)
 
 
+
+@term.route("/contribute/delete/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/contribute/delete/<concept_id>", methods=["POST"])
 @login_required
-def delete_term(concept_id):
+def delete_term(concept_id, portal_tag=''):
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
     if selected_term is None:
         abort(500)
@@ -215,15 +228,19 @@ def delete_term(concept_id):
         flash("Term deleted.")
     else:
         flash("You are not authorized to delete this term.")
-    return redirect(url_for("term.list_terms"))
+    if portal_tag:
+        return redirect(url_for("term.list_terms", portal_tag=portal_tag))
+    else:
+        return redirect(url_for("term.list_terms"))
 
 
 # here we are using term id because the key is better as an integer and we don't have to look it up
 # we should probably decide if we are going to use the concept id or the term id
 # for now it has to be like this because of the seaice db schema
+@term.route("comment/<term_id>/<portal_tag>", methods=["POST"])
 @term.route("comment/<term_id>", methods=["POST"])
 @login_required
-def add_comment(term_id):
+def add_comment(term_id, portal_tag=''):
     form = CommentForm()
     if form.validate_on_submit():
         owner_id = current_user.id
@@ -235,8 +252,8 @@ def add_comment(term_id):
         )
         new_comment.save()
 
-        return redirect(url_for("term.display_term_by_id", term_id=term_id))
-    return redirect(url_for("term.display_term_by_id", term_id=term_id))
+        return redirect(url_for("term.display_term_by_id", term_id=term_id, portal_tag=portal_tag))
+    return redirect(url_for("term.display_term_by_id", term_id=term_id, portal_tag=portal_tag))
 
 @term.route("/search/<portal_tag>")
 @term.route("/search")
@@ -410,8 +427,9 @@ def list_terms_by_tag(tag_id):
     )
 
 
+@term.route("/list/tag/value/<tag_value>/<portal_tag>")
 @term.route("/list/tag/value/<tag_value>")
-def terms_by_tag_value(tag_value):
+def terms_by_tag_value(tag_value, portal_tag=''):
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
     tag = Tag.query.filter_by(value=tag_value).first()
@@ -424,6 +442,7 @@ def terms_by_tag_value(tag_value):
         term_list=term_list,
         tag=tag,
         tag_list=tag_list,
+        portal_tag=portal_tag,
     )
 
 
@@ -559,16 +578,17 @@ def display_term_set(term_set_id):
     )
 
 
+@term.route("/tag/add/<int:term_id>/<portal_tag>", methods=["GET", "POST"])
 @term.route("/tag/add/<int:term_id>", methods=["GET", "POST"])
 @login_required
-def add_tag(term_id):
+def add_tag(term_id, portal_tag=''):
     tag_form = AddTagForm()
     term = Term.query.get_or_404(term_id)
     concept_id = term.concept_id
     tag = Tag.query.filter_by(value=tag_form.tag_list.data).first()
     term.tags.append(tag)
     term.save()
-    return redirect(url_for("term.display_term", concept_id=concept_id))
+    return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
 @term.route("/tag/remove/<int:term_id>/<int:tag_id>", methods=["GET", "POST"])
@@ -580,65 +600,71 @@ def remove_tag(term_id, tag_id):
     return redirect(url_for("term.display_term", concept_id=term.concept_id))
 
 
+@term.route("track/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("track/<concept_id>", methods=["POST"])
 @login_required
-def track_term(concept_id):
+def track_term(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         tracked_term = Term.query.filter_by(concept_id=concept_id).first()
         tracked_term.track(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
-    return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
+    return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
+@term.route("untrack/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("untrack/<concept_id>", methods=["POST"])
 @login_required
-def untrack_term(concept_id):
+def untrack_term(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         tracked_term = Term.query.filter_by(concept_id=concept_id).first()
         tracked_term.untrack(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
+@term.route("/vote/up/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/vote/up/<concept_id>", methods=["POST"])
 @login_required
-def vote_up(concept_id):
+def vote_up(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         selected_term = Term.query.filter_by(concept_id=concept_id).first()
         selected_term.up_vote(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
+@term.route("/vote/down/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/vote/down/<concept_id>", methods=["POST"])
 @login_required
-def vote_down(concept_id):
+def vote_down(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         selected_term = Term.query.filter_by(concept_id=concept_id).first()
         selected_term.down_vote(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
+@term.route("/vote/zero/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/vote/zero/<concept_id>", methods=["POST"])
 @login_required
-def vote_zero(concept_id):
+def vote_zero(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         selected_term = Term.query.filter_by(concept_id=concept_id).first()
         selected_term.zero_vote(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
+@term.route("/vote/remove/<concept_id>/<portal_tag>", methods=["POST"])
 @term.route("/vote/remove/<concept_id>", methods=["POST"])
 @login_required
-def remove_vote(concept_id):
+def remove_vote(concept_id, portal_tag=''):
     form = EmptyForm()
     if form.validate_on_submit():
         selected_term = Term.query.filter_by(concept_id=concept_id).first()
         selected_term.remove_vote(current_user)
-        return redirect(url_for("term.display_term", concept_id=concept_id))
+        return redirect(url_for("term.display_term", concept_id=concept_id, portal_tag=portal_tag))
 
 
 @term.route("/test/<concept_id>")

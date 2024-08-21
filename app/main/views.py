@@ -19,10 +19,17 @@ def portal_index(portal_tag):
     per_page = 10
     term_list = Term.query.filter(Term.tags.any(value=portal_tag)).order_by(Term.term_string)
 
+    if current_user.is_authenticated:
+        my_terms = current_user.terms
+        tracked_terms = current_user.tracking
+    else:
+        my_terms = []
+        tracked_terms = []
+
     return render_template(
         "main/portal.jinja",
-        my_terms=[],
-        tracked_terms=[],
+        my_terms=my_terms,
+        tracked_terms=tracked_terms,
         search_form=g.search_form,
         portal_tag=portal_tag,
     )
@@ -56,6 +63,7 @@ def contact():
     return render_template("main/contact.jinja")
 
 
+@main.route("/guidelines/<portal_tag>")
 @main.route("/guidelines")
-def guidelines():
-    return render_template("main/guidelines.jinja")
+def guidelines(portal_tag=''):
+    return render_template("main/guidelines.jinja", portal_tag=portal_tag)

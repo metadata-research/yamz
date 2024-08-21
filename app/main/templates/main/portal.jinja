@@ -54,7 +54,7 @@ YAMZ Metadata Dictionary
                 <h4>My terms</h4>
                 {% if my_terms %}
                 {% for term in my_terms %}
-                <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
+                <a href="{{ url_for('term.display_term', concept_id=term.concept_id, portal_tag=portal_tag) }}">{{ term.term_string }}</a>
                 <br />
                 {% endfor %}
                 {% else %}
@@ -69,7 +69,7 @@ YAMZ Metadata Dictionary
                 {% if tracked_terms %}
                 {% for track in tracked_terms %}
                 <a
-                    href="{{ url_for('term.display_term', concept_id=track.term.concept_id) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
+                    href="{{ url_for('term.display_term', concept_id=track.term.concept_id, portal_tag=portal_tag) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
                 {% endfor %}
                 {% else %}
                 <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
