@@ -1,7 +1,7 @@
 {{ pagedown.include_pagedown() }}
 
 <div class="container mt-4">
-    <form action="{{ url_for('term.add_comment', term_id=selected_term.id, portal_tag=portal_tag) }}"
+    <form action="{{ url_for('term.add_comment', term_id=selected_term.id) }}"
     	method="post">
         {{ comment_form.hidden_tag() }}
 

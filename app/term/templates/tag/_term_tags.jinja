@@ -2,7 +2,7 @@
         <div class="form-group row p-4">
             <div class="col">
                 {% for tag in selected_term.tags %}
-                <a href="{{ url_for('term.terms_by_tag_value', tag_value=tag.value, portal_tag=portal_tag) }}" role="button"
+                <a href="{{ url_for('term.terms_by_tag_value', tag_value=tag.value) }}" role="button"
                     class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
                 {% else %}
 

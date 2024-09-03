@@ -8,11 +8,7 @@
     <div class="row bg-light p-2 mb-1">
         <div class="col">
             Alternative definitions
-            {% if portal_tag %}
-            (<a href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string, portal_tag=portal_tag) }}">{{ selected_term.alt_definitions_count }}</a>),
-            {% else %}
             (<a href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
-            {% endif %}
             class:
             <mark>{{ selected_term.term_class.value[1] }}</mark> ({{ selected_term.consensus }})
         </div>
@@ -23,22 +19,14 @@
             <div class="row">
                 <div class="col text-center p-3">
                     {% if my_vote == 1 %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}" method="post">
-                    {% else %}
-                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}" method="post">
-                    {% endif %}
+                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id) }}" method="post">
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-primary btn-sm" title="remove vote">
                             <i class="fas fa-arrow-up"></i>
                         </button>
                     </form>
                     {% else %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.vote_up', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}" method="post">
-                    {% else %}
                     <form action="{{ url_for('term.vote_up', concept_id=selected_term.concept_id) }}" method="post">
-                    {% endif %}
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-up"></i>
@@ -47,22 +35,14 @@
                     {% endif %}
                     <h4>{{ selected_term.score }}</h4>
                     {% if my_vote == -1 %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}" method="post">
-                    {% else %}
                     <form action="{{ url_for('term.remove_vote', concept_id=selected_term.concept_id) }}" method="post">
-                    {% endif %}
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-primary btn-sm" title="remove vote">
                             <i class="fas fa-arrow-down"></i>
                         </button>
                     </form>
                     {% else %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.vote_down', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}" method="post">
-                    {% else %}
                     <form action="{{ url_for('term.vote_down', concept_id=selected_term.concept_id) }}" method="post">
-                    {% endif %}
                         {{ form.hidden_tag() }}
                         <button type="submit" class="btn btn-secondary btn-sm">
                             <i class="fas fa-arrow-down"></i>
@@ -75,23 +55,13 @@
             <div class="row">
                 <div class="col mt-2 text-center">
                     {% if selected_term.is_tracked_by(current_user) %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.untrack_term', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}"
-                        method="post">
-                    {% else %}
                     <form action="{{ url_for('term.untrack_term', concept_id=selected_term.concept_id) }}"
                         method="post">
-                    {% endif %}
                         {{ form.hidden_tag() }}
                         {{ form.submit(value='[unwatch]', class_='btn btn-link') }}
                     </form>
                     {% else %}
-                    {% if portal_tag %}
-                    <form action="{{ url_for('term.track_term', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}"
-                        method="post">
-                    {% else %}
                     <form action="{{ url_for('term.track_term', concept_id=selected_term.concept_id) }}" method="post">
-                    {% endif %}
                         {{ form.hidden_tag() }}
                         {{ form.submit(value='[watch]', class_='btn btn-link') }}
                     </form>
@@ -101,11 +71,7 @@
             {% else%}
             <div class="row">
                 <div class="col mt-2 text-center">
-                {% if portal_tag %}
-                    <a href="{{ url_for('auth.login', portal_tag=portal_tag) }}" class="btn btn-link">[watch]</a>
-                {% else %}
                     <a href="{{ url_for('auth.login') }}" class="btn btn-link">[watch]</a>
-                {% endif %}
                 </div>
             </div>
             {% endif %}
@@ -118,11 +84,7 @@
                     Term:
                 </td>
                 <td>
-                    {% if portal_tag %}
-                    <a class="fw-bold text-decoration-none" href="{{ url_for('term.display_term', concept_id=selected_term.concept_id, portal_tag=portal_tag) }}">{{ selected_term.term_string }}</a>
-                    {% else %}
                     <a class="fw-bold text-decoration-none" href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
-                    {% endif %}
                 </td>
             </tr>
             <tr>

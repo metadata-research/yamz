@@ -33,11 +33,7 @@ Search Results for <i>{{ search_terms }}</i>
         {% set count.value = count.value + 1 %}
         <tr>
             <td>
-                {% if portal_tag %}
-                <a href="{{ url_for('term.display_term', concept_id=term.concept_id, portal_tag=portal_tag) }}">{{ term.term_string }}</a>
-                {% else %}
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
-                {% endif %}
             </td>
             <td width ="70%">
                 {{ term.definition[0:200] | highlight_term_string(search_terms) }}

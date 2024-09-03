@@ -6,38 +6,34 @@ from app.auth import auth_blueprint as auth
 from app.auth.oauth import OAuthSignIn
 
 def redirect_authenticated_user():
-    portal_tag = session.pop('portal_tag', None)
-    if portal_tag:
-        return redirect(url_for("main.portal_index", portal_tag=portal_tag))
+    if session["portal_tag"]:
+        return redirect(url_for("main.portal_index", portal_tag=session["portal_tag"]))
     return redirect(url_for("main.index"))
 
-@auth.route("/login/<portal_tag>")
+
 @auth.route("/login")
-def login(portal_tag=''):
+def login():
     if current_user.is_authenticated:
         return redirect_authenticated_user()
-    session['portal_tag'] = portal_tag
-    return render_template("auth/login.jinja", portal_tag=portal_tag)
+    return render_template("auth/login.jinja")
 
-@auth.route("/logout/<portal_tag>")
+
 @auth.route("/logout")
-def logout(portal_tag=''):
+def logout():
     logout_user()
     return redirect_authenticated_user()
 
-@auth.route("/authorize/<provider>/<portal_tag>")
 @auth.route("/authorize/<provider>")
-def oauth_authorize(provider, portal_tag=''):
+def oauth_authorize(provider):
     if not current_user.is_anonymous:
         return redirect_authenticated_user()
 
     oauth = OAuthSignIn.get_provider(provider)
-    session['portal_tag'] = portal_tag
     return oauth.authorize()
 
-@auth.route("/<provider>" + "_authorized/<portal_tag>")
+
 @auth.route("/<provider>" + "_authorized")
-def oauth_callback(provider, portal_tag=''):
+def oauth_callback(provider):
     if not current_user.is_anonymous:
         return redirect_authenticated_user()
 

@@ -13,11 +13,7 @@ Login
     In order to propose new terms or comment on others, you must first
     sign in.
     <li>
-        {% if portal_tag %}
-        Sign in with <a href="{{ url_for('auth.oauth_authorize', provider='google', portal_tag=portal_tag) }}">Google</a>
-        {% else %}
         Sign in with <a href="{{ url_for('auth.oauth_authorize', provider='google') }}">Google</a>
-        {% endif %}
     </li>
     <!--
     <li>

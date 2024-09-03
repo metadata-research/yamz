@@ -26,44 +26,34 @@
 
 </head>
 
-{% if portal_tag %}
+{% if session["portal_tag"] %}
 <body style="min-height: 100vh; display: flex; flex-direction: column; background-color: #fceaea">
 {% else %}
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
 {% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container-fluid">
-            {% if portal_tag %}
+            {% if session["portal_tag"] %}
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown mx-3">
                         <a href="#" class="navbar-brand"
                          data-bs-toggle="dropdown" title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
                         <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;" src="/static/images/yamz_purple_logo_square_small.png">
-                        YAMZ-{{ portal_tag }}</a></a>
+                        YAMZ-{{ session["portal_tag"] }}</a></a>
                       <div class="dropdown-menu dropdown-menu-end">
-                        <a href="{{ url_for('main.portal_index', portal_tag=portal_tag) }}"
-                           class="dropdown-item">YAMZ-{{portal_tag}}</a>
-                        <a href="{{ url_for('main.index') }}"
+                        <a href="{{ url_for('main.portal_index', portal_tag=session["portal_tag"]) }}"
+                           class="dropdown-item">YAMZ-{{session["portal_tag"]}}</a>
+                        <a href="{{ url_for('main.leave_portal') }}"
                            class="dropdown-item">YAMZ</a>
                         </div>
                     </li>
                 </ul>
-            <!-- <li class="nav-item dropdown mx-3">
-            <a href="#" class="nav-link dropdown-toggle"
-            data-bs-toggle="dropdown" title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
-            <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;" src="/static/images/yamz_purple_logo_square_small.png">
-            YAMZ-{{ portal_tag }}</a>
-            <div class="dropdown-menu dropdown-menu-end">
-            <a href="{{ url_for('main.index') }}"
-            class="dropdown-item">Full YAMZ</a>
-            </div>
-            </li> -->
             {% else %}
 	        <a class="navbar-brand" href="/"
              title="YAMZ=Yet Another Metadata Zoo&#013;Pronounced 'yams'">
 	           <img style="height: 38px; width: 38px; margin: -8px 5px -2px 9px;"
-	            src="/static/images/yamz_purple_logo_square_small.png">
-	               YAMZ
+                src="/static/images/yamz_purple_logo_square_small.png">
+                   YAMZ{% if session["old_portal_tag"] %}<a class="navbar-brand" href="{{ url_for('main.portal_index', portal_tag=session["old_portal_tag"]) }}" style="color: grey;">-{{session["old_portal_tag"]}}</a>{% endif %}
 	        </a>
             {% endif %}
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar01"
@@ -80,44 +70,22 @@
             <div class="collapse navbar-collapse" id="navbar01">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        {% if portal_tag %}
-                        <a class="nav-link" href="{{ url_for(endpoint='term.list_terms', portal_tag=portal_tag) }}">
-                            Browse
-                        </a>
-                        {% else %}
                         {{ macros.nav_link('term.list_terms', 'Browse') }}
-                        {% endif %}
                     </li>
                     <li class="nav-item">
-                        {% if portal_tag %}
-                        <a class="nav-link" href="{{ url_for(endpoint='term.create_term', portal_tag=portal_tag) }}">
-                            Add
-                        </a>
-                        {% else %}
                         {{ macros.nav_link('term.create_term', 'Add') }}
-                        {% endif %}
                     </li>
                     <li class="nav-item">
-                        {% if portal_tag %}
-                        <a class="nav-link" href="{{ url_for(endpoint='io.import_document', portal_tag=portal_tag) }}">
-                            Import
-                        </a>
-                        {% else %}
                         {{ macros.nav_link('io.import_document', 'Import') }}
-                        {% endif %}
                     </li>
+                    {% if session['portal_tag'] %}
+                    {% else %}
                     <li class="nav-item">
                         {{ macros.nav_link('term.list_tags', 'Tags') }}
                     </li>
-
+                    {% endif %}
                     <li class="nav-item">
-                        {% if portal_tag %}
-                        <a class="nav-link" href="{{ url_for(endpoint='main.about', portal_tag=portal_tag) }}">
-                            About
-                        </a>
-                        {% else %}
                         {{ macros.nav_link('main.about', 'About') }}
-                        {% endif %}
                     </li>
 
                 </ul>
@@ -137,22 +105,13 @@
                              class="dropdown-item">Admin Dashboard</a>
                         {% endif %}
                         <div class="dropdown-divider"></div>
-                        {% if portal_tag %}
-                        <a href="{{ url_for('auth.logout', portal_tag=portal_tag) }}"
-                           class="dropdown-item">Logout</a>
-                        {% else %}
                         <a href="{{ url_for('auth.logout') }}"
                            class="dropdown-item">Logout</a>
-                        {% endif %}
                         </div>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        {% if portal_tag %}
-                        <a class="nav-link" href="{{ url_for('auth.login', portal_tag=portal_tag) }}">Login</a>
-                        {% else %}
                         <a class="nav-link" href="{{ url_for('auth.login') }}">Login</a>
-                        {% endif %}
                     </li>
                     {% endif %}
                 </ul>
@@ -172,12 +131,8 @@
             </div>
             {% if g.search_form %}
             <div class="col-auto align-self-end pb-4">
-                {% if portal_tag %}
-                <form method="get" action="{{ url_for('term.search', portal_tag=portal_tag) }}" novalidate>
-                {% else %} 
                 <form method="get" action="{{ url_for('term.search') }}"
 		        novalidate>
-                {% endif %}
                     <div class="form-group">
                         {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text)}}
                     </div>
