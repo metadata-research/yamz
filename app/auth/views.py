@@ -6,7 +6,7 @@ from app.auth import auth_blueprint as auth
 from app.auth.oauth import OAuthSignIn
 
 def redirect_authenticated_user():
-    if session["portal_tag"]:
+    if session.get("portal_tag", None):
         return redirect(url_for("main.portal_index", portal_tag=session["portal_tag"]))
     return redirect(url_for("main.index"))
 

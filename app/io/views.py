@@ -9,10 +9,9 @@ from flask_login import current_user, login_required
 from app.term.helpers import get_ark_id
 
 
-@io.route("/upload/<portal_tag>", methods=["GET", "POST"])
 @io.route("/upload", methods=["GET", "POST"])
 @login_required
-def import_document(portal_tag=''):
+def import_document():
     form = DataFileUploadForm()
     if form.validate_on_submit():
         uploaded_file = form.data_file.data
@@ -39,9 +38,8 @@ def import_document(portal_tag=''):
             title=set_name,
             description=set_description,
             form=EmptyForm(),
-            portal_tag=portal_tag,
         )
-    return render_template("io/import_document.jinja", form=form, portal_tag=portal_tag)
+    return render_template("io/import_document.jinja", form=form)
 
 
 @io.route("/export", methods=["GET", "POST"])

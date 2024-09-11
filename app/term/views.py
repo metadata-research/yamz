@@ -16,7 +16,6 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from sqlalchemy import desc
-from app.main.views import check_tag
 
 
 @term.before_request
@@ -294,34 +293,20 @@ def list_terms():
     return redirect(url_for("term.list_top_terms_alphabetical"))
 
 @term.route("/list/alphabetical")
-def list_alphabetical(portal_tag):
+def list_alphabetical():
     sort_type = "alphabetical"
     sort_order = request.args.get("order", "ascending")
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
 
     if sort_order == "descending":
-        if portal_tag:
-            term_list = (
-                Term.query.filter(Term.tags.any(value=portal_tag))
-                .order_by(Term.term_string.desc())
-                .paginate(page=page, per_page=per_page, error_out=False)
-            )
-        else:
-            term_list = (
+        term_list = (
                 Term.query.filter_by(status="published")
                 .order_by(Term.term_string.desc())
                 .paginate(page=page, per_page=per_page, error_out=False)
-            )
+        )
     else:
-        if portal_tag:
-            term_list = (
-                Term.query.filter(Term.tags.any(value=portal_tag))
-                .order_by(Term.term_string.asc())
-                .paginate(page=page, per_page=per_page, error_out=False)
-            )
-        else:
-            term_list = (
+        term_list = (
                 Term.query.filter_by(status="published")
                 .order_by(Term.term_string.asc())
                 .paginate(page=page, per_page=per_page, error_out=False)
@@ -335,7 +320,6 @@ def list_alphabetical(portal_tag):
         sort_type=sort_type,
         sort_order=sort_order,
         pager=pager,
-        portal_tag=portal_tag,
     )
 
 # @term.route("/list/alphabetical/<letter>")")
@@ -452,7 +436,7 @@ def create_tag():
 
         tag = Tag.query.filter_by(
             category=tag_category, value=tag_value).first()
-        if tag is None:
+        if (tag is None) and (tag_value.lower() != tag.value.lower()):
             new_tag = Tag(
                 category=tag_category, value=tag_value, description=tag_description
             )
@@ -460,7 +444,7 @@ def create_tag():
             return redirect(url_for("term.list_tags"))
         else:
             flash("Tag already exists")
-            return redirect(url_for("term.edit_tag, tag_id=tag.id"))
+            return redirect(url_for("term.edit_tag", tag_id=tag.id))
 
     else:
         return render_template("tag/create_tag.jinja", form=tag_form)

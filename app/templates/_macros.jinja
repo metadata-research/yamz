@@ -33,16 +33,12 @@
 {% endmacro %}
 
 
-{% macro render_pagination(pagination, endpoint, tag_id, portal_tag='') %}
+{% macro render_pagination(pagination, endpoint, tag_id) %}
 <div class=pagination>
     {%- for page in pagination.iter_pages() %}
     {% if page %}
     {% if page != pagination.page %}
-    {% if portal_tag %}
-    <a href="{{ url_for(endpoint, page=page, tag_id=tag_id, portal_tag=portal_tag) }}">{{ page }}</a>&nbsp;
-    {% else %}
     <a href="{{ url_for(endpoint, page=page, tag_id=tag_id) }}">{{ page }}</a>&nbsp;
-    {% endif %}
     {% else %}
     <strong>{{ page }}</strong>&nbsp;
     {% endif %}
