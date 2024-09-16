@@ -176,7 +176,7 @@ def create_term():
                 tag.save()
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
-            if session['portal_tag']:
+            if session.get('portal_tag'):
                 new_term.tags.append(Tag.query.filter_by(value=session['portal_tag']).first())
             new_term.save()
             return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
@@ -258,7 +258,7 @@ def search():
     term_vector_matches = Term.query.filter(Term.search_vector.match(
         vector_search_terms)).filter(Term.status != status.archived)
     
-    if session['portal_tag']:
+    if session.get('portal_tag'):
         term_string_matches = term_string_matches.filter(
             Term.tags.any(value=session['portal_tag']))
         term_vector_matches = term_vector_matches.filter(
@@ -433,12 +433,13 @@ def create_tag():
         tag_category = tag_form.category.data
         tag_value = tag_form.value.data
         tag_description = tag_form.description.data
+        tag_domain = tag_form.domain.data
 
         tag = Tag.query.filter_by(
             category=tag_category, value=tag_value).first()
-        if (tag is None) and (tag_value.lower() != tag.value.lower()):
+        if (tag is None) or (tag_value.lower() != tag.value.lower()):
             new_tag = Tag(
-                category=tag_category, value=tag_value, description=tag_description
+                category=tag_category, value=tag_value, description=tag_description, domain=tag_domain
             )
             new_tag.save()
             return redirect(url_for("term.list_tags"))
@@ -459,6 +460,7 @@ def edit_tag(tag_id):
         tag.category = tag_form.category.data
         tag.value = tag_form.value.data
         tag.description = tag_form.description.data
+        tag.domain = tag_form.domain.data
         tag.save()
         flash(
             'Tag updated.  <small>[<a href="'
@@ -469,6 +471,7 @@ def edit_tag(tag_id):
     tag_form.category.data = tag.category
     tag_form.value.data = tag.value
     tag_form.description.data = tag.description
+    tag_form.domain.data = tag.domain
     return render_template("tag/edit_tag.jinja", form=tag_form)
 
 

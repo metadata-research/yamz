@@ -39,6 +39,7 @@ class SearchForm(FlaskForm):
 class TagForm(FlaskForm):
     category = StringField("Category", validators=[DataRequired()], default="community")
     value = StringField("Value", validators=[DataRequired()])
+    domain = StringField("Domain")
     description = TextAreaField("Description")
     submit = SubmitField("Save")
 

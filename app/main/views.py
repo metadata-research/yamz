@@ -22,6 +22,7 @@ def portal_index(portal_tag):
     if not tag:
         abort(404)
     session["portal_tag"] = portal_tag
+    domain = tag.domain
     g.search_form = SearchForm()
     page = 1
     per_page = 10
@@ -39,6 +40,7 @@ def portal_index(portal_tag):
         my_terms=my_terms,
         tracked_terms=tracked_terms,
         search_form=g.search_form,
+        domain = domain,
     )
 
 
