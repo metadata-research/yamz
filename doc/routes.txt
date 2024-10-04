@@ -20,6 +20,8 @@ main.about                        GET        /about
 main.contact                      GET        /contact
 main.guidelines                   GET        /guidelines
 main.index                        GET        /
+main.portal_index                 GET        /p/<portal_tag>
+main.leave_portal                 GET        /leave_portal
 notify.delete_message             GET        /notify/message/delete/<int:message_id>
 notify.delete_notification        GET        /notify/notifications/delete/<int:notification_id>
 notify.messages                   GET        /notify/messages

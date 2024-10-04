@@ -7,8 +7,8 @@
     {% if not "alternate_terms" in request.endpoint %}
     <div class="row bg-light p-2 mb-1">
         <div class="col">
-            Alternative definitions (<a
-                href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
+            Alternative definitions
+            (<a href="{{ url_for('term.show_alternate_terms', term_string=selected_term.term_string) }}">{{ selected_term.alt_definitions_count }}</a>),
             class:
             <mark>{{ selected_term.term_class.value[1] }}</mark> ({{ selected_term.consensus }})
         </div>
@@ -84,8 +84,7 @@
                     Term:
                 </td>
                 <td>
-                    <a class="fw-bold text-decoration-none"
-                        href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
+                    <a class="fw-bold text-decoration-none" href="{{ url_for('term.display_term', concept_id=selected_term.concept_id) }}">{{ selected_term.term_string }}</a>
                 </td>
             </tr>
             <tr>

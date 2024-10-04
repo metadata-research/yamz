@@ -396,6 +396,7 @@ class Tag(db.Model):
     category = db.Column(db.Text, default="user")
     value = db.Column(db.Text)
     description = db.Column(db.Text)
+    domain = db.Column(db.Text)
 
     terms = db.relationship(
         "Term",

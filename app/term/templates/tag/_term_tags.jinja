@@ -2,8 +2,15 @@
         <div class="form-group row p-4">
             <div class="col">
                 {% for tag in selected_term.tags %}
+                {% if tag.category == 'portal' %}
+                <a href="{{ url_for('main.portal_index', portal_tag=tag.value) }}" role="button"
+                    class="btn btn-outline-dark btn-sm" style="background-color: #9aabff;">{{ tag.value }}</a>    
+                {% else %}
                 <a href="{{ url_for('term.terms_by_tag_value', tag_value=tag.value) }}" role="button"
                     class="btn btn-outline-dark btn-sm">{{ tag.value }}</a>
+                {% endif %}
+                {% else %}
+
                     {% if request.url_rule.endpoint == "term.display_term" %}
                         {% if current_user.is_administrator or current_user == selected_term.contributor %}
                         <a href="{{ url_for('term.remove_tag', term_id=selected_term.id, tag_id=tag.id) }}"
