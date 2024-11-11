@@ -84,6 +84,7 @@ def highlight_term_string(definition, search_terms):
         definition = definition.replace(term, "<b>" + term + "</b>")
     return definition
 
+
 @term.route("/ark:/99152/<concept_id>")
 @term.route("/ark:99152/<concept_id>")
 @term.route("/ark/99152/<concept_id>")
@@ -177,7 +178,8 @@ def create_term():
             tag = Tag.query.filter_by(value="Draft").first()
             new_term.tags.append(tag)
             if session.get('portal_tag'):
-                new_term.tags.append(Tag.query.filter_by(value=session['portal_tag']).first())
+                new_term.tags.append(Tag.query.filter_by(
+                    value=session['portal_tag']).first())
             new_term.save()
             return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
@@ -189,10 +191,20 @@ def create_term():
 def edit_term(concept_id):
     form = CreateTermForm()
     selected_term = Term.query.filter_by(concept_id=concept_id).first()
+    is_draft = any(tag.value == "Draft" for tag in selected_term.tags)
     if form.validate_on_submit():
         selected_term.term_string = form.term_string.data.strip()
         selected_term.definition = form.definition.data
         selected_term.examples = form.examples.data
+        if form.draft.data and not is_draft:
+            tag = Tag.query.filter_by(value="Draft").first()
+            if tag is None:
+                tag = create_tag("community", "Draft", "A draft term.")
+                tag.save()
+            selected_term.tags.append(tag)
+        elif not form.draft.data and is_draft:
+            tag = Tag.query.filter_by(value="Draft").first()
+            selected_term.tags.remove(tag)
         selected_term.update()
         # flash("Term updated.")
         return redirect(url_for("term.display_term", concept_id=concept_id))
@@ -200,9 +212,8 @@ def edit_term(concept_id):
         form.term_string.data = selected_term.term_string
         form.definition.data = selected_term.definition
         form.examples.data = selected_term.examples
-        
+        form.draft.data = is_draft
         return render_template("term/edit_term.jinja", form=form)
-
 
 
 @term.route("/contribute/delete/<concept_id>", methods=["POST"])
@@ -216,7 +227,7 @@ def delete_term(concept_id):
         flash("Term deleted.")
     else:
         flash("You are not authorized to delete this term.")
-    
+
     return redirect(url_for("term.list_terms"))
 
 
@@ -240,6 +251,7 @@ def add_comment(term_id):
         return redirect(url_for("term.display_term_by_id", term_id=term_id))
     return redirect(url_for("term.display_term_by_id", term_id=term_id))
 
+
 @term.route("/search")
 def search():
     page = request.args.get("page", 1, type=int)
@@ -257,7 +269,7 @@ def search():
     vector_search_terms = " & ".join(search_terms.split(" "))
     term_vector_matches = Term.query.filter(Term.search_vector.match(
         vector_search_terms)).filter(Term.status != status.archived)
-    
+
     if session.get('portal_tag'):
         term_string_matches = term_string_matches.filter(
             Term.tags.any(value=session['portal_tag']))
@@ -267,7 +279,6 @@ def search():
     term_list = term_string_matches.union_all(
         term_vector_matches).paginate(page=page, per_page=per_page, error_out=False)
 
-
     next_url = (
         url_for("term.search", q=search_terms, page=term_list.next_num)
         if term_list.has_next
@@ -276,7 +287,7 @@ def search():
     prev_url = (
         url_for("term.search", q=search_terms, page=term_list.prev_num)
         if term_list.has_prev
-         else None
+        else None
     )
 
     return render_template(
@@ -288,9 +299,11 @@ def search():
         prev_url=prev_url,
     )
 
+
 @term.route("/list")
 def list_terms():
     return redirect(url_for("term.list_top_terms_alphabetical"))
+
 
 @term.route("/list/alphabetical")
 def list_alphabetical():
@@ -301,16 +314,16 @@ def list_alphabetical():
 
     if sort_order == "descending":
         term_list = (
-                Term.query.filter_by(status="published")
-                .order_by(Term.term_string.desc())
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.desc())
                 .paginate(page=page, per_page=per_page, error_out=False)
         )
     else:
         term_list = (
-                Term.query.filter_by(status="published")
-                .order_by(Term.term_string.asc())
+            Term.query.filter_by(status="published")
+            .order_by(Term.term_string.asc())
                 .paginate(page=page, per_page=per_page, error_out=False)
-            )
+        )
 
     pager = Pager(term_list, page, per_page, Term.query.count())
 
@@ -323,6 +336,8 @@ def list_alphabetical():
     )
 
 # @term.route("/list/alphabetical/<letter>")")
+
+
 @term.route("/list/alphabetical/top")
 def list_top_terms_alphabetical():
     page = request.args.get("page", 1, type=int)
@@ -330,21 +345,22 @@ def list_top_terms_alphabetical():
 
     if session.get("portal_tag"):
         query_result = (
-        db.session.query(Term.term_string, db.func.count(Term.term_string))
-        .join(Term.tags)
-        .filter(Tag.value == session.get("portal_tag"))
-        .group_by(Term.term_string)
-        .order_by(Term.term_string.asc())
+            db.session.query(Term.term_string, db.func.count(Term.term_string))
+            .join(Term.tags)
+            .filter(Tag.value == session.get("portal_tag"))
+            .group_by(Term.term_string)
+            .order_by(Term.term_string.asc())
         )
     else:
         query_result = (
-        db.session.query(Term.term_string, db.func.count(Term.term_string))
-        .filter_by(status="published")
-        .group_by(Term.term_string)
-        .order_by(Term.term_string.asc())
+            db.session.query(Term.term_string, db.func.count(Term.term_string))
+            .filter_by(status="published")
+            .group_by(Term.term_string)
+            .order_by(Term.term_string.asc())
         )
 
-    pager = query_result.paginate(page=page, per_page=per_page, error_out=False)
+    pager = query_result.paginate(
+        page=page, per_page=per_page, error_out=False)
     term_list = pager.items
 
     tag_list = Tag.query.order_by(Tag.value.asc())
