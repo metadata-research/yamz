@@ -27,7 +27,7 @@ example:
 
 on Ubuntu:
     
-    ## Postgress default users
+    ## Postgres default users
 The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
 
 Enter the command:
@@ -42,7 +42,7 @@ Close and reopen your terminal.
 
     postgres=# create database yamz with owner postgres;
 
-## Postgress authentication configuration
+## Postgres authentication configuration
 Configure the authentication method for postgres and all other users connecting locally
 In `/etc/postgresql/14/main/pg_hba.conf` change "peer" to md5 for the administrative account and local unix domain socket
 
