@@ -30,12 +30,16 @@ class SearchForm(FlaskForm):
             kwargs["formdata"] = request.args
         if "csrf_enabled" not in kwargs:
             kwargs["csrf_enabled"] = False
+        if "portal_tag" in kwargs:
+            self.portal_tag = kwargs.pop("portal_tag") 
+
         super(SearchForm, self).__init__(*args, **kwargs)
 
 
 class TagForm(FlaskForm):
     category = StringField("Category", validators=[DataRequired()], default="community")
     value = StringField("Value", validators=[DataRequired()])
+    domain = StringField("Domain")
     description = TextAreaField("Description")
     submit = SubmitField("Save")
 
