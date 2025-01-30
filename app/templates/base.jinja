@@ -26,11 +26,7 @@
 
 </head>
 
-{% if session["portal_tag"] %}
-<body style="min-height: 100vh; display: flex; flex-direction: column; background-color: #fceaea">
-{% else %}
 <body style="min-height: 100vh; display: flex; flex-direction: column;">
-{% endif %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="YAMZ Navbar">
         <div class="container-fluid">
             {% if session["portal_tag"] %}
