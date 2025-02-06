@@ -42,10 +42,6 @@ class Relationship(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def get_predicate_uri(self):
-        if self.namespace:
-            return URIRef(f"{self.namespace}{self.predicate.term_string}")
-        return URIRef(self.predicate.term_string)
 
     def __repr__(self):
         return f"<Relationship {self.parent_id} {self.predicate.term_string} {self.child_id}>"
