@@ -1,21 +1,15 @@
+from flask import (abort, current_app, flash, g, redirect, render_template,
+                   request, session, url_for)
+from flask_login import current_user, login_required
+
+from app.admin.term import status
+from app.extras import pretty
 from app.term import term_blueprint as term
 from app.term.forms import *
 from app.term.models import *
+from app.term.views.list_views import *
+from app.term.views.tag_views import create_tag
 from app.utilities import *
-from app.extras import pretty
-from flask import (
-    abort,
-    current_app,
-    flash,
-    g,
-    redirect,
-    render_template,
-    request,
-    url_for,
-    session,
-)
-from flask_login import current_user, login_required
-from sqlalchemy import desc
 
 
 @term.before_request
@@ -116,25 +110,31 @@ def display_term_by_id(term_id):
     return redirect(url_for("term.display_term", concept_id=selected_term.concept_id))
 
 
-@term.route("/alternates/<term_string>")  # change concelpt id to ark
+@term.route("/alternates/<term_string>")  # change concept id to ark
 def show_alternate_terms(term_string):
     form = EmptyForm()
     include = request.args.get("include", "published")
+    portal_tag = session.get("portal_tag", None)
+    # Base query for terms with the specified term_string
+    query = Term.query.filter_by(term_string=term_string)
+    
+    # Filter by published status if "published" is included in the request args
     if "published" in include:
-        selected_terms = Term.query.filter_by(
-            term_string=term_string, status="published"
-        )
-    else:
-        selected_terms = Term.query.filter_by(term_string=term_string)
-    # selected_terms = published_terms.union(all_terms)
-
+        query = query.filter_by(status="published")
+    
+    # Further filter by portal_tag if provided
+    if portal_tag:
+        query = query.filter(Term.tags.any(value=portal_tag))
+    
+    selected_terms = query.all()
+    
     return render_template(
         "term/display_terms.jinja",
         selected_terms=selected_terms,
         form=form,
         tag_form=form,
         alternatives_for_string=term_string,
-        headline="Alternate Definitions " + "for " + term_string,
+        headline="Alternate Definitions for " + term_string,
     )
 
 
@@ -181,7 +181,7 @@ def create_term():
                 new_term.tags.append(Tag.query.filter_by(
                     value=session['portal_tag']).first())
             new_term.save()
-            return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
+        return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
     return render_template("term/create_term.jinja", form=form)
 
@@ -231,9 +231,6 @@ def delete_term(concept_id):
     return redirect(url_for("term.list_terms"))
 
 
-# here we are using term id because the key is better as an integer and we don't have to look it up
-# we should probably decide if we are going to use the concept id or the term id
-# for now it has to be like this because of the seaice db schema
 @term.route("comment/<term_id>", methods=["POST"])
 @login_required
 def add_comment(term_id):
@@ -264,11 +261,11 @@ def search():
     # term_string_matches = Term.query.filter(
     #    Term.term_string.ilike(search_terms)).filter(Term.status != status.archived)
     term_string_matches = Term.query.filter(Term.term_string.regexp_match(
-        term_string_re)).filter(Term.status != status.archived)
+        term_string_re))
 
     vector_search_terms = " & ".join(search_terms.split(" "))
     term_vector_matches = Term.query.filter(Term.search_vector.match(
-        vector_search_terms)).filter(Term.status != status.archived)
+        vector_search_terms))
 
     if session.get('portal_tag'):
         term_string_matches = term_string_matches.filter(
@@ -303,267 +300,6 @@ def search():
 @term.route("/list")
 def list_terms():
     return redirect(url_for("term.list_top_terms_alphabetical"))
-
-
-@term.route("/list/alphabetical")
-def list_alphabetical():
-    sort_type = "alphabetical"
-    sort_order = request.args.get("order", "ascending")
-    page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
-
-    if sort_order == "descending":
-        term_list = (
-            Term.query.filter_by(status="published")
-            .order_by(Term.term_string.desc())
-                .paginate(page=page, per_page=per_page, error_out=False)
-        )
-    else:
-        term_list = (
-            Term.query.filter_by(status="published")
-            .order_by(Term.term_string.asc())
-                .paginate(page=page, per_page=per_page, error_out=False)
-        )
-
-    pager = Pager(term_list, page, per_page, Term.query.count())
-
-    return render_template(
-        "term/list_terms.jinja",
-        term_list=term_list.items,
-        sort_type=sort_type,
-        sort_order=sort_order,
-        pager=pager,
-    )
-
-# @term.route("/list/alphabetical/<letter>")")
-
-
-@term.route("/list/alphabetical/top")
-def list_top_terms_alphabetical():
-    page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
-
-    if session.get("portal_tag"):
-        query_result = (
-            db.session.query(Term.term_string, db.func.count(Term.term_string))
-            .join(Term.tags)
-            .filter(Tag.value == session.get("portal_tag"))
-            .group_by(Term.term_string)
-            .order_by(Term.term_string.asc())
-        )
-    else:
-        query_result = (
-            db.session.query(Term.term_string, db.func.count(Term.term_string))
-            .filter_by(status="published")
-            .group_by(Term.term_string)
-            .order_by(Term.term_string.asc())
-        )
-
-    pager = query_result.paginate(
-        page=page, per_page=per_page, error_out=False)
-    term_list = pager.items
-
-    tag_list = Tag.query.order_by(Tag.value.asc())
-    return render_template(
-        "term/list_top_terms.jinja", term_list=term_list, pager=pager, tag_list=tag_list, portal_tag=session.get("portal_tag")
-    )
-
-
-# @term.route("/list/alphabetical/<letter>")
-
-
-@term.route("/list/tag/<int:tag_id>")
-def list_terms_by_tag(tag_id):
-    page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
-    tag = Tag.query.get_or_404(tag_id)
-    pager = (
-        Term.query.filter(Term.tags.any(id=tag_id))
-        .order_by(Term.term_string)
-        .paginate(page=page, per_page=per_page, error_out=False)
-    )
-    term_list = pager.items
-
-    return render_template(
-        "term/terms_by_tag.jinja",
-        term_list=term_list,
-        pager=pager,
-        tag_id=tag_id,
-        tag=tag.value,
-    )
-
-
-@term.route("/list/tag/value/<tag_value>")
-def terms_by_tag_value(tag_value):
-    page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
-    tag = Tag.query.filter_by(value=tag_value).first()
-    term_list = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-        Term.term_string
-    )
-    tag_list = Tag.query.order_by(Tag.value.asc())
-    return render_template(
-        "term/terms_by_tag_value.jinja",
-        term_list=term_list,
-        tag=tag,
-        tag_list=tag_list,
-    )
-
-
-@term.route("/list/tag/value/<tag_value>/detail")
-def terms_by_tag_value_detail(tag_value):
-    tag = Tag.query.filter_by(value=tag_value).first()
-    selected_terms = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-        Term.term_string
-    )
-    return render_template("term/terms_by_tag_value_detail.jinja", tag=tag, selected_terms=selected_terms, form=EmptyForm())
-
-
-@term.route("/list/score")
-def list_score():
-    term_list = (
-        db.session.query(Term)
-        .filter(Term.term_vote != 0)
-        .order_by(desc(Term.term_vote), Term.term_string)
-        .limit(current_app.config["TERMS_PER_PAGE"])
-    )
-    return render_template(
-        "term/highscore_terms.jinja", term_list=term_list, sort_type="high score"
-    )
-
-
-@term.route("/list/recent")
-def list_recent():
-    term_list = Term.query.order_by(Term.modified.desc()).limit(
-        current_app.config["TERMS_PER_PAGE"]
-    )
-    return render_template(
-        "term/highscore_terms.jinja", term_list=term_list, sort_type="recent"
-    )
-
-
-@term.route("/tag/create", methods=["GET", "POST"])
-def create_tag():
-    tag_form = TagForm()
-    if tag_form.validate_on_submit():
-        tag_category = tag_form.category.data
-        tag_value = tag_form.value.data
-        tag_description = tag_form.description.data
-        tag_domain = tag_form.domain.data
-
-        tag = Tag.query.filter_by(
-            category=tag_category, value=tag_value).first()
-        if (tag is None) or (tag_value.lower() != tag.value.lower()):
-            new_tag = Tag(
-                category=tag_category, value=tag_value, description=tag_description, domain=tag_domain
-            )
-            new_tag.save()
-            return redirect(url_for("term.list_tags"))
-        else:
-            flash("Tag already exists")
-            return redirect(url_for("term.edit_tag", tag_id=tag.id))
-
-    else:
-        return render_template("tag/create_tag.jinja", form=tag_form)
-
-
-@term.route("tag/edit/<int:tag_id>", methods=["GET", "POST"])
-@login_required
-def edit_tag(tag_id):
-    tag_form = TagForm()
-    tag = Tag.query.get_or_404(tag_id)
-    if tag_form.validate_on_submit():
-        tag.category = tag_form.category.data
-        tag.value = tag_form.value.data
-        tag.description = tag_form.description.data
-        tag.domain = tag_form.domain.data
-        tag.save()
-        flash(
-            'Tag updated.  <small>[<a href="'
-            + url_for("term.list_tags")
-            + '">Return to list]</a></small>'
-        )
-        return redirect(url_for("term.edit_tag", tag_id=tag_id))
-    tag_form.category.data = tag.category
-    tag_form.value.data = tag.value
-    tag_form.description.data = tag.description
-    tag_form.domain.data = tag.domain
-    return render_template("tag/edit_tag.jinja", form=tag_form)
-
-
-@term.route("/tag/delete/<int:tag_id>", methods=["GET", "POST"])
-@login_required
-def delete_tag(tag_id):
-    tag = Tag.query.get_or_404(tag_id)
-    tag.delete()
-    return redirect(url_for("term.list_tags"))
-
-
-@term.route("tag/list")
-def list_tags():
-    tags = Tag.query.order_by(Tag.value)
-    return render_template("tag/list_tags.jinja", tags=tags)
-
-
-@term.route("/set/list")
-def list_term_sets():
-    term_sets = TermSet.query.order_by(TermSet.name)
-    return render_template("term/list_term_sets.jinja", term_sets=term_sets)
-
-
-@term.route("/set/display/<int:term_set_id>")
-def display_term_set(term_set_id):
-    # page = request.args.get("page", 1, type=int)
-    # per_page = 10
-    term_set = TermSet.query.get_or_404(term_set_id)
-    # term_list = term_set.terms
-    '''
-    next_url = (
-        url_for("term.display_term_set",
-                term_set_id=term_set_id, page=term_list.next_num)
-        if term_list.has_next
-        else None
-    )
-    prev_url = (
-        url_for("term.display_term_set",
-                term_set_id=term_set_id, page=term_list.prev_num)
-        if term_list.has_prev
-        else None)
-
-    pages = term_list.pages
-    '''
-    return render_template(
-        "term/display_term_set.jinja",
-        # selected_terms=term_list.items,
-        term_set=term_set,
-        # term_list=term_list,
-        # next_url=next_url,
-        # prev_url=prev_url,
-        # page=page,
-        # pages=pages,
-        form=EmptyForm(),
-    )
-
-
-@term.route("/tag/add/<int:term_id>", methods=["GET", "POST"])
-@login_required
-def add_tag(term_id):
-    tag_form = AddTagForm()
-    term = Term.query.get_or_404(term_id)
-    concept_id = term.concept_id
-    tag = Tag.query.filter_by(value=tag_form.tag_list.data).first()
-    term.tags.append(tag)
-    term.save()
-    return redirect(url_for("term.display_term", concept_id=concept_id))
-
-
-@term.route("/tag/remove/<int:term_id>/<int:tag_id>", methods=["GET", "POST"])
-def remove_tag(term_id, tag_id):
-    term = Term.query.get_or_404(term_id)
-    tag = Tag.query.get_or_404(tag_id)
-    term.tags.remove(tag)
-    term.save()
-    return redirect(url_for("term.display_term", concept_id=term.concept_id))
 
 
 @term.route("track/<concept_id>", methods=["POST"])
