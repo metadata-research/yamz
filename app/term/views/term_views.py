@@ -110,25 +110,31 @@ def display_term_by_id(term_id):
     return redirect(url_for("term.display_term", concept_id=selected_term.concept_id))
 
 
-@term.route("/alternates/<term_string>")  # change concelpt id to ark
+@term.route("/alternates/<term_string>")  # change concept id to ark
 def show_alternate_terms(term_string):
     form = EmptyForm()
     include = request.args.get("include", "published")
+    portal_tag = session.get("portal_tag", None)
+    # Base query for terms with the specified term_string
+    query = Term.query.filter_by(term_string=term_string)
+    
+    # Filter by published status if "published" is included in the request args
     if "published" in include:
-        selected_terms = Term.query.filter_by(
-            term_string=term_string, status="published"
-        )
-    else:
-        selected_terms = Term.query.filter_by(term_string=term_string)
-    # selected_terms = published_terms.union(all_terms)
-
+        query = query.filter_by(status="published")
+    
+    # Further filter by portal_tag if provided
+    if portal_tag:
+        query = query.filter(Term.tags.any(value=portal_tag))
+    
+    selected_terms = query.all()
+    
     return render_template(
         "term/display_terms.jinja",
         selected_terms=selected_terms,
         form=form,
         tag_form=form,
         alternatives_for_string=term_string,
-        headline="Alternate Definitions " + "for " + term_string,
+        headline="Alternate Definitions for " + term_string,
     )
 
 

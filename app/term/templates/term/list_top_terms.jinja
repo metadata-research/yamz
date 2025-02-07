@@ -1,10 +1,9 @@
 {% extends './base.jinja' %}
 {% if sort_order == 'ascending' %}
-{% set sort_order = 'descending'  %}
+{% set sort_order = 'descending' %}
 {% elif sort_order== 'descending'%}
-{% set sort_order = 'ascending'  %}
+{% set sort_order = 'ascending' %}
 {% endif %}
-
 
 {% block title %}
 YAMZ Browse Terms - alphabetical
@@ -16,17 +15,61 @@ Browse terms - alphabetical
 
 {% block content %}
 <!-- {% include 'term/_subnav.jinja' %} -->
-
-{% for term in term_list  %}
+{{portal_tag}}
+{% for term in term_list %}
 <div class="row p-1">
     <div class="col">
-        <a href="{{ url_for('term.show_alternate_terms', term_string= term[0]) }}">{{ term[0] }}</a> ({{term[1]}})<br>
+        <a href="{{ url_for('term.show_alternate_terms', term_string= term[0], portal_tag=portal_tag) }}">{{
+            term[0]}}</a> ({{term[1]}})<br>
     </div>
 </div>
 {% endfor %}
 <div class="row py-2">
     <div class="col">
-        {{ macros.render_pagination(pager, request.url_rule.endpoint) }}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if pager.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('term.list_top_terms_alphabetical', page=pager.prev_num) }}"
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+                {% for page_num in pager.iter_pages() %}
+                {% if page_num %}
+                {% if page_num == pager.page %}
+                <li class="page-item active"><a class="page-link" href="#">{{ page_num }}</a></li>
+                {% else %}
+                <li class="page-item"><a class="page-link"
+                        href="{{ url_for('term.list_top_terms_alphabetical', page=page_num) }}">{{ page_num }}</a></li>
+                {% endif %}
+                {% else %}
+                <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if pager.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('term.list_top_terms_alphabetical', page=pager.next_num) }}"
+                        aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 </div>
 {% endblock content %}

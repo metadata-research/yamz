@@ -37,8 +37,6 @@ def list_alphabetical():
         pager=pager,
     )
 
-# @term.route("/list/alphabetical/<letter>")")
-
 
 @term.route("/list/alphabetical/top")
 def list_top_terms_alphabetical():
@@ -69,9 +67,6 @@ def list_top_terms_alphabetical():
     return render_template(
         "term/list_top_terms.jinja", term_list=term_list, pager=pager, tag_list=tag_list, portal_tag=session.get("portal_tag")
     )
-
-
-# @term.route("/list/alphabetical/<letter>")
 
 
 @term.route("/list/tag/<int:tag_id>")
