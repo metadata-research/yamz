@@ -36,15 +36,29 @@ Search Results for <i>{{ search_terms }}</i>
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
             <td width="70%">
-                {% if term.definition %}
-                {{ term.definition[0:200] | highlight_term_string(search_terms) }}
-                {% if term.definition|length > 200%}
-                <span class="collapse"
-                    id="collapseDiv{{count.value}}">{{term.definition[200:]|highlight_term_string(search_terms)}}</span>
+                {% if term.definition_html %}
+                {% if term.definition_html|length > 400 %}
+                {{ term.definition_html[0:400] | highlight_html_string(search_terms) | safe }}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition_html[400:] |
+                    highlight_html_string(search_terms) | safe }}</span>
                 <button class="btn btn-sm" type="button" data-bs-toggle="collapse"
                     data-bs-target="#collapseDiv{{count.value}}">
                     ...
                 </button>
+                {% else %}
+                {{ term.definition_html | highlight_html_string(search_terms) | safe }}
+                {% endif %}
+                {% elif term.definition %}
+                {% if term.definition|length > 200 %}
+                {{ term.definition[0:200] | process_markdown_links | highlight_term_string(search_terms) | safe }}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition[200:] | process_markdown_links
+                    | highlight_term_string(search_terms) | safe }}</span>
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseDiv{{count.value}}">
+                    ...
+                </button>
+                {% else %}
+                {{ term.definition | process_markdown_links | highlight_term_string(search_terms) | safe }}
                 {% endif %}
                 {% else %}
                 <em>No definition available</em>

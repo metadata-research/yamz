@@ -16,6 +16,10 @@ from flask import (
 )
 from flask_login import current_user, login_required
 from sqlalchemy import desc
+import re
+from markdown import markdown
+import bleach
+from bs4 import BeautifulSoup
 
 
 @term.before_request
@@ -80,9 +84,70 @@ def format_score(score):
 
 @term.app_template_filter("highlight_term_string")
 def highlight_term_string(definition, search_terms):
+    if definition is None:
+        return ""
     for term in search_terms.split(" "):
-        definition = definition.replace(term, "<b>" + term + "</b>")
+        if term.strip():
+            definition = definition.replace(term, "<b>" + term + "</b>")
     return definition
+
+
+@term.app_template_filter("process_markdown_links")
+def process_markdown_links(text):
+    """Convert markdown links to HTML links.
+    
+    This filter converts markdown links like [text](url) to HTML <a> tags.
+    """
+    if text is None:
+        return ""
+    
+    # Regular expression to find markdown links
+    link_pattern = r'\[(.*?)\]\((.*?)\)'
+    
+    # Replace markdown links with HTML links
+    html_text = re.sub(link_pattern, r'<a href="\2">\1</a>', text)
+    
+    return html_text
+
+
+@term.app_template_filter("highlight_html_string")
+def highlight_html_string(html_content, search_terms):
+    """Highlight search terms in HTML content without breaking HTML structure.
+    
+    This filter preserves HTML tags while highlighting search terms in the text content.
+    """
+    if html_content is None:
+        return ""
+    
+    # Parse the HTML content
+    soup = BeautifulSoup(html_content, 'html.parser')
+    
+    # Function to recursively process text nodes
+    def highlight_text_nodes(element):
+        if element.name is None:  # Text node
+            for term in search_terms.split(" "):
+                if term.strip():
+                    # Replace the term with bold version, but only in text nodes
+                    element.replace_with(
+                        BeautifulSoup(
+                            re.sub(
+                                r'(\b' + re.escape(term) + r'\b)', 
+                                r'<b>\1</b>', 
+                                str(element)
+                            ),
+                            'html.parser'
+                        )
+                    )
+        else:
+            # Process child elements
+            for child in list(element.children):
+                highlight_text_nodes(child)
+    
+    # Process the entire document
+    highlight_text_nodes(soup)
+    
+    # Return the modified HTML
+    return str(soup)
 
 
 @term.route("/ark:/99152/<concept_id>")
