@@ -281,6 +281,8 @@ Test for syntax errors.
 
 The YAMZ prototype is currently hosted at http://yamz.net
 
+Note: If you are installing your own instance of YAMZ, you should replace all references to "yamz.net" with your own domain name throughout this setup process.
+
 Make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
 
 Restart nginx.
