@@ -279,7 +279,7 @@ Test for syntax errors.
 
 `sudo nginx -t`
 
-The YAMZ prototype is currently hosted at http://yamz.link
+The YAMZ prototype is currently hosted at http://yamz.net
 
 Make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
 
