@@ -564,8 +564,43 @@ pg_restore -U postgres -d yamz yamz_backup.dump
 
 3. Restore to your development database:
    ```bash
+   # First, drop the existing database if it exists and create a new one
+   psql -U postgres -c "DROP DATABASE IF EXISTS yamz_dev;"
+   psql -U postgres -c "CREATE DATABASE yamz_dev;"
+   
+   # Then restore from the backup
    pg_restore -U postgres -d yamz_dev yamz_prod_backup.dump
    ```
+
+### Common Development Issues
+
+1. **Template Rendering Errors**: If you encounter "NoneType is not subscriptable" errors:
+   - Check Jinja2 templates for proper handling of None values
+   - Wrap operations on potentially None values in conditional checks
+   - Example fix for handling None definitions in templates:
+     ```jinja
+     {% if term.definition %}
+         {{ term.definition[0:200] }}
+     {% else %}
+         <em>No definition provided</em>
+     {% endif %}
+     ```
+
+2. **Configuration File Syntax**: Ensure proper syntax in config.py:
+   - Dictionary items should be separated by commas
+   - Example:
+     ```python
+     OAUTH_CREDENTIALS = {
+         "google": {
+             "id": "your-google-client-id",
+             "secret": "your-google-client-secret"
+         },
+         "orcid": {
+             "id": "your-orcid-client-id",
+             "secret": "your-orcid-client-secret"
+         }
+     }
+     ```
 
 ## Troubleshooting
 

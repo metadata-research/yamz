@@ -337,6 +337,105 @@ The development environment for YAMZ should be set up as follows:
 
 For more details on setting up a proper development environment, see the [SETUP.md](SETUP.md) file.
 
+## Contributing to YAMZ
+
+We welcome contributions to the YAMZ project! This section outlines the process for making changes and submitting them for review.
+
+### Setting Up Your Development Environment
+
+1. **Fork the Repository**
+   - Visit the [YAMZ GitHub repository](https://github.com/metadata-research/yamz)
+   - Click the "Fork" button in the top right to create your own copy
+
+2. **Clone Your Fork**
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/yamz.git
+   cd yamz
+   ```
+
+3. **Add the Upstream Repository**
+   ```bash
+   git remote add upstream https://github.com/metadata-research/yamz.git
+   ```
+
+4. **Create a Development Database**
+   ```bash
+   # Create a separate database for development
+   psql -U postgres -c "CREATE DATABASE yamz_dev;"
+   
+   # If you want to populate it with production data:
+   pg_restore -U postgres -d yamz_dev yamz_prd_backup.dump
+   ```
+
+5. **Configure Your Local Environment**
+   - Copy `_config.py` to `config.py` and set the database URI to point to `yamz_dev`
+   ```python
+   SQLALCHEMY_DATABASE_URI = "postgresql://postgres:your_password@localhost/yamz_dev"
+   ```
+
+### Making Changes
+
+1. **Create a Feature Branch**
+   - Always create a new branch for your changes based on the latest dev branch
+   ```bash
+   # Ensure your fork is up to date
+   git fetch upstream
+   git checkout dev
+   git merge upstream/dev
+   
+   # Create a new branch with a descriptive name
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make Your Changes**
+   - Write your code, fix bugs, or add new features
+   - Follow the existing code style and conventions
+   - Add or update tests as necessary
+
+3. **Test Your Changes**
+   - Run the application locally to test your changes
+   - Ensure all existing functionality still works
+   - Fix any issues that arise during testing
+
+4. **Commit Your Changes**
+   - Make focused, logical commits with clear messages
+   ```bash
+   git add .
+   git commit -m "Brief description of your changes"
+   ```
+
+### Submitting Your Changes
+
+1. **Push Your Branch**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+2. **Create a Pull Request**
+   - Go to your fork on GitHub
+   - Click "Pull Request" button
+   - Select your feature branch as the source
+   - Select the `dev` branch of the metadata-research/yamz repository as the target
+   - Provide a clear title and description of your changes
+   - Submit the pull request
+
+3. **Code Review Process**
+   - Maintainers will review your pull request
+   - Address any feedback or requested changes
+   - Once approved, your changes will be merged into the dev branch
+
+### Best Practices
+
+- **Keep Pull Requests Focused**: Each PR should address a single concern or feature
+- **Update Regularly**: Keep your fork and branches updated with the latest changes from upstream
+- **Document Your Code**: Add comments and update documentation as needed
+- **Follow Coding Standards**: Maintain consistent style with the existing codebase
+- **Test Thoroughly**: Ensure your changes don't break existing functionality
+
+### Common Issues and Solutions
+
+For help with common development issues, see the "Common Development Issues" section in [SETUP.md](SETUP.md).
+
 
 ## Reinstalling YAMZ Environment
 
