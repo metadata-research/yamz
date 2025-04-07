@@ -158,8 +158,8 @@ class TermModelCase(unittest.TestCase):
         self.assertEqual(term.term_string, "Test Term")
         self.assertEqual(term.definition, "This is a test definition.")
         self.assertEqual(term.owner_id, self.user.id)
-        self.assertEqual(term.status, "published")
-        self.assertEqual(term.term_class, "vernacular")
+        self.assertEqual(term.status, status.published)
+        self.assertEqual(term.term_class, term_class.vernacular)
         
     def test_term_voting(self):
         """Test term voting functionality with mocked vote methods"""
@@ -205,7 +205,7 @@ class TermModelCase(unittest.TestCase):
         term.votes = [vote1, vote2]
         
         # Test vote count
-        self.assertEqual(len(term.votes), 2)
+        self.assertEqual(term.votes.count(), 2)
 
     def test_term_tags(self):
         """Test adding tags to terms"""

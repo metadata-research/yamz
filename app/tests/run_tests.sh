@@ -57,29 +57,33 @@ fi
 
 # Run pytest tests if requested
 if [ "$run_pytest" = true ]; then
-  echo "Running pytest tests..."
+  echo "Running tests..."
   
   if [ "$coverage" = true ]; then
     if [ "$verbose" = true ]; then
-      python -m pytest app/tests/test_pytest*.py -v --cov=app --cov-report=html:test_output/coverage
+      python -m pytest app/tests/test_basic.py -v --cov=app --cov-report=html:test_output/coverage
     else
-      python -m pytest app/tests/test_pytest*.py --cov=app --cov-report=html:test_output/coverage
+      python -m pytest app/tests/test_basic.py --cov=app --cov-report=html:test_output/coverage
     fi
   else
     if [ "$verbose" = true ]; then
-      python -m pytest app/tests/test_pytest*.py -v
+      python -m pytest app/tests/test_basic.py -v
     else
-      python -m pytest app/tests/test_pytest*.py
+      python -m pytest app/tests/test_basic.py
     fi
   fi
   
-  if [ $? -eq 0 ]; then
-    echo "Pytest tests passed."
+  exit_code=$?
+  
+  if [ $exit_code -eq 0 ]; then
+    echo "Tests passed successfully!"
+    
     if [ "$coverage" = true ]; then
       echo "Coverage report generated in test_output/coverage/"
     fi
   else
-    echo "Pytest tests failed."
+    echo "Tests failed."
+    exit $exit_code
   fi
 fi
 

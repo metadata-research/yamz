@@ -1,7 +1,6 @@
 import pytest
 from flask import url_for
 import unittest.mock
-from app.tests.test_models import TestTerm
 
 
 def test_home_page(client):

@@ -1,97 +1,55 @@
-# Yamz Testing Guide
+# YAMZ Testing Documentation
 
-This directory contains tests for the Yamz application. There are several different testing approaches implemented here.
-
-## Testing Approaches
-
-### 1. Basic Tests (`test_basic.py`)
-
-The simplest tests focus on direct assertions without complex database interactions. They use:
-
-- Simple model instantiation for testing defaults and attributes
-- Mocking to isolate components and avoid actual database access
-- Patching Flask's render_template for testing routes
-
-These tests are fastest and most reliable, as they don't depend on complex setup or database state.
-
-### 2. Unittest Tests (`tests.py`)
-
-These tests use Python's unittest framework with more complex database interactions, using:
-
-- In-memory SQLite database for tests
-- Custom SQLite-compatible model definitions 
-- Temporary database that gets created and destroyed for each test suite
-
-### 3. Pytest Tests (`test_pytest_*.py`)
-
-These tests use Pytest for a more modern testing approach with:
-
-- Fixtures for test setup and teardown
-- Parametrized tests for testing many cases at once
-- Better error reporting and debugging
-
-## Running Tests
-
-The `run_tests.sh` script provides a convenient way to run tests with various options:
-
-```bash
-# Run all tests
-./app/tests/run_tests.sh
-
-# Run only unit tests
-./app/tests/run_tests.sh -u
-
-# Run only pytest tests
-./app/tests/run_tests.sh -p
-
-# Run tests with verbose output
-./app/tests/run_tests.sh -v
-
-# Run tests with coverage report
-./app/tests/run_tests.sh -c
-```
+This directory contains tests for the YAMZ application. The tests are designed to work with SQLite, making them easy to run in any environment without needing PostgreSQL.
 
 ## Testing Strategy
 
-### When to use each approach:
+Our testing approach focuses on validating core functionality with basic tests that:
 
-- **Basic tests**: For simple validation of models, functions, and routes
-- **Unittest tests**: For testing database interactions and relationships
-- **Pytest tests**: For more complex test cases with parameterization
+1. Confirm essential pages load correctly
+2. Verify term creation and retrieval works
+3. Test browsing capabilities
+4. Validate basic search functionality
 
-### Testing Database Models
+## Test Files
 
-When testing models with PostgreSQL-specific features:
+- `test_basic.py` - Core functionality tests that work with SQLite
+- `conftest.py` - Test fixtures and database setup/teardown logic
 
-1. Create SQLite-compatible model classes for testing
-2. Use SQLite-only features in tests
-3. Mock complex database interactions where possible
+## Running the Tests
 
-### Common Challenges
+From the project root directory:
 
-#### PostgreSQL-specific Features
+```bash
+# Run all tests with default output
+./app/tests/run_tests.sh -p
 
-The application uses PostgreSQL-specific features like TSVECTOR that don't work in SQLite. For testing:
+# Run tests with verbose output
+./app/tests/run_tests.sh -p -v
 
-- Use string replacements via monkey patching
-- Skip text search tests in SQLite environments
-- Use more basic queries for search-related tests
+# Run tests with coverage reporting
+./app/tests/run_tests.sh -p -c
+```
 
-#### Relationships and Foreign Keys
+## Understanding the Tests
 
-Test relationships carefully:
+### Database Compatibility
 
-- Ensure models have proper foreign key constraints defined
-- Use explicit primaryjoin and secondaryjoin when needed
-- For complex relationships, consider using mocks instead of real database objects
+The tests use SQLite instead of PostgreSQL for simplicity. The main compatibility challenge is that PostgreSQL uses TSVECTOR for full-text search, which SQLite doesn't support. The `conftest.py` file contains patches that allow the Term model to work with SQLite during testing.
 
-## Writing New Tests
+### Session Handling
+
+The tests carefully manage SQLAlchemy sessions to prevent "detached instance" errors. Each test closes and reopens sessions as needed to ensure test isolation.
+
+### Enum Handling
+
+The app uses PostgreSQL enums, which behave differently in SQLite. Our tests work around this by comparing string representations rather than direct equality.
+
+## Adding New Tests
 
 When adding new tests:
 
-1. Start with basic model/function tests
-2. Add route tests with mocked dependencies
-3. Add integration tests for critical features
-4. Consider the trade-offs between test complexity and coverage
-
-Remember: Good tests are readable, fast, and reliable. Prefer simpler tests that run quickly and consistently over complex tests that may be brittle.
+1. Add them to `test_basic.py` to maintain compatibility with SQLite
+2. Avoid direct dependencies on PostgreSQL-specific features like TSVECTOR
+3. Use string comparisons for enums (`str(term.status)` instead of direct equality)
+4. Be mindful of session handling to prevent detached instance errors
