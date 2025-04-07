@@ -21,14 +21,17 @@ Our testing approach focuses on validating core functionality with basic tests t
 From the project root directory:
 
 ```bash
-# Run all tests with default output
-./app/tests/run_tests.sh -p
+# Run tests with default output
+./app/tests/run_tests.sh
 
 # Run tests with verbose output
-./app/tests/run_tests.sh -p -v
+./app/tests/run_tests.sh -v
 
 # Run tests with coverage reporting
-./app/tests/run_tests.sh -p -c
+./app/tests/run_tests.sh -c
+
+# Install dependencies and run tests
+./app/tests/run_tests.sh -i
 ```
 
 ## Understanding the Tests

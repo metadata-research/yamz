@@ -2,20 +2,17 @@
 
 # Default values
 install_deps=false
-run_unittest=true
-run_pytest=true
+run_tests=true
 coverage=false
 verbose=false
 
 # Parse command-line options
-while getopts "iupcv" opt; do
+while getopts "icv" opt; do
   case $opt in
     i) install_deps=true ;;
-    u) run_unittest=true; run_pytest=false ;;
-    p) run_pytest=true; run_unittest=false ;;
     c) coverage=true ;;
     v) verbose=true ;;
-    *) echo "Usage: $0 [-i] [-u] [-p] [-c] [-v]"; exit 1 ;;
+    *) echo "Usage: $0 [-i] [-c] [-v]"; exit 1 ;;
   esac
 done
 
@@ -39,24 +36,8 @@ export SQLALCHEMY_DATABASE_URI=sqlite:///:memory:
 # Create test output directory
 mkdir -p test_output
 
-# Run unittest tests if requested
-if [ "$run_unittest" = true ]; then
-  echo "Running unittest tests..."
-  if [ "$verbose" = true ]; then
-    python -m unittest discover -s app/tests -p "tests.py" -v
-  else
-    python -m unittest discover -s app/tests -p "tests.py"
-  fi
-  
-  if [ $? -eq 0 ]; then
-    echo "Unittest tests passed."
-  else
-    echo "Unittest tests failed."
-  fi
-fi
-
-# Run pytest tests if requested
-if [ "$run_pytest" = true ]; then
+# Run tests
+if [ "$run_tests" = true ]; then
   echo "Running tests..."
   
   if [ "$coverage" = true ]; then
