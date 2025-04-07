@@ -335,6 +335,28 @@ The development environment for YAMZ should be set up as follows:
    - Create a separate service configuration file (e.g., `yamz_dev.service`)
    - Point the database URI to your development database
 
+### Database Environments
+
+YAMZ uses two separate databases to maintain isolation between development and production environments:
+
+#### Production Database (`yamz` or `yamz_prd`)
+- Contains the live, publicly accessible data
+- Should only be modified through the production application
+- Used by the main application instance at yamz.link
+- Any changes directly affect end users
+- Backed up regularly to prevent data loss
+
+#### Development Database (`yamz_dev`)
+- Used for testing new features and changes without affecting production data
+- Can be reset or modified without impacting end users
+- Used by the development instance at yamz-dev.yamz.link
+- Can be periodically refreshed from a production backup to stay current
+- Ideal for running migrations and schema changes before applying to production
+
+When working on the application, always ensure your config.py is pointing to the appropriate database for your current task. For local development and testing, using the development database or an entirely separate local database is strongly recommended.
+
+For testing that doesn't require a full PostgreSQL database, the application includes a SQLite-based test suite that can be run without any additional setup.
+
 For more details on setting up a proper development environment, see the [SETUP.md](SETUP.md) file.
 
 ## Contributing to YAMZ
