@@ -256,7 +256,7 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
 
     server {
         listen 80;
-        server_name yamz.link www.yamz.link;
+        server_name yamz.net www.yamz.net;
         location / {
             include uwsgi_params;
             uwsgi_pass unix:/home/your_username/yamz/yamz.sock;  # Replace with your actual username path
@@ -293,7 +293,7 @@ You can do this anyway you like, but currently it is with Certbot and its Nginx 
 
 The Nginx plugin will take configure Nginx and reload the config when necessary. To use it
 
-`sudo certbot --nginx -d yamz.link -d www.yamz.link`
+`sudo certbot --nginx -d yamz.net -d www.yamz.net`
 
 Make sure there is a generic type a record and one for www for your domain.
 
