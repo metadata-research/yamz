@@ -26,28 +26,34 @@ You can download the backup file from the server using:
 
 1. Create a new database on your local PostgreSQL server:
    ```
-   createdb yamz_prd
+   createdb -U postgres -h localhost yamz_prd
    ```
 
 2. Restore the database from the dump file:
    ```
-   pg_restore -d yamz_prd -h localhost -U your_postgres_username -W -v yamz_prd_backup.dump
+   pg_restore -d yamz_prd -h localhost -U postgres -v yamz_prd_backup.dump
    ```
    
    The command will prompt for your password.
 
 3. Verify the restore was successful:
    ```
-   psql -h localhost -U your_postgres_username -d yamz_prd -c "SELECT count(*) FROM users;"
+   psql -U postgres -h localhost -d yamz_prd -c "SELECT count(*) FROM users;"
+   psql -U postgres -h localhost -d yamz_prd -c "SELECT count(*) FROM terms;"
    ```
 
 ### Update Local Configuration
 
-Update your local application configuration to point to the restored database:
+The application configuration (_config.py) should already be set to use the restored database:
 
 ```python
-SQLALCHEMY_DATABASE_URI = "postgresql://your_postgres_username:your_password@localhost/yamz_prd"
+SQLALCHEMY_DATABASE_URI = (
+    os.environ.get("SQL_ALCHEMY_DATABASE_URI")
+    or "postgresql://postgres:PASS@localhost/yamz_prd"
+)
 ```
+
+Replace "PASS" with your actual PostgreSQL password or set the SQL_ALCHEMY_DATABASE_URI environment variable.
 
 ## Troubleshooting
 
