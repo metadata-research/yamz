@@ -28,3 +28,4 @@ git-sim_media
 plans
 .gitignore
 CLAUDE.md
+.coverage
