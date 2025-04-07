@@ -181,6 +181,8 @@ This guide provides detailed instructions for setting up YAMZ on different opera
    postgres=# \q
    ```
 
+   > **Important Note**: The instructions above create a SUPERUSER role named "postgres", which matches the default username in the sample _config.py file. If you choose to use a different username, make sure to update the `SQLALCHEMY_DATABASE_URI` in your config.py file accordingly. Also note that the sample config uses a database named "yamz_prd", while the instructions below create a database named "yamz". Be consistent in your naming or update the configuration as needed.
+
 3. **Verify Service is Running**:
    ```bash
    brew services list
@@ -250,6 +252,8 @@ pip install -r requirements.txt
        # Rest of the configuration...
    ```
 
+   > **Important**: The sample _config.py file uses "yamz_prd" as the database name, but the example above uses "yamz". Make sure that the database name in your configuration file matches the name of the database you create in the next section. Consistency between your database configuration and the actual database name is crucial for the application to connect properly.
+
 ## Database Configuration
 
 ### Creating the Database
@@ -283,6 +287,8 @@ psql postgres -U postgres
 postgres=# CREATE DATABASE yamz WITH OWNER postgres;
 postgres=# \q
 ```
+
+> **Note**: If you're using the sample _config.py file without modifications, you may want to name your database "yamz_prd" instead of "yamz" to match the default connection string, or update the database name in your config.py file accordingly.
 
 ### Running Migrations
 
