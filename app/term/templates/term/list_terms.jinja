@@ -36,12 +36,16 @@ Browse terms - {{ sort_type }}
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
             <td width="70%">
-                {{ term.definition[0:200] }}
-                {% if term.definition|length > 200%}
-                <span class="collapse" id="collapseDiv{{count.value}}">{{term.definition[200:]}}</span>
-                <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
-                ...
-                </button>
+                {% if term.definition %}
+                    {{ term.definition[0:200] }}
+                    {% if term.definition|length > 200 %}
+                        <span class="collapse" id="collapseDiv{{count.value}}">{{term.definition[200:]}}</span>
+                        <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
+                        ...
+                        </button>
+                    {% endif %}
+                {% else %}
+                    <em>No definition provided</em>
                 {% endif %}
             </td>
             <td>

@@ -3,11 +3,13 @@
 
 This is the README for the YAMZ vocabulary builder for data and metadata.
 It includes instructions for deploying on a local machine for testing and on
-a Linux-based environment for a scalable production version (coming soon). 
+a Linux-based environment for a scalable production version.
 
-The current application requires the use of a postgres database to support full-text search. 
+The application requires PostgreSQL to support full-text search. 
 
-The following is an example configuration. You can substitute your own db names and users.
+The following is an example configuration. You can substitute your own database names and users.
+
+For a comprehensive setup guide covering Windows, Ubuntu, and macOS, please refer to [SETUP.md](SETUP.md).
 
 ## Install
 
@@ -86,8 +88,6 @@ On macOS:
 
     psql -U postgres -c 'create database yamz with owner postgres'
 
-4. Placeholder
-
 
 5. Clone the repository
 
@@ -138,6 +138,8 @@ From the `config.py` file:
         or "postgresql://contributor:PASS@localhost/yamz"
     )
 
+Note: The `contributor` user mentioned in the database URI is a custom PostgreSQL database user you'll need to create. You can replace it with any username you prefer, but make sure to create this user in PostgreSQL with appropriate permissions.
+
 11. Set the `FLASK_APP` variable:
 
     `export FLASK_APP=yamz.py`
@@ -173,8 +175,7 @@ ORCID authentication similarly will only work if the URL is pre-authorized.
 
 ## Import Legacy Entries
 
-    It is no longer necessary to run the scripts to import legacy entries. Please follow the instructions
-    for backups below to import the entries into a new instance of yamz. 
+To import existing data to a new instance of YAMZ, please follow the instructions in the [Database Backup and Restoration](#backups) section below. This is the recommended approach rather than running individual import scripts.
 
 ## OAuth Credentials and appkey
 
@@ -186,18 +187,21 @@ configuration, supply these answers:
 
     Application type . . . . . . . . . . Web application
 
-    Authorized javascript origins  . . . https://localhost:5000 # note that the Credential API will not permit publishing the app with non-https redirects so it would be necessary to create a certificate for the machine running a dev instance of NGINX in order to test the Google authentication component locally
+    Authorized javascript origins  . . . http://localhost:5000
+                                         http://localhost:5001
                                          https://localhost
-                                         https://domain.name
+                                         https://yourdomain.com
 
-    Authorized redirect URI  . . . . . . https://localhost:5000/g_authorized
+    Authorized redirect URI  . . . . . . http://localhost:5000/g_authorized
+                                         http://localhost:5001/g_authorized
                                          https://localhost/g_authorized
-                                         https://domain.name/g_authorized
+                                         https://yourdomain.com/g_authorized
 
-The credentials minus the port is for when the proxy web server is set up, you are no longer using the flask 
-development server, and have set up https on a named server. You can also serve the application locally using 
-HTTPS by invoking uwsgi and the ini file from within the yamz directory `uwsgi yamz_local.ini` but you will need 
-to generate an ssl certificate for the localhost and add it to your browser or OS store.
+Note: For production deployments, you must use HTTPS URLs. For local development, HTTP works but requires specifying the port.
+
+The credentials without the port are for when a proxy web server is set up, you are no longer using the Flask 
+development server, and have set up HTTPS on a named server. You can also serve the application locally using 
+HTTPS by invoking uWSGI with the appropriate ini file from within the yamz directory: `uwsgi yamz_local.ini`. This method requires generating an SSL certificate for localhost and adding it to your browser or OS certificate store.
 
 ## Deploying to Production
 
@@ -215,17 +219,16 @@ Create a `yamz.ini` file in the yamz directory. There is a template in the repos
     
     die-on-term = true
 
-Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _usr1_ is a stand-in for the username 
-that is associated with the running instance of your web server.
+Create a unit file `yamz.service` within the `/etc/systemd/system` directory. _usr1_ is a placeholder - you should replace it with an actual system user that you've created to run the web server application.
   
     [Unit]
     Description=uWSGI instance to serve yamz
     After=network.target
     
     [Service]
-    User=usr1 
+    User=your_username  # Replace with an actual system user you've created
     Group=www-data
-    WorkingDirectory=/home/usr1/yamz
+    WorkingDirectory=/home/your_username/yamz  # Replace with actual user's home directory
     ExecStart=uwsgi --ini yamz.ini
 
     [Install]
@@ -253,10 +256,10 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
 
     server {
         listen 80;
-        server_name yamz.link www.yamz.link;
+        server_name yamz.net www.yamz.net;
         location / {
             include uwsgi_params;
-            uwsgi_pass unix:/home/usr1/yamz/yamz.sock;
+            uwsgi_pass unix:/home/your_username/yamz/yamz.sock;  # Replace with your actual username path
         }
     }
 
@@ -276,7 +279,9 @@ Test for syntax errors.
 
 `sudo nginx -t`
 
-The YAMZ prototype is currently hosted at http://yamz.link
+The YAMZ prototype is currently hosted at http://yamz.net
+
+Note: If you are installing your own instance of YAMZ, you should replace all references to "yamz.net" with your own domain name throughout this setup process.
 
 Make sure the user in the /etc/nginx/nginx.conf file is the user you want to run the project under
 
@@ -290,7 +295,7 @@ You can do this anyway you like, but currently it is with Certbot and its Nginx 
 
 The Nginx plugin will take configure Nginx and reload the config when necessary. To use it
 
-`sudo certbot --nginx -d yamz.link -d www.yamz.link`
+`sudo certbot --nginx -d yamz.net -d www.yamz.net`
 
 Make sure there is a generic type a record and one for www for your domain.
 
@@ -315,27 +320,193 @@ To update the yamz_dev database from current production database:
     postgres=# CREATE DATABASE yamz_dev WITH TEMPLATE yamz
 
 ## Development Environment
-The dev environment for the current version of YAMZ is a direct copy of the production environment, currently located on the same server but in a different directory. (~/yamz_dev). There are several differences. 
+The development environment for YAMZ should be set up as follows:
 
-The UNIX socket file must have a different name than yamz.sock in the yamz.ini file. Currently, it is called yamz_dev.sock
+1. Use the `dev` branch for development work
+2. Set up a separate database (e.g., `yamz_dev`) to avoid affecting production data
+3. For local development, use the Flask development server with:
+   ```bash
+   export FLASK_APP=yamz.py
+   export FLASK_ENV=development
+   export FLASK_RUN_PORT=5001
+   flask run
+   ```
 
-The `SQLALCHEMY_DATABASE_URI` points to a copy of the yamz database called yamz_dev which is not in syc with the main database. To sync it you can restore a backup copy with the yamz_dev name as described in 'Backups' above.
+4. When testing with uWSGI:
+   - Use a different socket file name (e.g., `yamz_dev.sock` instead of `yamz.sock`)
+   - Create a separate service configuration file (e.g., `yamz_dev.service`)
+   - Point the database URI to your development database
 
-There is a UNIX service called yamz_dev running that starts the uwsgi workers for the dev site. It is a copy of the yamz.service, just with a different name.
+### Database Environments
 
-The same git branch (deploy) exists in this dev directory so changes here will come as a pull request to 'deployment.' This is a shortcut that should be addressed.
+YAMZ uses two separate databases to maintain isolation between development and production environments:
+
+#### Production Database (`yamz` or `yamz_prd`)
+- Contains the live, publicly accessible data
+- Should only be modified through the production application
+- Used by the main application instance at yamz.link
+- Any changes directly affect end users
+- Backed up regularly to prevent data loss
+
+#### Development Database (`yamz_dev`)
+- Used for testing new features and changes without affecting production data
+- Can be reset or modified without impacting end users
+- Used by the development instance at yamz-dev.yamz.link
+- Can be periodically refreshed from a production backup to stay current
+- Ideal for running migrations and schema changes before applying to production
+
+When working on the application, always ensure your config.py is pointing to the appropriate database for your current task. For local development and testing, using the development database or an entirely separate local database is strongly recommended.
+
+For testing that doesn't require a full PostgreSQL database, the application includes a SQLite-based test suite that can be run without any additional setup.
+
+For more details on setting up a proper development environment, see the [SETUP.md](SETUP.md) file.
+
+## Contributing to YAMZ
+
+We welcome contributions to the YAMZ project! This section outlines the process for making changes and submitting them for review.
+
+### Setting Up Your Development Environment
+
+1. **Fork the Repository**
+   - Visit the [YAMZ GitHub repository](https://github.com/metadata-research/yamz)
+   - Click the "Fork" button in the top right to create your own copy
+
+2. **Clone Your Fork**
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/yamz.git
+   cd yamz
+   ```
+
+3. **Add the Upstream Repository**
+   ```bash
+   git remote add upstream https://github.com/metadata-research/yamz.git
+   ```
+
+4. **Create a Development Database**
+   ```bash
+   # Create a separate database for development
+   psql -U postgres -c "CREATE DATABASE yamz_dev;"
+   
+   # If you want to populate it with production data:
+   pg_restore -U postgres -d yamz_dev yamz_prd_backup.dump
+   ```
+
+5. **Configure Your Local Environment**
+   - Copy `_config.py` to `config.py` and set the database URI to point to `yamz_dev`
+   ```python
+   SQLALCHEMY_DATABASE_URI = "postgresql://postgres:your_password@localhost/yamz_dev"
+   ```
+
+### Making Changes
+
+1. **Create a Feature Branch**
+   - Always create a new branch for your changes based on the latest dev branch
+   ```bash
+   # Ensure your fork is up to date
+   git fetch upstream
+   git checkout dev
+   git merge upstream/dev
+   
+   # Create a new branch with a descriptive name
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Make Your Changes**
+   - Write your code, fix bugs, or add new features
+   - Follow the existing code style and conventions
+   - Add or update tests as necessary
+
+3. **Test Your Changes**
+   - Run the application locally to test your changes
+   - Ensure all existing functionality still works
+   - Fix any issues that arise during testing
+
+4. **Commit Your Changes**
+   - Make focused, logical commits with clear messages
+   ```bash
+   git add .
+   git commit -m "Brief description of your changes"
+   ```
+
+### Submitting Your Changes
+
+1. **Push Your Branch**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+2. **Create a Pull Request**
+   - Go to your fork on GitHub
+   - Click "Pull Request" button
+   - Select your feature branch as the source
+   - Select the `dev` branch of the metadata-research/yamz repository as the target
+   - Provide a clear title and description of your changes
+   - Submit the pull request
+
+3. **Code Review Process**
+   - Maintainers will review your pull request
+   - Address any feedback or requested changes
+   - Once approved, your changes will be merged into the dev branch
+
+### Best Practices
+
+- **Keep Pull Requests Focused**: Each PR should address a single concern or feature
+- **Update Regularly**: Keep your fork and branches updated with the latest changes from upstream
+- **Document Your Code**: Add comments and update documentation as needed
+- **Follow Coding Standards**: Maintain consistent style with the existing codebase
+- **Test Thoroughly**: Ensure your changes don't break existing functionality
+
+### Common Issues and Solutions
+
+For help with common development issues, see the "Common Development Issues" section in [SETUP.md](SETUP.md).
 
 
 ## Reinstalling YAMZ Environment
-1. Make a copy of the config file. You will need it once you pull the repository from GitHub.
-1. If you plan on restoring the database from the same computer, execute the command to save the db to a file.
-1. `sudo pg_dump -C -Fp -f yamz.sql -U postgres yamz`
-   1. This will create a file, yamz.sql. Save this or obtain the file from the production environment.
-1. Run psql as the postgres user `sudo -u postgres psql`
-1. Drop the yamz database `DROP DATABASE YAMZ`
-1. Restore from the backup `psql -U postgres -f yamz.sql`
-1. In an empty directory, clone the deployment repository.
-1. Copy the config file into the top-level directory.
-1. Start YAMZ via `flask run`
-1. If you want to use migrations, first delete the alembic version from the restored db.
-1. `flask db init`
+
+1. Backup your configuration and database:
+   ```bash
+   # Save your config.py
+   cp config.py ~/config.py.backup
+   
+   # Backup your database (Ubuntu example)
+   sudo -u postgres pg_dump -C -Fp -f yamz.sql yamz
+   ```
+
+2. Drop and recreate the database:
+   ```bash
+   sudo -u postgres psql
+   postgres=# DROP DATABASE yamz;
+   postgres=# CREATE DATABASE yamz;
+   postgres=# \q
+   ```
+
+3. Set up a fresh installation:
+   ```bash
+   # Clone the repository
+   git clone https://github.com/metadata-research/yamz.git
+   cd yamz
+   git checkout dev
+   
+   # Restore your config file
+   cp ~/config.py.backup config.py
+   
+   # Create and activate virtual environment
+   python3 -m venv env
+   source env/bin/activate
+   pip install -r requirements.txt
+   
+   # Restore your database
+   sudo -u postgres psql -f yamz.sql
+   ```
+
+4. If you want to use migrations with a restored database:
+   ```bash
+   # Clear existing alembic version
+   sudo -u postgres psql yamz -c "DELETE FROM alembic_version;"
+   
+   # Initialize migrations
+   export FLASK_APP=yamz.py
+   flask db init
+   ```
+
+For more detailed restoration instructions, refer to the [SETUP.md](SETUP.md) file.
