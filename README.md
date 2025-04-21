@@ -116,7 +116,7 @@ On macOS, you may have to first install python3 and virtualenv (https://gist.git
     `pip install -r requirements.txt`
 
 
-10. Modify the `\_config.py` file in the root directory with the appropriate credentials and change the name to `config.py` (remove the leading underscore). `config.py` is included in `.gitignore` so the modified file should not be pushed to the repository.
+10. Copy the `\_config.py` file in the root directory to `config.py` (remove the leading underscore). Modify the new file with the appropriate credentials. `config.py` is included in `.gitignore` so the modified file should not be pushed to the repository.
 
 Make sure to specify both orcid and google credentials and the username and password of the database you created. You can get these credentials here for [google](https://console.cloud.google.com/apis/credentials) and from ORCID under the developer tab in your profile. [Sandbox](https://console.cloud.google.com/apis/credentials)
 

@@ -1,12 +1,16 @@
 from flask import request
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, TextAreaField, SelectField, BooleanField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, InputRequired
 from flask_pagedown.fields import PageDownField
 
 
 class CreateTermForm(FlaskForm):
-    term_string = StringField("Term string", validators=[DataRequired()])
+    term_string = StringField(
+        "Term string",
+        validators=[InputRequired()],
+        render_kw={"pattern": r"\S.*", "title": "Field cannot be empty, start with whitespace, or contain only whitespace."}
+    )    
     definition = PageDownField("Definition")
     examples = PageDownField("Examples")
     draft =  BooleanField("Draft", default=True)
