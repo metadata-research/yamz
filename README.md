@@ -66,6 +66,8 @@ Restart the postgres server
 
 `sudo service postgresql restart`
 
+(macOS) `brew services restart postgresql`
+
 Finally, log back in to postgres to create the database,
 
 Add a db password for the user 'postgres'. 
@@ -73,21 +75,29 @@ Add a db password for the user 'postgres'.
     `sudo -u postgres psql template1`
     `postgres=# alter user postgres with encrypted password 'PASS';`
 
+The database name is yamz by default. In the shared yamz dev and prd
+servers the name is yamz_dev and yamz_prd, respectively.
+
 `sudo -u postgres psql`
 
 `postgres=# create database yamz with owner postgres;`
 
 `postgres-# \q`
 
-On macOS:
+On macOS, usually one time:
 
     createuser -d postgres
     psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
 
-On macOS:
+On macOS, every so often you need to recreate the database:
 
     psql -U postgres -c 'create database yamz with owner postgres'
 
+On macOS, regularly need to restart server:
+
+    brew services restart postgresql
+
+4. Placeholder
 
 5. Clone the repository
 
@@ -104,6 +114,8 @@ On macOS:
 On macOS, you may have to first install python3 and virtualenv (https://gist.github.com/pandafulmanda/730a9355e088a9970b18275cb9eadef3)
 
     brew install python3
+    # failing on mac, use python3 -m venv env
+    #  brew install pipx ?
     pip3 install virtualenv
     virtualenv env
 
@@ -152,6 +164,8 @@ On subsequent runs:
 
     flask db migrate
     flask db upgrade     
+
+XXX how does a new user set up some data to demo the system with?
 
 13. Run the app
 
@@ -258,6 +272,7 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
         listen 80;
         server_name yamz.net www.yamz.net;
         location / {
+w:510-642-3279
             include uwsgi_params;
             uwsgi_pass unix:/home/your_username/yamz/yamz.sock;  # Replace with your actual username path
         }
@@ -302,17 +317,23 @@ Make sure there is a generic type a record and one for www for your domain.
 Certbot will ask you whether you wish to redirect all http traffic to https (removing http access).
 
 ## Backups
+
 Backup on production
 `pg_dump -C -Fp -f yamz.sql -U postgres yamz`
 
 This will create a yamz.sql file that is portable.
 
-For example, to restore from a given daily backup:
+For example, to restore on your laptop from a given daily backup:
 
     service yamz stop
     dropdb -U postgres yamz
     psql -U postgres -f yamz_2023-05-11.sql
 
+    dropdb -U postgres yamz_prd
+    psql -U postgres -f yamz_2025-04-02.sql
+
+The database name is yamz by default. In the shared yamz dev and prd
+servers the name is yamz_dev and yamz_prd, respectively.
 To update the yamz_dev database from current production database:
 
     service yamz stop

@@ -5,7 +5,7 @@ class Config(object):
     # app
     SECRET_KEY = os.environ.get("SECRET_KEY") or "YOUR_SECRET_KEY"
 
-    # database
+    # database -- default database name is "yamz" (not yamz_prd, not yamz_dev)
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("SQL_ALCHEMY_DATABASE_URI")
         or "postgresql://postgres:PASS@localhost/yamz_prd"
