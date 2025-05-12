@@ -11,11 +11,12 @@
             {% endif %}
             {% if request.url_rule.endpoint == "term.display_term" %}
             {% if current_user.is_administrator or current_user == selected_term.contributor %}
-            <a href="{{ url_for('term.remove_tag', term_id=selected_term.id, tag_id=tag.id) }}" role="button"
-                class="btn btn-close btn-sm" onclick="confirm('remove tag {{tag.value}}?')"></a>
+            <a href="{{ url_for('term.remove_tag', term_id=selected_term.id, tag_id=tag.id) }}" 
+                class="btn btn-close btn-sm" 
+                onclick="return confirm('remove tag {{tag.value}}?')"></a>
             {% endif %}
             {% endif %}
-            {% endfor %}
+         {% endfor %}
         </div>
     </div>
 </div>
