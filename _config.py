@@ -8,7 +8,7 @@ class Config(object):
     # database
     SQLALCHEMY_DATABASE_URI = (
         os.environ.get("SQL_ALCHEMY_DATABASE_URI")
-        or "postgresql://postgres:PASS@localhost/yamz"
+        or "postgresql://postgres:PASS@localhost/yamz_prd"
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False

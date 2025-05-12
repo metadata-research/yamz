@@ -1,0 +1,28 @@
+name: Test Term Availability
+
+on:
+  workflow_dispatch: # Allow manual triggering of the workflow with inputs
+    inputs:
+      term_url:
+        description: "The term URL to check for availability"
+        required: true
+        default: "https://yamz.net/term/ark/h8072"
+
+jobs:
+  test_term:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Test Term Accessibility
+        run: |
+          echo "Testing URL: ${{ github.event.inputs.term_url }}"
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "${{ github.event.inputs.term_url }}")
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "✅ Term is reachable: ${{ github.event.inputs.term_url }}"
+          else
+            echo "❌ Term is NOT reachable. HTTP Status: $HTTP_STATUS"
+            exit 1
+          fi

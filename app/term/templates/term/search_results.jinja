@@ -1,9 +1,9 @@
 {% extends './base.jinja' %}
 
 {% if sort_order == 'ascending' %}
-{% set sort_order = 'descending'  %}
+{% set sort_order = 'descending' %}
 {% elif sort_order== 'descending'%}
-{% set sort_order = 'ascending'  %}
+{% set sort_order = 'ascending' %}
 {% endif %}
 
 
@@ -26,22 +26,42 @@ Search Results for <i>{{ search_terms }}</i>
         <tr>
     </thead>
     <!--<a href="{{ url_for('io.export_term_results', search_terms=search_terms) }}">[Export Terms]</a>-->
-    
+
     <tbody>
-    {% set count = namespace(value=0) %}
-    {% for term in term_list %}         
+        {% set count = namespace(value=0) %}
+        {% for term in term_list %}
         {% set count.value = count.value + 1 %}
         <tr>
             <td>
                 <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
             </td>
-            <td width ="70%">
-                {{ term.definition[0:200] | highlight_term_string(search_terms) }}
-                {% if term.definition|length > 200%}
-                <span class="collapse" id="collapseDiv{{count.value}}">{{term.definition[200:]|highlight_term_string(search_terms)}}</span>
-                <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDiv{{count.value}}">
-                ...
+            <td width="70%">
+                {% if term.definition_html %}
+                {% if term.definition_html|length > 400 %}
+                {{ term.definition_html[0:400] | highlight_html_string(search_terms) | safe }}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition_html[400:] |
+                    highlight_html_string(search_terms) | safe }}</span>
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseDiv{{count.value}}">
+                    ...
                 </button>
+                {% else %}
+                {{ term.definition_html | highlight_html_string(search_terms) | safe }}
+                {% endif %}
+                {% elif term.definition %}
+                {% if term.definition|length > 200 %}
+                {{ term.definition[0:200] | process_markdown_links | highlight_term_string(search_terms) | safe }}
+                <span class="collapse" id="collapseDiv{{count.value}}">{{ term.definition[200:] | process_markdown_links
+                    | highlight_term_string(search_terms) | safe }}</span>
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseDiv{{count.value}}">
+                    ...
+                </button>
+                {% else %}
+                {{ term.definition | process_markdown_links | highlight_term_string(search_terms) | safe }}
+                {% endif %}
+                {% else %}
+                <em>No definition available</em>
                 {% endif %}
             </td>
             <td>
@@ -49,8 +69,8 @@ Search Results for <i>{{ search_terms }}</i>
             <td>
                 {{ term.modified|format_date }}
             </td>
-        </tr>        
-    {% endfor %}
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 
