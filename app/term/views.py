@@ -264,6 +264,8 @@ def create_term():
                 new_term.tags.append(Tag.query.filter_by(
                     value=session['portal_tag']).first())
             new_term.save()
+            flash("✅ Term created successfully!", "success")
+
             return redirect(url_for("term.display_term", concept_id=new_term.concept_id))
 
     return render_template("term/create_term.jinja", form=form)
@@ -289,7 +291,7 @@ def edit_term(concept_id):
             tag = Tag.query.filter_by(value="Draft").first()
             selected_term.tags.remove(tag)
         selected_term.update()
-        # flash("Term updated.")
+        flash("Term updated.")
         return redirect(url_for("term.display_term", concept_id=concept_id))
     else:
         form.term_string.data = selected_term.term_string
@@ -481,9 +483,19 @@ def terms_by_tag_value(tag_value):
     page = request.args.get("page", 1, type=int)
     per_page = current_app.config["TERMS_PER_PAGE"]
     tag = Tag.query.filter_by(value=tag_value).first()
-    term_list = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-        Term.term_string
-    )
+    
+    # Special handling for Draft tag - show only current user's draft terms
+    if tag_value == "Draft" and current_user.is_authenticated:
+        term_list = Term.query.filter(
+            Term.tags.any(value=tag_value),
+            Term.owner_id == current_user.id
+        ).order_by(Term.term_string)
+    else:
+        # For all other tags, show all terms with that tag
+        term_list = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
+            Term.term_string
+        )
+    
     tag_list = Tag.query.order_by(Tag.value.asc())
     return render_template(
         "term/terms_by_tag_value.jinja",
@@ -496,9 +508,19 @@ def terms_by_tag_value(tag_value):
 @term.route("/list/tag/value/<tag_value>/detail")
 def terms_by_tag_value_detail(tag_value):
     tag = Tag.query.filter_by(value=tag_value).first()
-    selected_terms = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-        Term.term_string
-    )
+    
+    # Special handling for Draft tag - show only current user's draft terms
+    if tag_value == "Draft" and current_user.is_authenticated:
+        selected_terms = Term.query.filter(
+            Term.tags.any(value=tag_value),
+            Term.owner_id == current_user.id
+        ).order_by(Term.term_string)
+    else:
+        # For all other tags, show all terms with that tag
+        selected_terms = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
+            Term.term_string
+        )
+    
     return render_template("term/terms_by_tag_value_detail.jinja", tag=tag, selected_terms=selected_terms, form=EmptyForm())
 
 

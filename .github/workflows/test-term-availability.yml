@@ -1,34 +1,34 @@
 name: Test Term Availability
-#on:
- # deployment: # Trigger the workflow after a GitHub deployment
-  #  types: [created, completed] # Respond to deployment creation or completion
 
 on:
-  push: # Trigger the workflow on push events
+  push:
     branches:
-      - dev # Specify the branch(es) to watch, e.g., dev or main
-  workflow_dispatch: # Retain manual triggering of the workflow with inputs
-    inputs:
-      term_url:
-        description: "The term URL to check for availability"
-        required: true
-        default: "https://yamz.net/term/ark/h8072"
+      - main
+      - dev
 
 jobs:
-  test_term:
+  check-term:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-
-      - name: Test Term Accessibility
+      - name: Set TERM_URL based on branch
         run: |
-          echo "Testing URL: ${{ github.event.inputs.term_url || 'https://yamz.net/term/ark/h8072' }}"
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "${{ github.event.inputs.term_url || 'https://yamz.net/term/ark/h8072' }}")
-          if [ "$HTTP_STATUS" -eq 200 ]; then
-            echo "Term is reachable: ${{ github.event.inputs.term_url || 'https://yamz.net/term/ark/h8072' }}"
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "TERM_URL=https://yamz.net/term/ark/h8072" >> $GITHUB_ENV
+          elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
+            echo "TERM_URL=https://yamz-dev.yamz.net/term/ark/h8072" >> $GITHUB_ENV
           else
-            echo "Term is NOT reachable. HTTP Status: $HTTP_STATUS"
+            echo "TERM_URL=https://yamz.net/term/ark/h8072" >> $GITHUB_ENV
+          fi
+
+      - name: Print which URL is being checked
+        run: echo "Checking $TERM_URL"
+
+      - name: Check term availability
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$TERM_URL")
+          if [ "$status" = "200" ]; then
+            echo "Term is available at $TERM_URL"
+          else
+            echo "Term is NOT available at $TERM_URL (HTTP status: $status)"
             exit 1
           fi
