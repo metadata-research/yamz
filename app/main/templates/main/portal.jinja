@@ -5,109 +5,111 @@ YAMZ Metadata Dictionary
 {% endblock %}
 
 {% block headline %}
-{% if current_user.is_authenticated %}
-
 <h6 class="text-muted" style="white-space:nowrap;">
     A dictionary for all things metadata.
 </h6>
-
-{% endif %}
 {% endblock headline %}
 
 {% block content %}
 
-{% if not current_user.is_authenticated %}
-
 <div class="jumbotron" style="background-color: transparent; line-height: 1.8">
     <br />
-    <h1 class="text-center display-1" style="font-weight: 500">Metadictionary-{{session["portal_tag"]}}</h1>
+    <h1 class="text-center display-1" style="font-weight: 500">Metadictionary-{{ session["portal_tag"] }}</h1>
     <br />
-    <h4 class='text-center'>A crowdsourced {{domain}} vocabulary builder <br/>
-    - Part of the <a style="text-decoration: none" href='{{url_for('main.leave_portal')}}'>YAMZ Metadictionary</a> - </h4>
+    <h4 class='text-center'>
+        A crowdsourced {{ domain }} vocabulary builder<br />
+        - Part of the <a href="{{ url_for('main.leave_portal') }}">YAMZ Metadictionary</a> -
+    </h4>
     <p class="lead text-center">
-    <br />
-    Add terms and get permalinks (<a style="text-decoration: none"
-        href="/ark:/99152/h8072">PID</a>s)<br />
-    Use and link controlled terms<br />
-    Share and refine project terms<br />
-    Cherry-pick terms for ontologies<br />
-    Dialog, test, and vote to quickly achieve consensus<br />
+        <br />
+        Add terms and get permalinks (<a style="text-decoration: none" href="/ark:/99152/h8072">PID</a>s)<br />
+        Use and link controlled terms<br />
+        Share and refine project terms<br />
+        Cherry-pick terms for ontologies<br />
+        Dialog, test, and vote to quickly achieve consensus<br />
 </div>
 
+{% if current_user.is_authenticated %}
+<div class="container mt-4">
+    <div id="notifications" class="user-section" style="display:none;">
+        <h4>Notifications</h4>
+        <div id="notifications-content">
+            <!-- JS will populate this -->
+        </div>
+    </div>
+
+    <div id="myterms" class="user-section" style="display:none;">
+        <h4>My Terms</h4>
+        {% if my_terms %}
+            {% for term in my_terms %}
+                <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a><br />
+            {% endfor %}
+        {% else %}
+            <i>You haven't contributed any terms.</i>
+        {% endif %}
+    </div>
+
+    <div id="watching" class="user-section" style="display:none;">
+        <h4>Watching</h4>
+        {% if tracked_terms %}
+            {% for track in tracked_terms %}
+                <a href="{{ url_for('term.display_term', concept_id=track.term.concept_id) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
+            {% endfor %}
+        {% else %}
+            <i>You aren't tracking any terms.</i>
+        {% endif %}
+    </div>
+</div>
 {% endif %}
 
+{% endblock content %}
+
+{% block nav_extra %}
 {% if current_user.is_authenticated %}
-<div class="container mt-4 row marketing">
-    <table width=100%>
-        <tr>
-            <td rowspan=2 width=5%></td>
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            My Dashboard
+        </a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#" onclick="toggleSection('notifications')">Notifications</a>
+            <a class="dropdown-item" href="#" onclick="toggleSection('myterms')">My Terms</a>
+            <a class="dropdown-item" href="#" onclick="toggleSection('watching')">Watching</a>
+        </div>
+    </li>
+</ul>
+{% endif %}
+{% endblock nav_extra %}
 
-            <td rowspan=2 width=75% valign=top>
-                <br />
-                <h4>Notifications</h4>
-                <div id="notifications">
-                    <!-- this panel will be populated by javascript -->
-                </div>
-            </td>
+{% block body_scripts %}
+{{ super() }}
+{% if current_user.is_authenticated %}
+<script>
+    function toggleSection(id) {
+        document.querySelectorAll('.user-section').forEach(el => el.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+    }
 
-            <td valign=top>
-                <br />
-                <h4>My terms</h4>
-                {% if my_terms %}
-                {% for term in my_terms %}
-                <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a>
-                <br />
-                {% endfor %}
-                {% else %}
-                <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
-                {% endif %}
-                <br>
-            </td>
-        <tr>
-            <td valign=top>
-                <hr>
-                <h4>Watching</h4>
-                {% if tracked_terms %}
-                {% for track in tracked_terms %}
-                <a
-                    href="{{ url_for('term.display_term', concept_id=track.term.concept_id) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
-                {% endfor %}
-                {% else %}
-                <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
-                {% endif %}
-                <br /><br />
-            </td>
-        </tr>
-    </table>
-    {% endif %}
-
-    {% endblock content %}
-
-    {% block body_scripts%}
-    {{ super() }}
-    {% if current_user.is_authenticated %}
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $.getJSON({
-                url: "{{ url_for('notify.notifications') }}",
-                success: function (notification_data) {
-                    item_count = notification_data.length;
-                    if (item_count > 0) {
-                        for (var i = 0; i < item_count; i++) {
-                            $("#notifications").append(
-                                "<a href='/term/ark/" + notification_data[i].data.term_concept_id + "'>" +
-                                notification_data[i].data.term_string +
-                                "</a> <i>" + notification_data[i].name + "</i> " +
-                                "<a href='/notify/notifications/delete/" + notification_data[i].id + "'><small>[delete]</small></a><br />"
-                            );
-                        }
-                    } else {
-                        $("#notifications").html(
-                            "<font color='#B8B8B8'><i>No new notifications.</i></font>");
+    $(document).ready(function () {
+        $.getJSON({
+            url: "{{ url_for('notify.notifications') }}",
+            success: function (notification_data) {
+                const container = $("#notifications-content");
+                if (notification_data.length > 0) {
+                    for (let i = 0; i < notification_data.length; i++) {
+                        container.append(
+                            "<a href='/term/ark/" + notification_data[i].data.term_concept_id + "'>" +
+                            notification_data[i].data.term_string + "</a> <i>" + notification_data[i].name + "</i> " +
+                            "<a href='/notify/notifications/delete/" + notification_data[i].id + "'><small>[delete]</small></a><br />"
+                        );
                     }
+                } else {
+                    container.html("<i>No new notifications.</i>");
                 }
-            });
+            }
         });
-    </script>
-    {% endif %}
-    {% endblock body_scripts %}
+    });
+</script>
+{% endif %}
+{% endblock body_scripts %}
