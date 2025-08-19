@@ -64,24 +64,6 @@ YAMZ Metadata Dictionary
 
 {% endblock content %}
 
-{% block nav_extra %}
-{% if current_user.is_authenticated %}
-<ul class="navbar-nav ml-auto">
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            My Dashboard
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#" onclick="toggleSection('notifications')">Notifications</a>
-            <a class="dropdown-item" href="#" onclick="toggleSection('myterms')">My Terms</a>
-            <a class="dropdown-item" href="#" onclick="toggleSection('watching')">Watching</a>
-        </div>
-    </li>
-</ul>
-{% endif %}
-{% endblock nav_extra %}
-
 {% block body_scripts %}
 {{ super() }}
 {% if current_user.is_authenticated %}

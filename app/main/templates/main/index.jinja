@@ -1,8 +1,6 @@
 {% extends './base.jinja' %}
 
-{% block title %}
-YAMZ Metadata Dictionary
-{% endblock %}
+{% block title %}YAMZ Metadata Dictionary{% endblock %}
 
 {% block headline %}
 <h6 class="text-muted" style="white-space:nowrap;">
@@ -24,87 +22,4 @@ YAMZ Metadata Dictionary
         Cherry-pick terms for ontologies<br />
         Dialog, test, and vote to quickly achieve consensus<br />
 </div>
-
-{% if current_user.is_authenticated %}
-<div class="container mt-4">
-    <div id="notifications" class="user-section" style="display:none;">
-        <h4>Notifications</h4>
-        <div id="notifications-content">
-            <!-- JS will populate this -->
-        </div>
-    </div>
-
-    <div id="myterms" class="user-section" style="display:none;">
-        <h4>My Terms</h4>
-        {% if my_terms %}
-            {% for term in my_terms %}
-                <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a><br />
-            {% endfor %}
-        {% else %}
-            <i>You haven't contributed any terms.</i>
-        {% endif %}
-    </div>
-
-    <div id="watching" class="user-section" style="display:none;">
-        <h4>Watching</h4>
-        {% if tracked_terms %}
-            {% for track in tracked_terms %}
-                <a href="{{ url_for('term.display_term', concept_id=track.term.concept_id) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
-            {% endfor %}
-        {% else %}
-            <i>You aren't tracking any terms.</i>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-{% endblock %}
-
-{% block nav_extra %}
-{% if current_user.is_authenticated %}
-<ul class="navbar-nav ms-auto">
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-           data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            My Dashboard
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-            <li><a class="dropdown-item" href="#" onclick="toggleSection('notifications'); return false;">Notifications</a></li>
-            <li><a class="dropdown-item" href="#" onclick="toggleSection('myterms'); return false;">My Terms</a></li>
-            <li><a class="dropdown-item" href="#" onclick="toggleSection('watching'); return false;">Watching</a></li>
-        </ul>
-    </li>
-</ul>
-{% endif %}
-{% endblock %}
-
-{% block body_scripts %}
-{{ super() }}
-{% if current_user.is_authenticated %}
-<script>
-    function toggleSection(id) {
-        document.querySelectorAll('.user-section').forEach(el => el.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-    }
-
-    $(document).ready(function () {
-        $.getJSON({
-            url: "{{ url_for('notify.notifications') }}",
-            success: function (notification_data) {
-                const container = $("#notifications-content");
-                if (notification_data.length > 0) {
-                    for (let i = 0; i < notification_data.length; i++) {
-                        container.append(
-                            "<a href='/term/ark/" + notification_data[i].data.term_concept_id + "'>" +
-                            notification_data[i].data.term_string + "</a> <i>" + notification_data[i].name + "</i> " +
-                            "<a href='/notify/notifications/delete/" + notification_data[i].id + "'><small>[delete]</small></a><br />"
-                        );
-                    }
-                } else {
-                    container.html("<i>No new notifications.</i>");
-                }
-            }
-        });
-    });
-</script>
-{% endif %}
 {% endblock %}
