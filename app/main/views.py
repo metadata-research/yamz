@@ -1,18 +1,18 @@
-from flask import (render_template, g)
+from flask import render_template, g, session, redirect, url_for
 from flask_login import current_user
+from markupsafe import escape
+from werkzeug.exceptions import abort
 
 from app.main import main_blueprint as main
 from app.term.forms import SearchForm
 from app.term.models import Term, Tag
-from markupsafe import escape
-from werkzeug.exceptions import abort
-from flask import redirect, url_for, session
 
 
 @main.route("/leave_portal")
 def leave_portal():
     session["old_portal_tag"] = session.pop("portal_tag", None)
     return redirect(url_for("main.index"))
+
 
 @main.route("/p/<portal_tag>")
 def portal_index(portal_tag):
@@ -23,6 +23,7 @@ def portal_index(portal_tag):
         abort(404)
     session["portal_tag"] = portal_tag
     domain = tag.domain
+
     g.search_form = SearchForm()
     page = 1
     per_page = 10
@@ -40,14 +41,16 @@ def portal_index(portal_tag):
         my_terms=my_terms,
         tracked_terms=tracked_terms,
         search_form=g.search_form,
-        domain = domain,
+        domain=domain,
+        title=f"Portal: {portal_tag}"
     )
 
 
 @main.route("/")
 def index():
-    if session.get("portal_tag", None):
+    if session.get("portal_tag"):
         return redirect(url_for("main.portal_index", portal_tag=session.get("portal_tag")))
+
     g.search_form = SearchForm()
     if current_user.is_authenticated:
         my_terms = current_user.terms
@@ -55,13 +58,35 @@ def index():
     else:
         my_terms = []
         tracked_terms = []
+
     return render_template(
         "main/index.jinja",
         my_terms=my_terms,
         tracked_terms=tracked_terms,
         search_form=g.search_form,
+        title="Home"
     )
 
+
+@main.route("/dashboard")
+def dashboard():
+    # Only allow logged-in users
+    if not current_user.is_authenticated:
+        return redirect(url_for("auth.login"))
+
+    g.search_form = SearchForm()
+
+    my_terms = current_user.terms
+    tracked_terms = current_user.tracking
+
+    return render_template(
+        "main/dashboard.jinja",
+        my_terms=my_terms,
+        tracked_terms=tracked_terms,
+        search_form=g.search_form,
+        title="Dashboard",
+        headline="Your Dashboard"
+    )
 
 
 @main.route("/about")
@@ -72,7 +97,6 @@ def about():
 @main.route("/contact")
 def contact():
     return render_template("main/contact.jinja")
-
 
 
 @main.route("/guidelines")

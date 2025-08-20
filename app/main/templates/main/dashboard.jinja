@@ -1,0 +1,71 @@
+{% extends './base.jinja' %}
+
+{% block title %}Dashboard - YAMZ{% endblock %}
+
+{% block headline %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Notifications -->
+        <div class="col-md-4">
+            <h4>Notifications</h4>
+            <div id="notifications">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- My Terms -->
+        <div class="col-md-4">
+            <h4>My Terms</h4>
+            {% if my_terms %}
+                {% for term in my_terms %}
+                    <a href="{{ url_for('term.display_term', concept_id=term.concept_id) }}">{{ term.term_string }}</a><br>
+                {% endfor %}
+            {% else %}
+                <font color="#B8B8B8"><i>You haven't contributed any terms.</i></font>
+            {% endif %}
+        </div>
+
+        <!-- Watching -->
+        <div class="col-md-4">
+            <h4>Watching</h4>
+            {% if tracked_terms %}
+                {% for track in tracked_terms %}
+                    <a href="{{ url_for('term.display_term', concept_id=track.term.concept_id) }}">{{ track.term.term_string }}</a>{{ ", " if not loop.last else "" }}
+                {% endfor %}
+            {% else %}
+                <font color="#B8B8B8"><i>You aren't tracking any terms.</i></font>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block body_scripts %}
+{{ super() }}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.getJSON({
+            url: "{{ url_for('notify.notifications') }}",
+            success: function (notification_data) {
+                let item_count = notification_data.length;
+                if (item_count > 0) {
+                    for (let i = 0; i < item_count; i++) {
+                        $("#notifications").append(
+                            "<a href='/term/ark/" + notification_data[i].data.term_concept_id + "'>" +
+                            notification_data[i].data.term_string +
+                            "</a> <i>" + notification_data[i].name + "</i> " +
+                            "<a href='/notify/notifications/delete/" + notification_data[i].id + "'><small>[delete]</small></a><br />"
+                        );
+                    }
+                } else {
+                    $("#notifications").html("<font color='#B8B8B8'><i>No new notifications.</i></font>");
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
