@@ -272,7 +272,6 @@ For example ` sudo nano /etc/nginx/sites-available/yamz`
         listen 80;
         server_name yamz.net www.yamz.net;
         location / {
-w:510-642-3279
             include uwsgi_params;
             uwsgi_pass unix:/home/your_username/yamz/yamz.sock;  # Replace with your actual username path
         }
