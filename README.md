@@ -21,18 +21,22 @@ On macOS, you can use homebrew:
     
     brew install postgresql
 
-Make sure the postgres server is running. You may want to configure your
-computer so that the server starts automatically on reboot. On macOS, for
-example:
+Make sure the postgres server is running, for example, with
+
+    brew services info postgresql
+
+You may want to configure your computer so that the server starts automatically on
+reboot. On macOS, for example:
 
     brew services start postgresql
 
 on Ubuntu:
     
-    ## Postgres default users
-The default unix admin user, postgres, needs a password assigned in order to connect to a database. To set a password:
+## Postgres default users
 
-Enter the command:
+The default unix admin user, postgres, needs a password assigned in order to connect
+to a database. To set a password,
+
    `sudo passwd postgres`
 
 You will get a prompt to enter your new password.
@@ -84,16 +88,22 @@ servers the name is yamz_dev and yamz_prd, respectively.
 
 `postgres-# \q`
 
-On macOS, usually one time:
+On macOS,
+
+* usually one time:
 
     createuser -d postgres
     psql -U postgres -c "alter user postgres with encrypted password 'PASS'"
 
-On macOS, every so often you need to recreate the database:
+* every so often you need to recreate the database:
 
     psql -U postgres -c 'create database yamz with owner postgres'
 
-On macOS, regularly need to restart server:
+* or you may need to delete the database:
+
+    psql -U postgres -c 'drop database yamz'
+
+* or you may need to restart server:
 
     brew services restart postgresql
 
@@ -318,18 +328,18 @@ Certbot will ask you whether you wish to redirect all http traffic to https (rem
 ## Backups
 
 Backup on production
+
 `pg_dump -C -Fp -f yamz.sql -U postgres yamz`
 
-This will create a yamz.sql file that is portable.
+This will create a yamz.sql file that is portable. The latest backups can be found
+on the production server under ~yamz/backup/yamz_{dev,prd}/latest.sql.gz.
 
-For example, to restore on your laptop from a given daily backup:
+For example, to restore the latest producion database:
 
     service yamz stop
-    dropdb -U postgres yamz
-    psql -U postgres -f yamz_2023-05-11.sql
-
+    gunzip latest.sql.gz
     dropdb -U postgres yamz_prd
-    psql -U postgres -f yamz_2025-04-02.sql
+    psql -U postgres -f latest.sql
 
 The database name is yamz by default. In the shared yamz dev and prd
 servers the name is yamz_dev and yamz_prd, respectively.
@@ -338,6 +348,16 @@ To update the yamz_dev database from current production database:
     service yamz stop
     psql -U postgres
     postgres=# CREATE DATABASE yamz_dev WITH TEMPLATE yamz
+
+On MacOS, to load yamz_prd into database "yamz" from the latest backup:
+
+    dropdb -U postgres yamz
+    psql -U postgres -f latest.sql
+    psql -U postgres -c "ALTER DATABASE yamz_prd RENAME TO yamz;"
+    source env/bin/activate
+    rm -fr migrations/
+    export FLASK_APP=yamz.py FLASK_RUN_PORT=5001
+    flask db init
 
 ## Development Environment
 The development environment for YAMZ should be set up as follows:

@@ -87,38 +87,32 @@
 
 <div class="container mt-4">
     <div class="row">
-        {% block sidebar %}
-        {# Optional: dashboard-specific sidebar links here #}
-        {% endblock %}
-
-        <main class="{% block main_class %}col{% endblock %}">
-            {% if g.search_form %}
-            <div class="row mb-3">
-                <div class="col-auto ms-auto">
-                    <form method="get" action="{{ url_for('term.search') }}" novalidate>
-                        <div class="form-group">
-                            {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text) }}
-                        </div>
-                    </form>
-                </div>
-            </div>
-            {% endif %}
-
+        <div class="col align-self-start">
             <h1 class="pb-2">{% block headline %}{% endblock %}</h1>
-
-            {% block content %}{% endblock %}
-
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            <div class="alert alert-success alert-dismissible fade show w-40 mt-2" role="alert">
-                {% for message in messages %}
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                {% endfor %}
+        </div>
+        {% if g.search_form %}
+            <div class="col-auto align-self-end pb-4">
+                <form method="get" action="{{ url_for('term.search') }}" novalidate>
+                    <div class="form-group">
+                        {{ g.search_form.q(size=40, class='form-control', placeholder=g.search_form.q.label.text) }}
+                    </div>
+                </form>
             </div>
-            {% endif %}
-            {% endwith %}
-        </main>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show w-40 mt-2" role="alert">
+            {% for message in messages %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
     </div>
 </div>
 
