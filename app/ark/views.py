@@ -2,8 +2,8 @@ from flask import redirect, url_for, render_template
 
 from app.ark import ark_blueprint as ark
 
-@ark.route("/")
-@ark.route("/99152/<concept_id>")
+#@ark.route("/")
+#@ark.route("/99152/<concept_id>")
 @ark.route("/<concept_id>")
 def index(concept_id=None):
     if concept_id is None:
