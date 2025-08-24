@@ -150,6 +150,7 @@ ref_regex = re.compile("#\{\s*(([gstkm])\s*:+)?\s*([^}|]*?)(\s*\|+\s*([^}]*?))?\
 # _xterm_tag_regex = re.compile('#\{\s*([a-zA-Z0-9]+)\s*:\s*(relate. to[^\{\}]*)\}') # hack!
 # term_tag_regex = re.compile("#\{\s*([a-zA-Z0-9]+)\s*:\s*([^\{\}]*)\}")
 
+# XXX shouldn't this be ^https://  below?
 permalink_regex = re.compile("^http://(.*)$")
 
 # The "uniquerifier" (ixuniq) makes a tag string uniquer for indexing,

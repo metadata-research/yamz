@@ -164,7 +164,7 @@ class Term(db.Model):
 
     @property
     def persistent_id(self):
-        return ("https://n2t.net/ark:/{}/{}{}").format(
+        return ("https://n2t.net/ark:{}/{}{}").format(
             self.naan,
             self.shoulder,
             self.ark_id,

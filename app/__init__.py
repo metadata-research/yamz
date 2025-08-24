@@ -64,8 +64,9 @@ def create_app(config_class=Config):
     app.register_blueprint(term_bp, url_prefix="/term")
     app.register_blueprint(user_bp, url_prefix="/user")
     app.register_blueprint(io_bp, url_prefix="/io")
-    app.register_blueprint(ark_bp, url_prefix="/ark", name="ark")
-    app.register_blueprint(ark_bp, url_prefix="/ark:", name="ark_colon")
+    app.register_blueprint(ark_bp, url_prefix="/ark:99152", name="ark_modern")
+    app.register_blueprint(ark_bp, url_prefix="/ark:/99152", name="ark_classic")
+    app.register_blueprint(ark_bp, url_prefix="/ark:", name="ark_not_here")
 
     from app.term.models import Tag, Term
     from app.user.models import User

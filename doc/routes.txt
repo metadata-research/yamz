@@ -1,27 +1,26 @@
-YAMZ startup
 Endpoint                          Methods    Rule
 --------------------------------  ---------  --------------------------------------------------
 admin.index                       GET        /admin/
 admin.static                      GET        /admin/static/<path:filename>
-ark.index                         GET        /ark/<concept_id>
-ark.index                         GET        /ark/99152/<concept_id>
-ark.index                         GET        /ark/
-ark_colon.index                   GET        /ark:/<concept_id>
-ark_colon.index                   GET        /ark:/99152/<concept_id>
-ark_colon.index                   GET        /ark:/
+ark_classic.index                 GET        /ark:/99152/<concept_id>
+ark_modern.index                  GET        /ark:99152/<concept_id>
+ark_not_here.index                GET        /ark:/<concept_id>
 auth.login                        GET        /login
 auth.logout                       GET        /logout
 auth.oauth_authorize              GET        /authorize/<provider>
 auth.oauth_callback               GET        /<provider>_authorized
+io.display_import                 GET, POST  /io/upload/display
 io.export_page                    GET, POST  /io/export
 io.export_term_results            GET, POST  /io/export/terms
 io.import_document                GET, POST  /io/upload
+io.import_helio_document          GET, POST  /io/upload/helio
 main.about                        GET        /about
 main.contact                      GET        /contact
+main.dashboard                    GET        /dashboard
 main.guidelines                   GET        /guidelines
 main.index                        GET        /
-main.portal_index                 GET        /p/<portal_tag>
 main.leave_portal                 GET        /leave_portal
+main.portal_index                 GET        /p/<portal_tag>
 notify.delete_message             GET        /notify/message/delete/<int:message_id>
 notify.delete_notification        GET        /notify/notifications/delete/<int:notification_id>
 notify.messages                   GET        /notify/messages
@@ -64,6 +63,7 @@ term.remove_vote                  POST       /term/vote/remove/<concept_id>
 term.search                       GET        /term/search
 term.show_alternate_terms         GET        /term/alternates/<term_string>
 term.terms_by_tag_value           GET        /term/list/tag/value/<tag_value>
+term.terms_by_tag_value_detail    GET        /term/list/tag/value/<tag_value>/detail
 term.test_term                    GET        /term/test/<concept_id>
 term.track_term                   POST       /term/track/<concept_id>
 term.untrack_term                 POST       /term/untrack/<concept_id>
