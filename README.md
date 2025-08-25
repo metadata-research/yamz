@@ -359,6 +359,15 @@ On MacOS, to load yamz_prd into database "yamz" from the latest backup:
     export FLASK_APP=yamz.py FLASK_RUN_PORT=5001
     flask db init
 
+## Data for importing, exporting, staging, evaluating, etc.
+
+Data tables (eg, terms under admin, upload directory) have been put in
+metadata-research/yzdat Github repo separate from the yamz code repo.
+
+## Automated testing
+
+Minimal so far (see .gitub/workflows/).
+
 ## Development Environment
 The development environment for YAMZ should be set up as follows:
 

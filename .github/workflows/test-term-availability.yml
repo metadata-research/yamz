@@ -13,11 +13,11 @@ jobs:
       - name: Set TERM_URL based on branch
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
-            echo "TERM_URL=https://yamz.net/term/ark/h8072" >> $GITHUB_ENV
+            echo "TERM_URL=https://yamz.net/term/ark:99152/h8072" >> $GITHUB_ENV
           elif [[ "${GITHUB_REF}" == "refs/heads/dev" ]]; then
             echo "TERM_URL=https://yamz-dev.yamz.net/term/ark:99152/h8072" >> $GITHUB_ENV
           else
-            echo "TERM_URL=https://yamz.net/term/ark/h8072" >> $GITHUB_ENV
+            echo "TERM_URL=https://yamz.net/term/ark:99152/h8072" >> $GITHUB_ENV
           fi
 
       - name: Print which URL is being checked
