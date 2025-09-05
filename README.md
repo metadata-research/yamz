@@ -373,12 +373,12 @@ The development environment for YAMZ should be set up as follows:
 
 1. Use the `dev` branch for development work
 2. Set up a separate database (e.g., `yamz_dev`) to avoid affecting production data
-3. For local development, use the Flask development server with:
+3. For local development, use the Flask development server with settings that are consistent with or use this `.flaskenv` file:
    ```bash
-   export FLASK_APP=yamz.py
-   export FLASK_ENV=development
-   export FLASK_RUN_PORT=5001
-   flask run
+   FLASK_APP=yamz.py
+   FLASK_ENV=development
+   FLASK_DEBUG=True
+   FLASK_RUN_PORT=5001
    ```
 
 4. When testing with uWSGI:
