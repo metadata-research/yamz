@@ -2,18 +2,17 @@
 
 {% import "_macros.jinja" as macros %}
 
-{% block headline%}
-YAMZ Tag: {{ tag.value }}
-{% endblock headline%}
+{% block headline %}
+    {# Only show headline if not Draft OR if user is logged in #}
+    {% if not (tag.value == "Draft" and not current_user.is_authenticated) %}
+        YAMZ Tag: {{ tag.value }}
+    {% endif %}
+{% endblock headline %}
 
 {% block content %}
-Tag Description: {{ tag.description }}
+    Tag Description: {{ tag.description }}
 
-
-
-{% for selected_term in selected_terms  %}
-{% include 'term/_term_detail.jinja' %}
-
-{% endfor %}
-
+    {% for selected_term in selected_terms %}
+        {% include 'term/_term_detail.jinja' %}
+    {% endfor %}
 {% endblock content %}

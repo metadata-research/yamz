@@ -481,21 +481,28 @@ def list_terms_by_tag(tag_id):
 @term.route("/list/tag/value/<tag_value>")
 def terms_by_tag_value(tag_value):
     page = request.args.get("page", 1, type=int)
-    per_page = current_app.config["TERMS_PER_PAGE"]
-    tag = Tag.query.filter_by(value=tag_value).first()
-    
-    # Special handling for Draft tag - show only current user's draft terms
-    if tag_value == "Draft" and current_user.is_authenticated:
-        term_list = Term.query.filter(
-            Term.tags.any(value=tag_value),
-            Term.owner_id == current_user.id
-        ).order_by(Term.term_string)
+    per_page = current_app.config.get("TERMS_PER_PAGE", 20)
+    tag = Tag.query.filter_by(value=tag_value).first_or_404()
+
+    if tag_value == "Draft":
+        if not current_user.is_authenticated:
+            term_list = []
+        else:
+            term_list = (
+                Term.query.filter(
+                    Term.tags.any(value=tag_value),
+                    Term.owner_id == current_user.id
+                )
+                .order_by(Term.term_string)
+                .all()
+            )
     else:
-        # For all other tags, show all terms with that tag
-        term_list = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-            Term.term_string
+        term_list = (
+            Term.query.filter(Term.tags.any(value=tag_value))
+            .order_by(Term.term_string)
+            .all()
         )
-    
+
     tag_list = Tag.query.order_by(Tag.value.asc())
     return render_template(
         "term/terms_by_tag_value.jinja",
@@ -505,23 +512,36 @@ def terms_by_tag_value(tag_value):
     )
 
 
+
 @term.route("/list/tag/value/<tag_value>/detail")
 def terms_by_tag_value_detail(tag_value):
-    tag = Tag.query.filter_by(value=tag_value).first()
-    
-    # Special handling for Draft tag - show only current user's draft terms
-    if tag_value == "Draft" and current_user.is_authenticated:
-        selected_terms = Term.query.filter(
-            Term.tags.any(value=tag_value),
-            Term.owner_id == current_user.id
-        ).order_by(Term.term_string)
+    tag = Tag.query.filter_by(value=tag_value).first_or_404()
+
+    if tag_value == "Draft":
+        if not current_user.is_authenticated:
+            selected_terms = []
+        else:
+            selected_terms = (
+                Term.query.filter(
+                    Term.tags.any(value=tag_value),
+                    Term.owner_id == current_user.id
+                )
+                .order_by(Term.term_string)
+                .all()
+            )
     else:
-        # For all other tags, show all terms with that tag
-        selected_terms = Term.query.filter(Term.tags.any(value=tag_value)).order_by(
-            Term.term_string
+        selected_terms = (
+            Term.query.filter(Term.tags.any(value=tag_value))
+            .order_by(Term.term_string)
+            .all()
         )
-    
-    return render_template("term/terms_by_tag_value_detail.jinja", tag=tag, selected_terms=selected_terms, form=EmptyForm())
+
+    return render_template(
+        "term/terms_by_tag_value_detail.jinja",
+        tag=tag,
+        selected_terms=selected_terms,
+        form=EmptyForm(),
+    )
 
 
 @term.route("/list/score")
