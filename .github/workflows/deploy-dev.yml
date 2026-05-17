@@ -1,0 +1,68 @@
+name: Deploy to yamz-dev
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, yamz-dev-runner]
+    
+    steps:
+      - name: Checkout dev branch
+        uses: actions/checkout@v3
+        with:
+          ref: dev
+          fetch-depth: 0
+
+      - name: Pull latest dev branch changes
+        run: |
+          cd ~/dev/yamz
+          git fetch origin
+          git pull origin dev
+
+      - name: Set up Python virtual environment
+        run: |
+          cd ~/dev/yamz
+          python3 -m venv env
+          source env/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run database migrations
+        run: |
+          cd ~/dev/yamz
+          source env/bin/activate
+          export FLASK_APP=yamz.py
+          flask db migrate
+          flask db upgrade
+        env:
+          SQLALCHEMY_DATABASE_URI: ${{ secrets.YAMZ_DEV_DB_URI }}
+
+      - name: Restart yamz_dev service
+        run: |
+          sudo service yamz_dev restart
+          sleep 3
+
+      - name: Verify service status
+        run: |
+          sudo service yamz_dev status
+
+      - name: Health check
+        run: |
+          sleep 5
+          status=$(curl -s -o /dev/null -w "%{http_code}" "https://yamz-dev.yamz.net/term/ark:99152/h8072")
+          if [ "$status" = "200" ]; then
+            echo "✓ Health check passed: yamz-dev is responding"
+          else
+            echo "✗ Health check failed: HTTP status $status"
+            exit 1
+          fi
+
+      - name: Check logs for errors
+        if: always()
+        run: |
+          echo "=== Recent yamz-dev logs ==="
+          tail -n 50 ~/dev/yamz/logs/yamz.log 2>/dev/null || echo "Log file not found"
