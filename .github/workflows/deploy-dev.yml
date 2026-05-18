@@ -39,7 +39,7 @@ jobs:
           flask db migrate
           flask db upgrade
         env:
-          SQLALCHEMY_DATABASE_URI: ${{ secrets.YAMZ_DEV_DB_URI }}
+          SQLALCHEMY_DATABASE_URI: "${{ secrets.YAMZ_DEV_DB_URI }}"
 
       - name: Restart yamz_dev service
         run: |
