@@ -57,7 +57,7 @@ jobs:
           flask db upgrade
           set -x
         env:
-          SQLALCHEMY_DATABASE_URI: ${{ secrets.YAMZ_PROD_DB_URI }}
+          SQLALCHEMY_DATABASE_URI: "${{ secrets.YAMZ_PRD_DB_URI }}"
 
       - name: Restart yamz service
         run: |
