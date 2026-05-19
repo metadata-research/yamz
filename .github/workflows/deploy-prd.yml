@@ -26,18 +26,18 @@ jobs:
       - name: Create pre-deployment backup
         run: |
           mkdir -p ~/backup/yamz_prd
-          BACKUP_FILE="~/backup/yamz_prd/backup_$(date +%Y%m%d_%H%M%S).sql.gz"
+          BACKUP_FILE="~/backup/yamz_prd/deploys/$(date +%Y%m%d_%H%M%S).sql.gz"
           set +x  # Hide command with password from logs
           pg_dump -U postgres yamz_prd | gzip > "$BACKUP_FILE"
           set -x
           echo "Backup created: $BACKUP_FILE"
           
           # Keep only 7 latest backups
-          ls -t ~/backup/yamz_prd/backup_*.sql.gz | tail -n +8 | xargs rm -f
+          ls -t ~/backup/yamz_prd/deploys/*.sql.gz | tail -n +8 | xargs rm -f
 
       - name: Update latest symlink
         run: |
-          ln -sf ~/backup/yamz_prd/backup_$(date +%Y%m%d_%H%M%S).sql.gz ~/backup/yamz_prd/latest.sql.gz
+          ln -sf ~/backup/yamz_prd/deploys/$(date +%Y%m%d_%H%M%S).sql.gz ~/backup/yamz_prd/latest.sql.gz
 
       - name: Set up Python virtual environment
         run: |
@@ -46,18 +46,6 @@ jobs:
           source env/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run database migrations
-        run: |
-          cd ~/prd/yamz
-          source env/bin/activate
-          export FLASK_APP=yamz.py
-          set +x  # Hide environment variables from logs
-          flask db migrate
-          flask db upgrade
-          set -x
-        env:
-          SQLALCHEMY_DATABASE_URI: "${{ secrets.YAMZ_PRD_DB_URI }}"
 
       - name: Restart yamz service
         run: |
