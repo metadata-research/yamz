@@ -31,16 +31,6 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run database migrations
-        run: |
-          cd ~/dev/yamz
-          source env/bin/activate
-          export FLASK_APP=yamz.py
-          flask db migrate       # if this fails, try "rm -fr migrations; flask db init"
-          flask db upgrade
-        env:
-          SQLALCHEMY_DATABASE_URI: "${{ secrets.YAMZ_DEV_DB_URI }}"
-
       - name: Restart yamz_dev service
         run: |
           sudo service yamz_dev restart
