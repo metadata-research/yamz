@@ -49,15 +49,15 @@ class Config(object):
     ARK_PREFIX = "ark:/99152/"
     NAAN = "YOUR_NAAN"
 
-    # mail
-    MAIL_SERVER = os.environ.get("MAIL_SERVER") or "smtp.mailgun.org"
+    # mail -- the error-email handler is disabled in app/__init__.py and the only
+    # mail.send() path (app/notify/email.py) is currently unused, so these are
+    # placeholders only. Set real values via environment variables (or the
+    # deployment's own gitignored config.py) if/when mail is re-enabled.
+    MAIL_SERVER = os.environ.get("MAIL_SERVER") or "YOUR_MAIL_SERVER"
     MAIL_PORT = int(os.environ.get("MAIL_PORT") or 587)
     MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS") or True
-    MAIL_USERNAME = os.environ.get("MAIL_USERNAME") or "postmaster@mail.yamz.link"
-    MAIL_PASSWORD = (
-        os.environ.get("MAIL_PASSWORD")
-        or "YOUR_MAILGUN_API_KEY"
-    )
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME") or "YOUR_MAIL_USERNAME"
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD") or "YOUR_MAIL_PASSWORD"
     ADMINS = ["ADMIN_EMAIL_ADDRESS"]
 
     # logging - set to True to see error messages on Flask console

@@ -393,14 +393,14 @@ YAMZ uses two separate databases to maintain isolation between development and p
 #### Production Database (`yamz` or `yamz_prd`)
 - Contains the live, publicly accessible data
 - Should only be modified through the production application
-- Used by the main application instance at yamz.link
+- Used by the main application instance at yamz.net
 - Any changes directly affect end users
 - Backed up regularly to prevent data loss
 
 #### Development Database (`yamz_dev`)
 - Used for testing new features and changes without affecting production data
 - Can be reset or modified without impacting end users
-- Used by the development instance at yamz-dev.yamz.link
+- Used by the development instance at yamz-dev.yamz.net
 - Can be periodically refreshed from a production backup to stay current
 - Ideal for running migrations and schema changes before applying to production
 

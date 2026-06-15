@@ -355,10 +355,10 @@ pg_restore -U postgres -d yamz yamz_prd_backup.dump
 5. Select "Web application" as the application type
 6. Add authorized JavaScript origins:
    - For local development: `http://localhost:5000` and `http://localhost:5001`
-   - For production: your domain (e.g., `https://yamz.link`)
+   - For production: your domain (e.g., `https://yamz.net`)
 7. Add authorized redirect URIs:
    - For local development: `http://localhost:5000/g_authorized` and `http://localhost:5001/g_authorized`
-   - For production: your domain redirect URI (e.g., `https://yamz.link/g_authorized`)
+   - For production: your domain redirect URI (e.g., `https://yamz.net/g_authorized`)
 8. Copy the client ID and client secret to your `config.py` file
 
 Note: For production, you'll need to use HTTPS URLs. For local development, Google requires port specification.
@@ -369,7 +369,7 @@ Note: For production, you'll need to use HTTPS URLs. For local development, Goog
 2. Register a new application
 3. Set the redirect URI:
    - For local development: `http://localhost:5000/orcid_authorized` or `http://localhost:5001/orcid_authorized`
-   - For production: your domain redirect URI (e.g., `https://yamz.link/orcid_authorized`)
+   - For production: your domain redirect URI (e.g., `https://yamz.net/orcid_authorized`)
 4. Copy the client ID and client secret to your `config.py` file
 
 ## Running the Application
