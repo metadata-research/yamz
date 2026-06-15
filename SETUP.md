@@ -422,6 +422,7 @@ For a production deployment, you'll need:
    
    socket = yamz.sock
    chmod-socket = 660
+   chown-socket = your_username:www-data   # match the systemd User=; group must be www-data (Nginx)
    vacuum = true
    
    die-on-term = true
@@ -441,11 +442,22 @@ For a production deployment, you'll need:
    Group=www-data
    WorkingDirectory=/path/to/yamz  # Replace with actual path to your installation
    Environment="PATH=/path/to/yamz/env/bin"  # Replace with actual path
+   ExecStartPre=/bin/rm -f /path/to/yamz/yamz.sock  # clear any stale socket before starting
    ExecStart=/path/to/yamz/env/bin/uwsgi --ini yamz.ini  # Replace with actual path
    
    [Install]
    WantedBy=multi-user.target
    ```
+
+   > **Preventing socket `(13: Permission denied)` errors.** Nginx connects as `www-data`, so the
+   > socket must be group-owned by `www-data` with group read/write: `chmod-socket = 660` sets the
+   > mode, `chown-socket` pins the owner/group, and `vacuum = true` deletes the socket on a clean
+   > exit. The usual trigger is a **stale socket owned by the wrong user** (e.g. someone ran `uwsgi`
+   > by hand from their own account instead of via systemd). Always manage the app with
+   > `sudo systemctl restart yamz` — never run `uwsgi` directly in production — and the `ExecStartPre`
+   > line clears any leftover socket on each start. *Most robust option:* add `RuntimeDirectory=yamz`
+   > to `[Service]`, set `socket = /run/yamz/yamz.sock`, and `uwsgi_pass unix:/run/yamz/yamz.sock;`
+   > in Nginx, so systemd recreates the socket cleanly under `/run` on every start.
 
 3. **Enable and Start Service**
    
